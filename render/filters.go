@@ -303,6 +303,21 @@ func IsTopology(topology string) FilterFunc {
 // mimicing the check performed by MakeFilter() instead of the more complex check in IsNotPseudo()
 var IsPseudoTopology = IsTopology(Pseudo)
 
+// IsPvc returns true if resource has OpenEBS labels such as openebs/controller with value jiva-controller, openebs/controller-service with value jiva-controller-service or openebs/replica with value jiva-replica
+func IsPvc(n report.Node) bool {
+    name, _ := n.Latest.Lookup(kubernetes.Name)
+    containerName, _ := n.Latest.Lookup(docker.ContainerName)
+    if (strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc")) {
+        OpenEBS_Ctrl_label, _     := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
+        OpenEBS_Ctrl_Svc_label, _ := n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel)
+        OpenEBS_Rep_label, _      := n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
+        if OpenEBS_Ctrl_label == "jiva-controller" || OpenEBS_Ctrl_Svc_label == "jiva-controller-service" || OpenEBS_Rep_label == "jiva-replica" || strings.Contains(containerName, "pvc"){
+        	return true
+        }
+    }
+    return false
+}
+
 var systemContainerNames = map[string]struct{}{
 	"weavescope": {},
 	"weavedns":   {},

@@ -47,6 +47,14 @@ var (
 			{Value: "hide", Label: "Hide Unmanaged", filter: render.IsNotPseudo, filterPseudo: true},
 		},
 	}
+        storageFilter  = APITopologyOptionGroup{
+		ID:      "storage",
+		Default: "Off",
+		Options: []APITopologyOption{
+			{Value: "Off", Label: "Storage Off", filter: nil, filterPseudo: false},
+			{Value: "On", Label: "Storage On", filter: render.IsPvc, filterPseudo: false},
+		},
+	}
 )
 
 // namespaceFilters generates a namespace selector option group based on the given namespaces
@@ -171,6 +179,14 @@ func MakeRegistry() *Registry {
 				{Value: "hide", Label: "Hide Uncontained", filter: render.IsNotPseudo, filterPseudo: true},
 			},
 		},
+                {
+			ID:      "storage",
+		        Default: "Off",
+		        Options: []APITopologyOption{
+			    {Value: "Off", Label: "Storage Off", filter: nil, filterPseudo: false},
+			    {Value: "On", Label: "Storage On", filter: render.IsPvc, filterPseudo: false},
+		        },
+	        },
 	}
 
 	unconnectedFilter := []APITopologyOptionGroup{
@@ -229,7 +245,7 @@ func MakeRegistry() *Registry {
 			renderer:    render.PodRenderer,
 			Name:        "Pods",
 			Rank:        3,
-			Options:     []APITopologyOptionGroup{unmanagedFilter},
+			Options:     []APITopologyOptionGroup{storageFilter, unmanagedFilter},
 			HideIfEmpty: true,
 		},
 		APITopologyDesc{
@@ -237,7 +253,7 @@ func MakeRegistry() *Registry {
 			parent:      podsID,
 			renderer:    render.KubeControllerRenderer,
 			Name:        "controllers",
-			Options:     []APITopologyOptionGroup{unmanagedFilter},
+			Options:     []APITopologyOptionGroup{storageFilter, unmanagedFilter},
 			HideIfEmpty: true,
 		},
 		APITopologyDesc{
@@ -245,7 +261,7 @@ func MakeRegistry() *Registry {
 			parent:      podsID,
 			renderer:    render.PodServiceRenderer,
 			Name:        "services",
-			Options:     []APITopologyOptionGroup{unmanagedFilter},
+			Options:     []APITopologyOptionGroup{storageFilter, unmanagedFilter},
 			HideIfEmpty: true,
 		},
 		APITopologyDesc{
