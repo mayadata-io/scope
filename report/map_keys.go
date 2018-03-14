@@ -72,6 +72,9 @@ const (
 	KubernetesStateDeleted         = "deleted"
 	KubernetesType                 = "kubernetes_type"
 	KubernetesPorts                = "kubernetes_ports"
+	KubernetesOpenebsCtrlLabel     = "kubernetes_labels_openebs/controller"
+	KubernetesOpenebsCtrlSvcLabel  = "kubernetes_labels_openebs/controller-service"
+	KubernetesOpenebsRepLabel      = "kubernetes_labels_openebs/replica"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
