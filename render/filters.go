@@ -310,16 +310,16 @@ func IsPvc(n report.Node) bool {
     if (strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc")) {
         _, ok := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
         if ok {
-			return true
-	      }
-        _, ok = n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel)
-        if ok {
-			return true
-              }
-        _, ok = n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
-        if ok {
-			return true
-	      }
+		return true
+        }
+	_, ok = n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel)
+	if ok {
+		return true
+	}
+	_, ok = n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
+	if ok {
+		return true
+	}
     }
     return false
 }
