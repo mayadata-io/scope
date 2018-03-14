@@ -311,15 +311,15 @@ func IsPvc(n report.Node) bool {
         _, ok    := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
         if ok {
 			return true
-		}
+	      }
         _, ok = n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel) 
         if ok {
 			return true
-		}
+              }
         _, ok      = n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
         if ok {
 			return true
-		}
+	      }
     }
     return false
 }
