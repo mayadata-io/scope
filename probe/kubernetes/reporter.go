@@ -96,9 +96,14 @@ var (
 		report.Pod:    {ID: report.Pod, Label: "# Pods", From: report.FromCounters, Datatype: report.Number, Priority: 8},
 	}
 
-	CronJobMetricTemplates = PodMetricTemplates
+	CronJobMetricTemplates                 = PodMetricTemplates
+	PersistentVolumeClaimMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+	}
 
-	TableTemplates = report.TableTemplates{
+	PersistentVolumeClaimMetricTemplates = PodMetricTemplates
+	TableTemplates                       = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
 			Label:  "Kubernetes Labels",
@@ -262,6 +267,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	persistentVolumeClaimTopology, _, err := r.persistentVolumeClaimTopology(r.probeID)
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -270,6 +279,8 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.CronJob = result.CronJob.Merge(cronJobTopology)
 	result.Deployment = result.Deployment.Merge(deploymentTopology)
 	result.Namespace = result.Namespace.Merge(namespaceTopology)
+	result.PersistentVolumeClaim = result.PersistentVolumeClaim.Merge(persistentVolumeClaimTopology)
+
 	return result, nil
 }
 
@@ -509,4 +520,22 @@ func (r *Reporter) namespaceTopology() (report.Topology, error) {
 		return nil
 	})
 	return result, err
+}
+
+func (r *Reporter) persistentVolumeClaimTopology(probeID string) (report.Topology, []PersistentVolumeClaim, error) {
+	//TODO: Need to improve logic for topology.
+	var (
+		result = report.MakeTopology().
+			WithMetadataTemplates(PersistentVolumeClaimMetadataTemplates).
+			WithMetricTemplates(PersistentVolumeClaimMetricTemplates).
+			WithTableTemplates(TableTemplates)
+		pvcs = []PersistentVolumeClaim{}
+	)
+
+	err := r.client.WalkPersistentVolumeClaim(func(p PersistentVolumeClaim) error {
+		result.AddNode(p.GetNode(probeID))
+		pvcs = append(pvcs, p)
+		return nil
+	})
+	return result, pvcs, err
 }

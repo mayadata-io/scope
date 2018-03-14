@@ -20,21 +20,22 @@ import (
 )
 
 const (
-	apiTopologyURL         = "/api/topology/"
-	processesID            = "processes"
-	processesByNameID      = "processes-by-name"
-	systemGroupID          = "system"
-	containersID           = "containers"
-	containersByHostnameID = "containers-by-hostname"
-	containersByImageID    = "containers-by-image"
-	podsID                 = "pods"
-	kubeControllersID      = "kube-controllers"
-	servicesID             = "services"
-	hostsID                = "hosts"
-	weaveID                = "weave"
-	ecsTasksID             = "ecs-tasks"
-	ecsServicesID          = "ecs-services"
-	swarmServicesID        = "swarm-services"
+	apiTopologyURL          = "/api/topology/"
+	processesID             = "processes"
+	processesByNameID       = "processes-by-name"
+	systemGroupID           = "system"
+	containersID            = "containers"
+	containersByHostnameID  = "containers-by-hostname"
+	containersByImageID     = "containers-by-image"
+	podsID                  = "pods"
+	kubeControllersID       = "kube-controllers"
+	servicesID              = "services"
+	hostsID                 = "hosts"
+	weaveID                 = "weave"
+	ecsTasksID              = "ecs-tasks"
+	ecsServicesID           = "ecs-services"
+	swarmServicesID         = "swarm-services"
+	persistentVolumeClaimID = "persistentvolumeclaim"
 )
 
 var (
@@ -277,6 +278,12 @@ func MakeRegistry() *Registry {
 			renderer: render.HostRenderer,
 			Name:     "Hosts",
 			Rank:     4,
+		},
+		APITopologyDesc{
+			id:       persistentVolumeClaimID,
+			Name:     "PVC",
+			renderer: render.PVCRenderer,
+			Rank:     5,
 		},
 		APITopologyDesc{
 			id:       weaveID,

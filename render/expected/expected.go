@@ -37,6 +37,7 @@ var (
 	pod                   = node(report.Pod)
 	service               = node(report.Service)
 	hostNode              = node(report.Host)
+	pvcNode               = node(report.PersistentVolumeClaim)
 
 	UnknownPseudoNode1ID = render.MakePseudoNodeID(fixture.UnknownClient1IP)
 	UnknownPseudoNode2ID = render.MakePseudoNodeID(fixture.UnknownClient3IP)

@@ -26,6 +26,7 @@ func renderKubernetesTopologies(rpt report.Report) bool {
 		&rpt.DaemonSet,
 		&rpt.StatefulSet,
 		&rpt.CronJob,
+		&rpt.PersistentVolumeClaim,
 	}
 	for _, t := range topologies {
 		if len(t.Nodes) > 0 {

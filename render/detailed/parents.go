@@ -25,6 +25,7 @@ var parentTopologies = []string{
 	report.ECSService,
 	report.SwarmService,
 	report.Host,
+	report.PersistentVolumeClaim,
 }
 
 // Parents renders the parents of this report.Node, which have been aggregated
