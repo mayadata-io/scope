@@ -179,14 +179,6 @@ func MakeRegistry() *Registry {
 				{Value: "hide", Label: "Hide Uncontained", filter: render.IsNotPseudo, filterPseudo: true},
 			},
 		},
-                {
-			ID:      "storage",
-		        Default: "Off",
-		        Options: []APITopologyOption{
-			    {Value: "Off", Label: "Storage Off", filter: nil, filterPseudo: false},
-			    {Value: "On", Label: "Storage On", filter: render.IsPvc, filterPseudo: false},
-		        },
-	        },
 	}
 
 	unconnectedFilter := []APITopologyOptionGroup{
