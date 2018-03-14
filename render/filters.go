@@ -308,12 +308,18 @@ func IsPvc(n report.Node) bool {
     name, _ := n.Latest.Lookup(kubernetes.Name)
     containerName, _ := n.Latest.Lookup(docker.ContainerName)
     if (strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc")) {
-        OpenEBS_Ctrl_label, _     := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
-        OpenEBS_Ctrl_Svc_label, _ := n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel)
-        OpenEBS_Rep_label, _      := n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
-        if OpenEBS_Ctrl_label == "jiva-controller" || OpenEBS_Ctrl_Svc_label == "jiva-controller-service" || OpenEBS_Rep_label == "jiva-replica" || strings.Contains(containerName, "pvc"){
-        	return true
-        }
+        _, ok    := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
+        if ok {
+			return true
+		}
+        _, ok = n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel) 
+        if ok {
+			return true
+		}
+        _, ok      = n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
+        if ok {
+			return true
+		}
     }
     return false
 }
