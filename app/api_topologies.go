@@ -48,7 +48,7 @@ var (
 			{Value: "hide", Label: "Hide Unmanaged", filter: render.IsNotPseudo, filterPseudo: true},
 		},
 	}
-	storageFilter  = APITopologyOptionGroup{
+	storageFilter = APITopologyOptionGroup{
 		ID:      "storage",
 		Default: "Off",
 		Options: []APITopologyOption{
@@ -258,6 +258,14 @@ func MakeRegistry() *Registry {
 			HideIfEmpty: true,
 		},
 		APITopologyDesc{
+			id:          persistentVolumeClaimID,
+			parent:      podsID,
+			renderer:    render.PVCRenderer,
+			Name:        "persistent volumes",
+			Options:     []APITopologyOptionGroup{},
+			HideIfEmpty: true,
+		},
+		APITopologyDesc{
 			id:          ecsTasksID,
 			renderer:    render.ECSTaskRenderer,
 			Name:        "Tasks",
@@ -286,12 +294,6 @@ func MakeRegistry() *Registry {
 			renderer: render.HostRenderer,
 			Name:     "Hosts",
 			Rank:     4,
-		},
-		APITopologyDesc{
-			id:       persistentVolumeClaimID,
-			Name:     "PVC",
-			renderer: render.PVCRenderer,
-			Rank:     5,
 		},
 		APITopologyDesc{
 			id:       weaveID,
