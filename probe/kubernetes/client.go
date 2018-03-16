@@ -38,6 +38,7 @@ type Client interface {
 	WalkCronJobs(f func(CronJob) error) error
 	WalkNamespaces(f func(NamespaceResource) error) error
 	WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) error
+	WalkPersistentVolume(f func(PersistentVolume) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -60,6 +61,7 @@ type client struct {
 	nodeStore                  cache.Store
 	namespaceStore             cache.Store
 	persistentVolumeClaimStore cache.Store
+	persistentVolumeStore      cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -145,6 +147,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.statefulSetStore = result.setupStore("statefulsets")
 	result.cronJobStore = result.setupStore("cronjobs")
 	result.persistentVolumeClaimStore = result.setupStore("persistentvolumeclaims")
+	result.persistentVolumeStore = result.setupStore("persistentvolumes")
 	return result, nil
 }
 
@@ -182,6 +185,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.client.CoreV1().RESTClient(), &apiv1.Node{}, nil
 	case "persistentvolumeclaims":
 		return c.client.CoreV1().RESTClient(), &apiv1.PersistentVolumeClaim{}, nil
+	case "persistentvolumes":
+		return c.client.CoreV1().RESTClient(), &apiv1.PersistentVolume{}, nil
 	case "namespaces":
 		return c.client.CoreV1().RESTClient(), &apiv1.Namespace{}, nil
 	case "deployments":
@@ -325,6 +330,20 @@ func (c *client) WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) 
 	for _, m := range c.persistentVolumeClaimStore.List() {
 		p := m.(*apiv1.PersistentVolumeClaim)
 		if err := f(NewPVC(p)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// WalkPersistentVolume calls f for each PVC
+func (c *client) WalkPersistentVolume(f func(PersistentVolume) error) error {
+	if c.persistentVolumeClaimStore == nil {
+		return nil
+	}
+	for _, m := range c.persistentVolumeStore.List() {
+		p := m.(*apiv1.PersistentVolume)
+		if err := f(NewPV(p)); err != nil {
 			return err
 		}
 	}

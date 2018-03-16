@@ -194,6 +194,15 @@ var nodeSummaryGroupSpecs = []struct {
 			},
 		},
 	},
+	{
+		topologyID: report.PersistentVolume,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label: "PV",
+			Columns: []Column{
+				{ID: kubernetes.State, Label: "State"},
+			},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {

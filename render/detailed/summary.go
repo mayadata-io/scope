@@ -79,6 +79,7 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.SwarmService:          swarmServiceNodeSummary,
 	report.Host:                  hostNodeSummary,
 	report.PersistentVolumeClaim: persistentVolumeClaimNodeSummary,
+	report.PersistentVolume:      persistentVolumeNodeSummary,
 	report.Overlay:               weaveNodeSummary,
 	report.Endpoint:              nil, // Do not render
 }
@@ -99,6 +100,7 @@ var primaryAPITopology = map[string]string{
 	report.SwarmService:          "swarm-services",
 	report.Host:                  "hosts",
 	report.PersistentVolumeClaim: "persistentvolumeclaim",
+	report.PersistentVolume:      "persistentvolume",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -374,6 +376,12 @@ func weaveNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 }
 
 func persistentVolumeClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	// TODO: Need to improve more and add Minor label
+	base = addKubernetesLabelAndRank(base, n)
+	return base
+}
+
+func persistentVolumeNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	// TODO: Need to improve more and add Minor label
 	base = addKubernetesLabelAndRank(base, n)
 	return base

@@ -33,4 +33,5 @@ var (
 	SelectSwarmService          = TopologySelector(report.SwarmService)
 	SelectOverlay               = TopologySelector(report.Overlay)
 	SelectPersistentVolumeClaim = TopologySelector(report.PersistentVolumeClaim)
+	SelectPersistentVolume      = TopologySelector(report.PersistentVolume)
 )
