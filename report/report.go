@@ -130,7 +130,7 @@ type Report struct {
 	// Metadata includes things like PVC id, pvc name etc. Edges are not present
 	PersistentVolumeClaim Topology
 
-	// PersistentVolumeClaim represent all kubernetes PersistentVolumes on hosts running probes.
+	// PersistentVolume represent all kubernetes PersistentVolumes on hosts running probes.
 	// Metadata includes things like PV id, pv name etc. Edges are not present
 	PersistentVolume Topology
 

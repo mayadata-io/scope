@@ -166,6 +166,9 @@ var (
 
 	// ParsePersistentVolumeClaimNodeID parses a persistentvolumeclaim node ID
 	ParsePersistentVolumeClaimNodeID = parseSingleComponentID("persistentvolumeclaim")
+
+	// ParsePersistentVolumeNodeID parses a persistentvolumeclaim node ID
+	ParsePersistentVolumeNodeID = parseSingleComponentID("persistentvolume")
 )
 
 // makeSingleComponentID makes a single-component node id encoder
