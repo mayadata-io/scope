@@ -1,7 +1,7 @@
 # Weave Scope - Troubleshooting & Monitoring for Docker & Kubernetes
 
-[![Circle CI](https://circleci.com/gh/weaveworks/scope/tree/master.svg?style=shield)](https://circleci.com/gh/weaveworks/scope/tree/master)
-[![Coverage Status](https://coveralls.io/repos/weaveworks/scope/badge.svg)](https://coveralls.io/r/weaveworks/scope)
+[![CircleCI](https://circleci.com/gh/openebs/scope.svg?style=svg)](https://circleci.com/gh/openebs/scope)
+[![Coverage Status](https://coveralls.io/repos/github/openebs/scope/badge.svg?branch=master)](https://coveralls.io/github/openebs/scope?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/weaveworks/scope)](https://goreportcard.com/report/github.com/weaveworks/scope)
 [![Slack Status](https://slack.weave.works/badge.svg)](https://slack.weave.works)
 [![Docker Pulls](https://img.shields.io/docker/pulls/weaveworks/scope.svg?maxAge=604800)](https://hub.docker.com/r/weaveworks/scope/)
