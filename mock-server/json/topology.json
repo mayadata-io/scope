@@ -1,0 +1,636 @@
+[
+  {
+    "hide_if_empty": false,
+    "name": "Containers",
+    "options": [
+      {
+        "defaultValue": "application",
+        "id": "system",
+        "options": [
+          {
+            "label": "All",
+            "value": "all"
+          },
+          {
+            "label": "System Containers",
+            "value": "system"
+          },
+          {
+            "label": "Application Containers",
+            "value": "application"
+          }
+        ]
+      },
+      {
+        "defaultValue": "running",
+        "id": "stopped",
+        "options": [
+          {
+            "label": "Stopped containers",
+            "value": "stopped"
+          },
+          {
+            "label": "Running containers",
+            "value": "running"
+          },
+          {
+            "label": "Both",
+            "value": "both"
+          }
+        ]
+      },
+      {
+        "defaultValue": "hide",
+        "id": "pseudo",
+        "options": [
+          {
+            "label": "Show Uncontained",
+            "value": "show"
+          },
+          {
+            "label": "Hide Uncontained",
+            "value": "hide"
+          }
+        ]
+      },
+      {
+        "defaultValue": "",
+        "id": "namespace",
+        "noneLabel": "All Namespaces",
+        "options": [
+          {
+            "label": "default",
+            "value": "default"
+          },
+          {
+            "label": "kube-public",
+            "value": "kube-public"
+          },
+          {
+            "label": "kube-system",
+            "value": "kube-system"
+          },
+          {
+            "label": "weave",
+            "value": "weave"
+          }
+        ],
+        "selectType": "union"
+      }
+    ],
+    "rank": 2,
+    "stats": {
+      "edge_count": 12,
+      "filtered_nodes": 0,
+      "node_count": 44,
+      "nonpseudo_node_count": 42
+    },
+    "sub_topologies": [
+      {
+        "hide_if_empty": false,
+        "name": "by DNS name",
+        "options": [
+          {
+            "defaultValue": "application",
+            "id": "system",
+            "options": [
+              {
+                "label": "All",
+                "value": "all"
+              },
+              {
+                "label": "System Containers",
+                "value": "system"
+              },
+              {
+                "label": "Application Containers",
+                "value": "application"
+              }
+            ]
+          },
+          {
+            "defaultValue": "running",
+            "id": "stopped",
+            "options": [
+              {
+                "label": "Stopped containers",
+                "value": "stopped"
+              },
+              {
+                "label": "Running containers",
+                "value": "running"
+              },
+              {
+                "label": "Both",
+                "value": "both"
+              }
+            ]
+          },
+          {
+            "defaultValue": "hide",
+            "id": "pseudo",
+            "options": [
+              {
+                "label": "Show Uncontained",
+                "value": "show"
+              },
+              {
+                "label": "Hide Uncontained",
+                "value": "hide"
+              }
+            ]
+          },
+          {
+            "defaultValue": "",
+            "id": "namespace",
+            "noneLabel": "All Namespaces",
+            "options": [
+              {
+                "label": "default",
+                "value": "default"
+              },
+              {
+                "label": "kube-public",
+                "value": "kube-public"
+              },
+              {
+                "label": "kube-system",
+                "value": "kube-system"
+              },
+              {
+                "label": "weave",
+                "value": "weave"
+              }
+            ],
+            "selectType": "union"
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 10,
+          "filtered_nodes": 0,
+          "node_count": 10,
+          "nonpseudo_node_count": 8
+        },
+        "url": "/api/topology/containers-by-hostname"
+      },
+      {
+        "hide_if_empty": false,
+        "name": "by image",
+        "options": [
+          {
+            "defaultValue": "application",
+            "id": "system",
+            "options": [
+              {
+                "label": "All",
+                "value": "all"
+              },
+              {
+                "label": "System Containers",
+                "value": "system"
+              },
+              {
+                "label": "Application Containers",
+                "value": "application"
+              }
+            ]
+          },
+          {
+            "defaultValue": "running",
+            "id": "stopped",
+            "options": [
+              {
+                "label": "Stopped containers",
+                "value": "stopped"
+              },
+              {
+                "label": "Running containers",
+                "value": "running"
+              },
+              {
+                "label": "Both",
+                "value": "both"
+              }
+            ]
+          },
+          {
+            "defaultValue": "hide",
+            "id": "pseudo",
+            "options": [
+              {
+                "label": "Show Uncontained",
+                "value": "show"
+              },
+              {
+                "label": "Hide Uncontained",
+                "value": "hide"
+              }
+            ]
+          },
+          {
+            "defaultValue": "",
+            "id": "namespace",
+            "noneLabel": "All Namespaces",
+            "options": [
+              {
+                "label": "default",
+                "value": "default"
+              },
+              {
+                "label": "kube-public",
+                "value": "kube-public"
+              },
+              {
+                "label": "kube-system",
+                "value": "kube-system"
+              },
+              {
+                "label": "weave",
+                "value": "weave"
+              }
+            ],
+            "selectType": "union"
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 12,
+          "filtered_nodes": 0,
+          "node_count": 14,
+          "nonpseudo_node_count": 12
+        },
+        "url": "/api/topology/containers-by-image"
+      }
+    ],
+    "url": "/api/topology/containers"
+  },
+  {
+    "hide_if_empty": false,
+    "name": "Hosts",
+    "options": null,
+    "rank": 4,
+    "stats": {
+      "edge_count": 2,
+      "filtered_nodes": 0,
+      "node_count": 2,
+      "nonpseudo_node_count": 1
+    },
+    "sub_topologies": [
+      {
+        "hide_if_empty": false,
+        "name": "Weave Net",
+        "options": null,
+        "rank": 0,
+        "stats": {
+          "edge_count": 0,
+          "filtered_nodes": 0,
+          "node_count": 0,
+          "nonpseudo_node_count": 0
+        },
+        "url": "/api/topology/weave"
+      }
+    ],
+    "url": "/api/topology/hosts"
+  },
+  {
+    "hide_if_empty": true,
+    "name": "Pods",
+    "options": [
+      {
+        "defaultValue": "hide",
+        "id": "pseudo",
+        "options": [
+          {
+            "label": "Show Unmanaged",
+            "value": "show"
+          },
+          {
+            "label": "Hide Unmanaged",
+            "value": "hide"
+          }
+        ]
+      },
+      {
+        "defaultValue": "",
+        "id": "namespace",
+        "noneLabel": "All Namespaces",
+        "options": [
+          {
+            "label": "default",
+            "value": "default"
+          },
+          {
+            "label": "kube-public",
+            "value": "kube-public"
+          },
+          {
+            "label": "kube-system",
+            "value": "kube-system"
+          },
+          {
+            "label": "weave",
+            "value": "weave"
+          }
+        ],
+        "selectType": "union"
+      }
+    ],
+    "rank": 3,
+    "stats": {
+      "edge_count": 11,
+      "filtered_nodes": 0,
+      "node_count": 13,
+      "nonpseudo_node_count": 11
+    },
+    "sub_topologies": [
+      {
+        "hide_if_empty": true,
+        "name": "controllers",
+        "options": [
+          {
+            "defaultValue": "hide",
+            "id": "pseudo",
+            "options": [
+              {
+                "label": "Show Unmanaged",
+                "value": "show"
+              },
+              {
+                "label": "Hide Unmanaged",
+                "value": "hide"
+              }
+            ]
+          },
+          {
+            "defaultValue": "",
+            "id": "namespace",
+            "noneLabel": "All Namespaces",
+            "options": [
+              {
+                "label": "default",
+                "value": "default"
+              },
+              {
+                "label": "kube-public",
+                "value": "kube-public"
+              },
+              {
+                "label": "kube-system",
+                "value": "kube-system"
+              },
+              {
+                "label": "weave",
+                "value": "weave"
+              }
+            ],
+            "selectType": "union"
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 8,
+          "filtered_nodes": 0,
+          "node_count": 10,
+          "nonpseudo_node_count": 8
+        },
+        "url": "/api/topology/kube-controllers"
+      },
+      {
+        "hide_if_empty": true,
+        "name": "services",
+        "options": [
+          {
+            "defaultValue": "hide",
+            "id": "pseudo",
+            "options": [
+              {
+                "label": "Show Unmanaged",
+                "value": "show"
+              },
+              {
+                "label": "Hide Unmanaged",
+                "value": "hide"
+              }
+            ]
+          },
+          {
+            "defaultValue": "",
+            "id": "namespace",
+            "noneLabel": "All Namespaces",
+            "options": [
+              {
+                "label": "default",
+                "value": "default"
+              },
+              {
+                "label": "kube-public",
+                "value": "kube-public"
+              },
+              {
+                "label": "kube-system",
+                "value": "kube-system"
+              },
+              {
+                "label": "weave",
+                "value": "weave"
+              }
+            ],
+            "selectType": "union"
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 6,
+          "filtered_nodes": 0,
+          "node_count": 9,
+          "nonpseudo_node_count": 7
+        },
+        "url": "/api/topology/services"
+      },
+      {
+        "hide_if_empty": false,
+        "name": "persistent Volume",
+        "options": [
+          {
+            "defaultValue": "",
+            "id": "namespace",
+            "noneLabel": "All Namespaces",
+            "options": [
+              {
+                "label": "default",
+                "value": "default"
+              },
+              {
+                "label": "kube-public",
+                "value": "kube-public"
+              },
+              {
+                "label": "kube-system",
+                "value": "kube-system"
+              },
+              {
+                "label": "weave",
+                "value": "weave"
+              }
+            ],
+            "selectType": "union"
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 0,
+          "filtered_nodes": 0,
+          "node_count": 2,
+          "nonpseudo_node_count": 2
+        },
+        "url": "/api/topology/persistentVolume"
+      }
+    ],
+    "url": "/api/topology/pods"
+  },
+  {
+    "hide_if_empty": true,
+    "name": "Processes",
+    "options": [
+      {
+        "defaultValue": "hide",
+        "id": "unconnected",
+        "options": [
+          {
+            "label": "Show Unconnected",
+            "value": "show"
+          },
+          {
+            "label": "Hide Unconnected",
+            "value": "hide"
+          }
+        ]
+      }
+    ],
+    "rank": 1,
+    "stats": {
+      "edge_count": 22,
+      "filtered_nodes": 0,
+      "node_count": 333,
+      "nonpseudo_node_count": 332
+    },
+    "sub_topologies": [
+      {
+        "hide_if_empty": true,
+        "name": "by name",
+        "options": [
+          {
+            "defaultValue": "hide",
+            "id": "unconnected",
+            "options": [
+              {
+                "label": "Show Unconnected",
+                "value": "show"
+              },
+              {
+                "label": "Hide Unconnected",
+                "value": "hide"
+              }
+            ]
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 17,
+          "filtered_nodes": 0,
+          "node_count": 267,
+          "nonpseudo_node_count": 266
+        },
+        "url": "/api/topology/processes-by-name"
+      }
+    ],
+    "url": "/api/topology/processes"
+  },
+  {
+    "hide_if_empty": true,
+    "name": "Tasks",
+    "options": [
+      {
+        "defaultValue": "hide",
+        "id": "pseudo",
+        "options": [
+          {
+            "label": "Show Unmanaged",
+            "value": "show"
+          },
+          {
+            "label": "Hide Unmanaged",
+            "value": "hide"
+          }
+        ]
+      }
+    ],
+    "rank": 3,
+    "stats": {
+      "edge_count": 0,
+      "filtered_nodes": 0,
+      "node_count": 0,
+      "nonpseudo_node_count": 0
+    },
+    "sub_topologies": [
+      {
+        "hide_if_empty": true,
+        "name": "services",
+        "options": [
+          {
+            "defaultValue": "hide",
+            "id": "pseudo",
+            "options": [
+              {
+                "label": "Show Unmanaged",
+                "value": "show"
+              },
+              {
+                "label": "Hide Unmanaged",
+                "value": "hide"
+              }
+            ]
+          }
+        ],
+        "rank": 0,
+        "stats": {
+          "edge_count": 0,
+          "filtered_nodes": 0,
+          "node_count": 0,
+          "nonpseudo_node_count": 0
+        },
+        "url": "/api/topology/ecs-services"
+      }
+    ],
+    "url": "/api/topology/ecs-tasks"
+  },
+  {
+    "hide_if_empty": true,
+    "name": "services",
+    "options": [
+      {
+        "defaultValue": "hide",
+        "id": "pseudo",
+        "options": [
+          {
+            "label": "Show Unmanaged",
+            "value": "show"
+          },
+          {
+            "label": "Hide Unmanaged",
+            "value": "hide"
+          }
+        ]
+      }
+    ],
+    "rank": 3,
+    "stats": {
+      "edge_count": 0,
+      "filtered_nodes": 0,
+      "node_count": 0,
+      "nonpseudo_node_count": 0
+    },
+    "url": "/api/topology/swarm-services"
+  }
+]
