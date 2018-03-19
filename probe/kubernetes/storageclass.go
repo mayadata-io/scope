@@ -17,10 +17,6 @@ type storageClass struct {
 	Meta
 }
 
-type person struct {
-	name string
-}
-
 // NewStorageClass returns new Storage Class type
 func NewStorageClass(p *storage_v1.StorageClass) StorageClass {
 	return &storageClass{StorageClass: p, Meta: meta{p.ObjectMeta}}
