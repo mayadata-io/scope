@@ -9,6 +9,7 @@ var PVCRenderer = MakeReduce(
 
 	MapEndpoints(endpoint2PVC, report.PersistentVolumeClaim),
 	MapEndpoints(endpoint2PV, report.PersistentVolume),
+	MapEndpoints(endpoint2StorageClass, report.StorageClass),
 )
 
 // endpoint2PVC returns pvc node ID
@@ -23,6 +24,14 @@ func endpoint2PVC(n report.Node) string {
 func endpoint2PV(n report.Node) string {
 	if pvNodeID, ok := n.Latest.Lookup(report.MakePersistentVolumeNodeID(n.ID)); ok {
 		return pvNodeID
+	}
+	return ""
+}
+
+// endpoint2StorageClass returns StorageClass node ID
+func endpoint2StorageClass(n report.Node) string {
+	if storageclassNodeID, ok := n.Latest.Lookup(report.MakeStorageClassNodeID(n.ID)); ok {
+		return storageclassNodeID
 	}
 	return ""
 }

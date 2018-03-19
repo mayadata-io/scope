@@ -203,6 +203,15 @@ var nodeSummaryGroupSpecs = []struct {
 			},
 		},
 	},
+	{
+		topologyID: report.StorageClass,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label: "StorageClass",
+			Columns: []Column{
+				{ID: kubernetes.State, Label: "State"},
+			},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {

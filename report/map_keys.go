@@ -109,6 +109,7 @@ var commonKeys = map[string]string{
 	SwarmService:          SwarmService,
 	PersistentVolumeClaim: PersistentVolumeClaim,
 	PersistentVolume:      PersistentVolume,
+	StorageClass:          StorageClass,
 
 	HostNodeID:             HostNodeID,
 	ControlProbeID:         ControlProbeID,

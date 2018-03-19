@@ -111,7 +111,15 @@ var (
 	}
 
 	PersistentVolumeMetricTemplates = PodMetricTemplates
-	TableTemplates                  = report.TableTemplates{
+
+	StorageClassMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+	}
+
+	StorageClassMetricTemplates = PodMetricTemplates
+
+	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
 			Label:  "Kubernetes Labels",
@@ -283,6 +291,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	storageClassTopology, _, err := r.storageClassTopology(r.probeID)
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -293,6 +305,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.Namespace = result.Namespace.Merge(namespaceTopology)
 	result.PersistentVolumeClaim = result.PersistentVolumeClaim.Merge(persistentVolumeClaimTopology)
 	result.PersistentVolume = result.PersistentVolume.Merge(persistentVolumeTopology)
+	result.StorageClass = result.StorageClass.Merge(storageClassTopology)
 
 	return result, nil
 }
@@ -569,4 +582,22 @@ func (r *Reporter) persistentVolumeTopology(probeID string) (report.Topology, []
 		return nil
 	})
 	return result, pvcs, err
+}
+
+func (r *Reporter) storageClassTopology(probeID string) (report.Topology, []StorageClass, error) {
+	//TODO: Need to improve logic for topology.
+	var (
+		result = report.MakeTopology().
+			WithMetadataTemplates(StorageClassMetadataTemplates).
+			WithMetricTemplates(StorageClassMetricTemplates).
+			WithTableTemplates(TableTemplates)
+		sc = []StorageClass{}
+	)
+
+	err := r.client.WalkStorageClass(func(p StorageClass) error {
+		result.AddNode(p.GetNode(probeID))
+		sc = append(sc, p)
+		return nil
+	})
+	return result, sc, err
 }

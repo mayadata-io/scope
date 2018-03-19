@@ -15,6 +15,7 @@ import (
 	apibatchv2alpha1 "k8s.io/api/batch/v2alpha1"
 	apiv1 "k8s.io/api/core/v1"
 	apiextensionsv1beta1 "k8s.io/api/extensions/v1beta1"
+	storage_v1 "k8s.io/api/storage/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -39,6 +40,7 @@ type Client interface {
 	WalkNamespaces(f func(NamespaceResource) error) error
 	WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) error
 	WalkPersistentVolume(f func(PersistentVolume) error) error
+	WalkStorageClass(f func(StorageClass) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -62,6 +64,7 @@ type client struct {
 	namespaceStore             cache.Store
 	persistentVolumeClaimStore cache.Store
 	persistentVolumeStore      cache.Store
+	storageClassStore          cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -148,6 +151,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.cronJobStore = result.setupStore("cronjobs")
 	result.persistentVolumeClaimStore = result.setupStore("persistentvolumeclaims")
 	result.persistentVolumeStore = result.setupStore("persistentvolumes")
+	result.storageClassStore = result.setupStore("storageclasses")
 	return result, nil
 }
 
@@ -187,6 +191,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.client.CoreV1().RESTClient(), &apiv1.PersistentVolumeClaim{}, nil
 	case "persistentvolumes":
 		return c.client.CoreV1().RESTClient(), &apiv1.PersistentVolume{}, nil
+	case "storageclasses":
+		return c.client.StorageV1().RESTClient(), &storage_v1.StorageClass{}, nil
 	case "namespaces":
 		return c.client.CoreV1().RESTClient(), &apiv1.Namespace{}, nil
 	case "deployments":
@@ -336,7 +342,7 @@ func (c *client) WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) 
 	return nil
 }
 
-// WalkPersistentVolume calls f for each PVC
+// WalkPersistentVolume calls f for each PV
 func (c *client) WalkPersistentVolume(f func(PersistentVolume) error) error {
 	if c.persistentVolumeClaimStore == nil {
 		return nil
@@ -344,6 +350,20 @@ func (c *client) WalkPersistentVolume(f func(PersistentVolume) error) error {
 	for _, m := range c.persistentVolumeStore.List() {
 		p := m.(*apiv1.PersistentVolume)
 		if err := f(NewPV(p)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+//WalkStorageClass calls f for each storageclass
+func (c *client) WalkStorageClass(f func(StorageClass) error) error {
+	if c.storageClassStore == nil {
+		return nil
+	}
+	for _, m := range c.storageClassStore.List() {
+		p := m.(*storage_v1.StorageClass)
+		if err := f(NewStorageClass(p)); err != nil {
 			return err
 		}
 	}
