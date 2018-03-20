@@ -2,7 +2,7 @@ package kubernetes
 
 import (
 	"github.com/weaveworks/scope/report"
-	storage_v1 "k8s.io/api/storage/v1"
+	storagev1 "k8s.io/api/storage/v1"
 )
 
 // StorageClass represent kubernetes StorageClass interface
@@ -13,12 +13,12 @@ type StorageClass interface {
 
 // storageClass represents kubernetes storage classes
 type storageClass struct {
-	*storage_v1.StorageClass
+	*storagev1.StorageClass
 	Meta
 }
 
 // NewStorageClass returns new Storage Class type
-func NewStorageClass(p *storage_v1.StorageClass) StorageClass {
+func NewStorageClass(p *storagev1.StorageClass) StorageClass {
 	return &storageClass{StorageClass: p, Meta: meta{p.ObjectMeta}}
 }
 

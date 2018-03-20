@@ -15,7 +15,7 @@ import (
 	apibatchv2alpha1 "k8s.io/api/batch/v2alpha1"
 	apiv1 "k8s.io/api/core/v1"
 	apiextensionsv1beta1 "k8s.io/api/extensions/v1beta1"
-	storage_v1 "k8s.io/api/storage/v1"
+	storagev1 "k8s.io/api/storage/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -192,7 +192,7 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 	case "persistentvolumes":
 		return c.client.CoreV1().RESTClient(), &apiv1.PersistentVolume{}, nil
 	case "storageclasses":
-		return c.client.StorageV1().RESTClient(), &storage_v1.StorageClass{}, nil
+		return c.client.StorageV1().RESTClient(), &storagev1.StorageClass{}, nil
 	case "namespaces":
 		return c.client.CoreV1().RESTClient(), &apiv1.Namespace{}, nil
 	case "deployments":
@@ -362,7 +362,7 @@ func (c *client) WalkStorageClass(f func(StorageClass) error) error {
 		return nil
 	}
 	for _, m := range c.storageClassStore.List() {
-		p := m.(*storage_v1.StorageClass)
+		p := m.(*storagev1.StorageClass)
 		if err := f(NewStorageClass(p)); err != nil {
 			return err
 		}
