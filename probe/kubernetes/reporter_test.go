@@ -148,6 +148,15 @@ func (c *mockClient) WalkDeployments(f func(kubernetes.Deployment) error) error 
 func (c *mockClient) WalkNamespaces(f func(kubernetes.NamespaceResource) error) error {
 	return nil
 }
+func (c *mockClient) WalkPersistentVolumeClaim(f func(kubernetes.PersistentVolumeClaim) error) error {
+	return nil
+}
+func (c *mockClient) WalkPersistentVolume(f func(kubernetes.PersistentVolume) error) error {
+	return nil
+}
+func (c *mockClient) WalkStorageClass(f func(kubernetes.StorageClass) error) error {
+	return nil
+}
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
 func (c *mockClient) GetLogs(namespaceID, podName string, _ []string) (io.ReadCloser, error) {
 	r, ok := c.logs[namespaceID+";"+podName]
