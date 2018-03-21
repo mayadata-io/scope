@@ -305,23 +305,23 @@ var IsPseudoTopology = IsTopology(Pseudo)
 
 // IsPvc returns true if resource has OpenEBS labels such as openebs/controller with value jiva-controller, openebs/controller-service with value jiva-controller-service or openebs/replica with value jiva-replica
 func IsPvc(n report.Node) bool {
-    name, _ := n.Latest.Lookup(kubernetes.Name)
-    containerName, _ := n.Latest.Lookup(docker.ContainerName)
-    if (strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc")) {
-        _, ok := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
-        if ok {
-		return true
-        }
-	_, ok = n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel)
-	if ok {
-		return true
+	name, _ := n.Latest.Lookup(kubernetes.Name)
+	containerName, _ := n.Latest.Lookup(docker.ContainerName)
+	if strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc") {
+		_, ok := n.Latest.Lookup(kubernetes.OpenEBSCtrlLabel)
+		if ok {
+			return true
+		}
+		_, ok = n.Latest.Lookup(kubernetes.OpenEBSCtrlSvcLabel)
+		if ok {
+			return true
+		}
+		_, ok = n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
+		if ok {
+			return true
+		}
 	}
-	_, ok = n.Latest.Lookup(kubernetes.OpenEBSRepLabel)
-	if ok {
-		return true
-	}
-    }
-    return false
+	return false
 }
 
 var systemContainerNames = map[string]struct{}{

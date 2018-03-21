@@ -558,7 +558,7 @@ func (r *Reporter) persistentVolumeClaimTopology(probeID string) (report.Topolog
 		pvcs = []PersistentVolumeClaim{}
 	)
 
-	err := r.client.WalkPersistentVolumeClaim(func(p PersistentVolumeClaim) error {
+	err := r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
 		result.AddNode(p.GetNode(probeID))
 		pvcs = append(pvcs, p)
 		return nil
@@ -576,7 +576,7 @@ func (r *Reporter) persistentVolumeTopology(probeID string) (report.Topology, []
 		pvcs = []PersistentVolume{}
 	)
 
-	err := r.client.WalkPersistentVolume(func(p PersistentVolume) error {
+	err := r.client.WalkPersistentVolumes(func(p PersistentVolume) error {
 		result.AddNode(p.GetNode(probeID))
 		pvcs = append(pvcs, p)
 		return nil
@@ -594,7 +594,7 @@ func (r *Reporter) storageClassTopology(probeID string) (report.Topology, []Stor
 		sc = []StorageClass{}
 	)
 
-	err := r.client.WalkStorageClass(func(p StorageClass) error {
+	err := r.client.WalkStorageClasses(func(p StorageClass) error {
 		result.AddNode(p.GetNode(probeID))
 		sc = append(sc, p)
 		return nil

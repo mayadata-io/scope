@@ -38,9 +38,9 @@ type Client interface {
 	WalkStatefulSets(f func(StatefulSet) error) error
 	WalkCronJobs(f func(CronJob) error) error
 	WalkNamespaces(f func(NamespaceResource) error) error
-	WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) error
-	WalkPersistentVolume(f func(PersistentVolume) error) error
-	WalkStorageClass(f func(StorageClass) error) error
+	WalkPersistentVolumeClaims(f func(PersistentVolumeClaim) error) error
+	WalkPersistentVolumes(f func(PersistentVolume) error) error
+	WalkStorageClasses(f func(StorageClass) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -329,7 +329,7 @@ func (c *client) WalkStatefulSets(f func(StatefulSet) error) error {
 }
 
 // WalkPersistentVolumeClaim calls f for each PVC
-func (c *client) WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) error {
+func (c *client) WalkPersistentVolumeClaims(f func(PersistentVolumeClaim) error) error {
 	if c.persistentVolumeClaimStore == nil {
 		return nil
 	}
@@ -343,7 +343,7 @@ func (c *client) WalkPersistentVolumeClaim(f func(PersistentVolumeClaim) error) 
 }
 
 // WalkPersistentVolume calls f for each PV
-func (c *client) WalkPersistentVolume(f func(PersistentVolume) error) error {
+func (c *client) WalkPersistentVolumes(f func(PersistentVolume) error) error {
 	if c.persistentVolumeClaimStore == nil {
 		return nil
 	}
@@ -357,7 +357,7 @@ func (c *client) WalkPersistentVolume(f func(PersistentVolume) error) error {
 }
 
 //WalkStorageClass calls f for each storageclass
-func (c *client) WalkStorageClass(f func(StorageClass) error) error {
+func (c *client) WalkStorageClasses(f func(StorageClass) error) error {
 	if c.storageClassStore == nil {
 		return nil
 	}
