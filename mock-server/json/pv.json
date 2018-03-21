@@ -10,7 +10,36 @@
           "id": "kubernetes_created",
           "label": "Created",
           "value": "2018-03-15T08:28:18Z",
-          "priority": 3.0,
+          "priority": 3,
+          "dataType": "datetime"
+        }
+      ],
+      "tables": [
+        {
+          "id": "kubernetes_labels_",
+          "label": "Kubernetes Labels",
+          "type": "property-list",
+          "columns": null,
+          "rows": []
+        }
+      ],
+       "adjacency": [
+        "cfd470d2-282a-11e8-b0a2-141877a4a32a",
+        "cfd470d2-282a-11e8-b0a2;<namespace>",
+        "cfd470d2-282a"
+      ]
+    },
+    {
+      "id": "cfd470d2-282a-11e8-b0a2-141877a4a32a",
+      "label": "demo-vol1-claim",
+      "rank": "/demo-vol1-claim",
+      "shape": "square",
+      "metadata": [
+        {
+          "id": "kubernetes_created",
+          "label": "Created",
+          "value": "2018-03-15T08:28:17Z",
+          "priority": 3,
           "dataType": "datetime"
         }
       ],
@@ -24,33 +53,8 @@
         }
       ],
       "adjacency": [
-				"cfd470d2-282a;<namespace>",
-				"cfd470d2-282a-11e8-b0a2;<namespace>",
-				"cfd470d2-282a-11e8-b0a2-141877a4a32a;<namespace>"
-			]
-    },
-    {
-      "id": "cfd470d2-282a-11e8-b0a2-141877a4a32a;<namespace>",
-      "label": "demo-vol1-claim",
-      "rank": "/demo-vol1-claim",
-      "shape": "square",
-      "metadata": [
-        {
-          "id": "kubernetes_created",
-          "label": "Created",
-          "value": "2018-03-15T08:28:17Z",
-          "priority": 3.0,
-          "dataType": "datetime"
-        }
-      ],
-      "tables": [
-        {
-          "id": "kubernetes_labels_",
-          "label": "Kubernetes Labels",
-          "type": "property-list",
-          "columns": null,
-          "rows": []
-        }
+        "cfd470d2-282a-11e8-b0a2;<namespace>",
+        "d03e0a31"
       ]
     },
     {
@@ -63,7 +67,7 @@
           "id": "kubernetes_created",
           "label": "Created",
           "value": "2018-03-15T08:28:17Z",
-          "priority": 3.0,
+          "priority": 3,
           "dataType": "datetime"
         }
       ],
@@ -78,7 +82,7 @@
       ]
     },
     {
-      "id": "cfd470d2-282a;<namespace>",
+      "id": "cfd470d2-282a",
       "label": "percona-65779b6584-mjbkk",
       "rank": "/demo-vol2-claim",
       "shape": "hexagon",
@@ -87,7 +91,7 @@
           "id": "kubernetes_created",
           "label": "Created",
           "value": "2018-03-15T08:28:17Z",
-          "priority": 3.0,
+          "priority": 3,
           "dataType": "datetime"
         }
       ],
@@ -101,7 +105,7 @@
         }
       ],
       "adjacency": [
-        "cfd470d2-282a-11e8-b0a2-141877a4a32a;<namespace>"
+        "cfd470d2-282a-11e8-b0a2-141877a4a32a"
       ]
     }
   ],

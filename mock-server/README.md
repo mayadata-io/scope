@@ -14,4 +14,5 @@ This will start a webpack-dev-server that serves the UI.
   ## Running mock-server (go-server)
 - Go to scope/mock-server: `cd scope/mock-server`
 - Download and install gin-gonc: `go get github.com/gin-gonic/gin`
+- Download and install gorilla: `go get github.com/gorilla/websocket`
 - Start mock-server : `go run mock-server.go` and then open `http://localhost:4042/`
