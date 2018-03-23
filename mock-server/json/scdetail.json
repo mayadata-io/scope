@@ -1,9 +1,9 @@
 {
   "node": {
-    "id": "cfd470d2-282a-11e8-b0a2-141877a4a32a",
-    "label": "demo-vol1-claim",
-    "rank": "/demo-vol1-claim",
-    "shape": "circle",
+    "id": "cfd470d2-282a-11e8-b0a2",
+    "label": "SC-ISCSI-general",
+    "rank": "/demo-vol2-claim",
+    "shape": "pentagon",
     "metadata": [
       {
         "id": "Name",
@@ -24,46 +24,40 @@
         "priority": 3.0
       },
       {
-        "id": "Status",
-        "label": "Status",
-        "value": "Bound",
-        "priority": 5.0
-      },
-      {
         "id": "Volume",
         "label": "Volume",
         "value": "pvc-cfd470d2-282a-11e8-b0a2-141877a4a32a",
-        "priority": 6.0
+        "priority": 4.0
       },
       {
         "id": "Labels",
         "label": "Labels",
         "value": "none",
-        "priority": 7.0
+        "priority": 5.0
       },
       {
         "id": "Annotations",
         "label": "Annotations",
         "value": " control-plane.alpha.kubernetes.io",
-        "priority": 8.0
+        "priority": 6.0
       },
       {
         "id": "Finalizers",
         "label": "Finalizers",
         "value": "",
-        "priority": 9.0
+        "priority": 7.0
       },
       {
         "id": "Capacity",
         "label": "Capacity",
         "value": "5G",
-        "priority": 10.0
+        "priority": 8.0
       },
       {
         "id": "Events",
         "label": "Events",
         "value": "none",
-        "priority": 11.0
+        "priority": 9.0
       }
     ],
     "controls": [

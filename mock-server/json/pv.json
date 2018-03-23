@@ -4,7 +4,7 @@
       "id": "d03e0a31",
       "label": "pvc-cfd470d2",
       "rank": "/pvc-cfd470d2-282a-11e8-b0a2-141877a4a32a",
-      "shape": "circle",
+      "shape": "new",
       "metadata": [
         {
           "id": "kubernetes_created",
@@ -12,6 +12,47 @@
           "value": "2018-03-15T08:28:18Z",
           "priority": 3,
           "dataType": "datetime"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "docker_cpu_total_usage",
+          "label": "IOPS",
+          "format": "percent",
+          "value": 1.94,
+          "priority": 1,
+          "samples": null,
+          "min": 1.9474654188482,
+          "max": 100,
+          "first": "2018-03-23T06:58:33.898152858Z",
+          "last": "2018-03-23T06:58:47.79270917Z",
+          "url": ""
+        },
+        {
+          "id": "docker_memory_usage",
+          "label": "Latency",
+          "format": "filesize",
+          "value": 96243712,
+          "priority": 2,
+          "samples": null,
+          "min": 96219136,
+          "max": 8270471168,
+          "first": "2018-03-23T06:58:32.813037123Z",
+          "last": "2018-03-23T06:58:47.79270917Z",
+          "url": ""
+        },
+        {
+          "id": "load1",
+          "label": "Load (1m)",
+          "group": "load",
+          "value": 1.09,
+          "priority": 11,
+          "samples": null,
+          "min": 1.03,
+          "max": 1.19,
+          "first": "2018-03-23T07:08:16.576331446Z",
+          "last": "2018-03-23T07:08:27.579041794Z",
+          "url": ""
         }
       ],
       "tables": [
@@ -25,7 +66,7 @@
       ],
        "adjacency": [
         "cfd470d2-282a-11e8-b0a2-141877a4a32a",
-        "cfd470d2-282a-11e8-b0a2;<namespace>",
+        "cfd470d2-282a-11e8-b0a2",
         "cfd470d2-282a"
       ]
     },
@@ -53,12 +94,12 @@
         }
       ],
       "adjacency": [
-        "cfd470d2-282a-11e8-b0a2;<namespace>",
+        "cfd470d2-282a-11e8-b0a2",
         "d03e0a31"
       ]
     },
     {
-      "id": "cfd470d2-282a-11e8-b0a2;<namespace>",
+      "id": "cfd470d2-282a-11e8-b0a2",
       "label": "SC-ISCSI-general",
       "rank": "/demo-vol2-claim",
       "shape": "pentagon",
