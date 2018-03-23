@@ -4,7 +4,7 @@
       "id": "d03e0a31",
       "label": "pvc-cfd470d2",
       "rank": "/pvc-cfd470d2-282a-11e8-b0a2-141877a4a32a",
-      "shape": "new",
+      "shape": "circle",
       "metadata": [
         {
           "id": "kubernetes_created",
