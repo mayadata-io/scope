@@ -310,7 +310,7 @@ a {
   @extend .fully-pannable;
 }
 
-.topologies-selector {
+.topologies {
   margin: 0 4px;
   display: flex;
 
@@ -371,10 +371,10 @@ a {
 
 .nodes-chart-overlay {
   pointer-events: none;
-  opacity: $node-elements-in-background-opacity;
+  opacity: 0;
 
-  &:not(.active) {
-    display: none;
+  &.active {
+    opacity: $node-elements-in-background-opacity;
   }
 }
 
@@ -617,17 +617,23 @@ a {
       dominant-baseline: middle;
       text-anchor: middle;
     }
+
   }
 
+  .shape-dottedcylinder {
+    .border{
+      stroke-dasharray: 0.07;
+    }
+  }
   .stack .shape .border {
     stroke-width: $node-border-stroke-width * 0.8;
   }
-
   .edge-marker {
     color: $edge-color;
     fill: $edge-color;
   }
 }
+
 
 .matched-results {
   text-align: center;
