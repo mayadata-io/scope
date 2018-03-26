@@ -108,6 +108,8 @@ var commonKeys = map[string]string{
 	ECSTask:               ECSTask,
 	SwarmService:          SwarmService,
 	PersistentVolumeClaim: PersistentVolumeClaim,
+	PersistentVolume:      PersistentVolume,
+	StorageClass:          StorageClass,
 
 	HostNodeID:             HostNodeID,
 	ControlProbeID:         ControlProbeID,

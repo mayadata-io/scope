@@ -30,6 +30,8 @@ const (
 	ECSTask               = "ecs_task"
 	SwarmService          = "swarm_service"
 	PersistentVolumeClaim = "persistentvolumeclaim"
+	PersistentVolume      = "persistentvolume"
+	StorageClass          = "storageclass"
 
 	// Shapes used for different nodes
 	Circle   = "circle"
@@ -65,6 +67,8 @@ var topologyNames = []string{
 	ECSService,
 	SwarmService,
 	PersistentVolumeClaim,
+	PersistentVolume,
+	StorageClass,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -124,9 +128,17 @@ type Report struct {
 	// present.
 	Namespace Topology
 
-	// PersistentVolumeClaim represebt all kubernetes PersistentVolumeClaims on hosts running probes.
-	// Metadata includes things lile PVC id, pvc name etc. Edges are not present
+	// PersistentVolumeClaim represent all kubernetes PersistentVolumeClaims on hosts running probes.
+	// Metadata includes things like PVC id, pvc name etc. Edges are not present
 	PersistentVolumeClaim Topology
+
+	// PersistentVolume represent all kubernetes PersistentVolumes on hosts running probes.
+	// Metadata includes things like PV id, pv name etc. Edges are not present
+	PersistentVolume Topology
+
+	// StorageClass represent all kubernetes StorageClasses on hosts running probes.
+	// Metadata includes things like storage class id, storage class name etc. Edges are not present
+	StorageClass Topology
 
 	// ContainerImages nodes represent all Docker containers images on
 	// hosts running probes. Metadata includes things like image id, name etc.
@@ -249,9 +261,18 @@ func MakeReport() Report {
 		SwarmService: MakeTopology().
 			WithShape(Heptagon).
 			WithLabel("service", "services"),
+
 		PersistentVolumeClaim: MakeTopology().
 			WithShape(Heptagon).
 			WithLabel("persistentvolumeclaim", "persistentvolumeclaims"),
+
+		PersistentVolume: MakeTopology().
+			WithShape(Heptagon).
+			WithLabel("persistentvolume", "persistentvolumes"),
+
+		StorageClass: MakeTopology().
+			WithShape(Triangle).
+			WithLabel("storageclass", "storageclasses"),
 
 		DNS: DNSRecords{},
 
@@ -355,6 +376,10 @@ func (r *Report) topology(name string) *Topology {
 		return &r.SwarmService
 	case PersistentVolumeClaim:
 		return &r.PersistentVolumeClaim
+	case PersistentVolume:
+		return &r.PersistentVolume
+	case StorageClass:
+		return &r.StorageClass
 	}
 	return nil
 }

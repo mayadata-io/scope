@@ -96,14 +96,30 @@ var (
 		report.Pod:    {ID: report.Pod, Label: "# Pods", From: report.FromCounters, Datatype: report.Number, Priority: 8},
 	}
 
-	CronJobMetricTemplates                 = PodMetricTemplates
+	CronJobMetricTemplates = PodMetricTemplates
+
 	PersistentVolumeClaimMetadataTemplates = report.MetadataTemplates{
 		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
 	}
 
 	PersistentVolumeClaimMetricTemplates = PodMetricTemplates
-	TableTemplates                       = report.TableTemplates{
+
+	PersistentVolumeMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+	}
+
+	PersistentVolumeMetricTemplates = PodMetricTemplates
+
+	StorageClassMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+	}
+
+	StorageClassMetricTemplates = PodMetricTemplates
+
+	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
 			Label:  "Kubernetes Labels",
@@ -271,6 +287,14 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	persistentVolumeTopology, _, err := r.persistentVolumeTopology(r.probeID)
+	if err != nil {
+		return result, err
+	}
+	storageClassTopology, _, err := r.storageClassTopology(r.probeID)
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -280,6 +304,8 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.Deployment = result.Deployment.Merge(deploymentTopology)
 	result.Namespace = result.Namespace.Merge(namespaceTopology)
 	result.PersistentVolumeClaim = result.PersistentVolumeClaim.Merge(persistentVolumeClaimTopology)
+	result.PersistentVolume = result.PersistentVolume.Merge(persistentVolumeTopology)
+	result.StorageClass = result.StorageClass.Merge(storageClassTopology)
 
 	return result, nil
 }
@@ -532,10 +558,46 @@ func (r *Reporter) persistentVolumeClaimTopology(probeID string) (report.Topolog
 		pvcs = []PersistentVolumeClaim{}
 	)
 
-	err := r.client.WalkPersistentVolumeClaim(func(p PersistentVolumeClaim) error {
+	err := r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
 		result.AddNode(p.GetNode(probeID))
 		pvcs = append(pvcs, p)
 		return nil
 	})
 	return result, pvcs, err
+}
+
+func (r *Reporter) persistentVolumeTopology(probeID string) (report.Topology, []PersistentVolume, error) {
+	//TODO: Need to improve logic for topology.
+	var (
+		result = report.MakeTopology().
+			WithMetadataTemplates(PersistentVolumeMetadataTemplates).
+			WithMetricTemplates(PersistentVolumeMetricTemplates).
+			WithTableTemplates(TableTemplates)
+		pvcs = []PersistentVolume{}
+	)
+
+	err := r.client.WalkPersistentVolumes(func(p PersistentVolume) error {
+		result.AddNode(p.GetNode(probeID))
+		pvcs = append(pvcs, p)
+		return nil
+	})
+	return result, pvcs, err
+}
+
+func (r *Reporter) storageClassTopology(probeID string) (report.Topology, []StorageClass, error) {
+	//TODO: Need to improve logic for topology.
+	var (
+		result = report.MakeTopology().
+			WithMetadataTemplates(StorageClassMetadataTemplates).
+			WithMetricTemplates(StorageClassMetricTemplates).
+			WithTableTemplates(TableTemplates)
+		sc = []StorageClass{}
+	)
+
+	err := r.client.WalkStorageClasses(func(p StorageClass) error {
+		result.AddNode(p.GetNode(probeID))
+		sc = append(sc, p)
+		return nil
+	})
+	return result, sc, err
 }
