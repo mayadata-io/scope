@@ -31,7 +31,7 @@ const labelWidth = 1.2 * NODE_BASE_SIZE;
 const nodeShapes = {
   circle: NodeShapeCircle,
   triangle: NodeShapeTriangle,
-  square: NodeShapeDottedSquare,
+  square: NodeShapeSquare,
   pentagon: NodeShapePentagon,
   hexagon: NodeShapeHexagon,
   heptagon: NodeShapeHeptagon,
