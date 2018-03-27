@@ -16,7 +16,7 @@ import NodeNetworksOverlay from './node-networks-overlay';
 import {
   NodeShapeCircle,
   NodeShapeTriangle,
-  // NodeShapeSquare,
+  NodeShapeSquare,
   NodeShapePentagon,
   NodeShapeHexagon,
   NodeShapeHeptagon,
@@ -31,7 +31,7 @@ const labelWidth = 1.2 * NODE_BASE_SIZE;
 const nodeShapes = {
   circle: NodeShapeCircle,
   triangle: NodeShapeTriangle,
-  square: NodeShapeDottedCylinder,
+  square: NodeShapeDottedSquare,
   pentagon: NodeShapePentagon,
   hexagon: NodeShapeHexagon,
   heptagon: NodeShapeHeptagon,
