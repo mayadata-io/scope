@@ -22,7 +22,8 @@ import {
   NodeShapeHeptagon,
   NodeShapeOctagon,
   NodeShapeCloud,
-  NodeShapeCylinder
+  NodeShapeCylinder,
+  NodeShapeDottedCylinder
 } from './node-shapes';
 
 
@@ -30,13 +31,14 @@ const labelWidth = 1.2 * NODE_BASE_SIZE;
 const nodeShapes = {
   circle: NodeShapeCircle,
   triangle: NodeShapeTriangle,
-  square: NodeShapeSquare,
+  square: NodeShapeDottedSquare,
   pentagon: NodeShapePentagon,
   hexagon: NodeShapeHexagon,
   heptagon: NodeShapeHeptagon,
   octagon: NodeShapeOctagon,
   cloud: NodeShapeCloud,
   cylinder: NodeShapeCylinder,
+  dottedcylinder: NodeShapeDottedCylinder
 };
 
 function stackedShape(Shape) {

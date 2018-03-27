@@ -13,7 +13,6 @@ function curvedUnitPolygonPath(n) {
   const curve = curveCardinalClosed.tension(0.65);
   const spline = line().curve(curve);
   const innerAngle = (2 * Math.PI) / n;
-
   return spline(range(0, n).map(k => [
     Math.sin(k * innerAngle),
     -Math.cos(k * innerAngle),
@@ -30,4 +29,5 @@ export const hexagonShapeProps = { d: curvedUnitPolygonPath(6) };
 export const heptagonShapeProps = { d: curvedUnitPolygonPath(7) };
 export const octagonShapeProps = { d: curvedUnitPolygonPath(8) };
 export const cylinderShapeProps = { d: UNIT_CYLINDER_PATH };
+export const dottedCylinderShapeProps = { d: UNIT_CYLINDER_PATH };
 export const cloudShapeProps = { d: UNIT_CLOUD_PATH };
