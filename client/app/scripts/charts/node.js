@@ -24,7 +24,7 @@ import {
   NodeShapeCloud,
   NodeShapeCylinder,
   NodeShapeDottedCylinder,
-  NodeShapeSheet
+  NodeShapeSheet,
 } from './node-shapes';
 
 
@@ -39,8 +39,8 @@ const nodeShapes = {
   octagon: NodeShapeOctagon,
   cloud: NodeShapeCloud,
   cylinder: NodeShapeCylinder,
-  dottedcylinder: NodeShapeDottedCylinder
-  doc: NodeShapeSheet,
+  dottedcylinder: NodeShapeDottedCylinder,
+  doc: NodeShapeSheet
 };
 
 function stackedShape(Shape) {
