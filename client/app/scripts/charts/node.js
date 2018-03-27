@@ -24,7 +24,7 @@ import {
   NodeShapeCloud,
   NodeShapeCylinder,
   NodeShapeDottedCylinder,
-  NodeShapeSheet,
+  NodeShapeSheet
 } from './node-shapes';
 
 
