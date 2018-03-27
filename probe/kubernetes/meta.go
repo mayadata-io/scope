@@ -14,6 +14,7 @@ const (
 	Namespace           = report.KubernetesNamespace
 	Created             = report.KubernetesCreated
 	OpenEBSCtrlLabel    = report.KubernetesOpenebsCtrlLabel
+	VolumeClaimName     = report.KubernetesVolumeClaimName
 	OpenEBSCtrlSvcLabel = report.KubernetesOpenebsCtrlSvcLabel
 	OpenEBSRepLabel     = report.KubernetesOpenebsRepLabel
 	LabelPrefix         = "kubernetes_labels_"

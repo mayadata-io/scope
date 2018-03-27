@@ -82,6 +82,7 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.PersistentVolume:      persistentVolumeNodeSummary,
 	report.StorageClass:          storageClassNodeSummary,
 	report.Overlay:               weaveNodeSummary,
+	report.ApplicationPod:        applicationPodNodeSummary,
 	report.Endpoint:              nil, // Do not render
 }
 
@@ -103,6 +104,7 @@ var primaryAPITopology = map[string]string{
 	report.PersistentVolumeClaim: "persistentvolumeclaim",
 	report.PersistentVolume:      "persistentvolume",
 	report.StorageClass:          "storageclass",
+	report.ApplicationPod:        "applicationpod",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -390,6 +392,12 @@ func persistentVolumeNodeSummary(base BasicNodeSummary, n report.Node) BasicNode
 }
 
 func storageClassNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	// TODO: Need to improve more and add Minor label
+	base = addKubernetesLabelAndRank(base, n)
+	return base
+}
+
+func applicationPodNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	// TODO: Need to improve more and add Minor label
 	base = addKubernetesLabelAndRank(base, n)
 	return base

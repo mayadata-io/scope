@@ -10,6 +10,7 @@ var PVCRenderer = MakeReduce(
 	MapEndpoints(endpoint2PVC, report.PersistentVolumeClaim),
 	MapEndpoints(endpoint2PV, report.PersistentVolume),
 	MapEndpoints(endpoint2StorageClass, report.StorageClass),
+	MapEndpoints(endpoint2PVC, report.ApplicationPod),
 )
 
 // endpoint2PVC returns pvc node ID

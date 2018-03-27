@@ -75,6 +75,7 @@ const (
 	KubernetesOpenebsCtrlLabel     = "kubernetes_labels_openebs/controller"
 	KubernetesOpenebsCtrlSvcLabel  = "kubernetes_labels_openebs/controller-service"
 	KubernetesOpenebsRepLabel      = "kubernetes_labels_openebs/replica"
+	KubernetesVolumeClaimName      = "kubernetes_volume_claim_name"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
@@ -110,6 +111,7 @@ var commonKeys = map[string]string{
 	PersistentVolumeClaim: PersistentVolumeClaim,
 	PersistentVolume:      PersistentVolume,
 	StorageClass:          StorageClass,
+	ApplicationPod:        ApplicationPod,
 
 	HostNodeID:             HostNodeID,
 	ControlProbeID:         ControlProbeID,
