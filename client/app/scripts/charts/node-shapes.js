@@ -20,8 +20,8 @@ import {
   octagonShapeProps,
   cloudShapeProps,
   cylinderShapeProps,
-  dottedCylinderShapeProps
-  SheetShapeProps,
+  dottedCylinderShapeProps,
+  SheetShapeProps
 } from '../utils/node-shape-utils';
 import { encodeIdAttribute } from '../utils/dom-utils';
 
