@@ -41,6 +41,7 @@ type Client interface {
 	WalkPersistentVolumeClaims(f func(PersistentVolumeClaim) error) error
 	WalkPersistentVolumes(f func(PersistentVolume) error) error
 	WalkStorageClasses(f func(StorageClass) error) error
+	WalkApplicationPods(f func(ApplicationPod) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -65,6 +66,7 @@ type client struct {
 	persistentVolumeClaimStore cache.Store
 	persistentVolumeStore      cache.Store
 	storageClassStore          cache.Store
+	applicationPodStore        cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -152,6 +154,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.persistentVolumeClaimStore = result.setupStore("persistentvolumeclaims")
 	result.persistentVolumeStore = result.setupStore("persistentvolumes")
 	result.storageClassStore = result.setupStore("storageclasses")
+	result.applicationPodStore = result.setupStore("pods")
 	return result, nil
 }
 
@@ -364,6 +367,20 @@ func (c *client) WalkStorageClasses(f func(StorageClass) error) error {
 	for _, m := range c.storageClassStore.List() {
 		p := m.(*storagev1.StorageClass)
 		if err := f(NewStorageClass(p)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// WalkApplicationPods calls f for each application Pod
+func (c *client) WalkApplicationPods(f func(ApplicationPod) error) error {
+	if c.applicationPodStore == nil {
+		return nil
+	}
+	for _, m := range c.applicationPodStore.List() {
+		p := m.(*apiv1.Pod)
+		if err := f(NewApp(p)); err != nil {
 			return err
 		}
 	}

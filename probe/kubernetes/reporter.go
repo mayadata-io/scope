@@ -295,6 +295,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	applicationPodTopology, _, err := r.applicationPodTopology(r.probeID)
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -306,6 +310,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.PersistentVolumeClaim = result.PersistentVolumeClaim.Merge(persistentVolumeClaimTopology)
 	result.PersistentVolume = result.PersistentVolume.Merge(persistentVolumeTopology)
 	result.StorageClass = result.StorageClass.Merge(storageClassTopology)
+	result.ApplicationPod = result.ApplicationPod.Merge(applicationPodTopology)
 
 	return result, nil
 }
@@ -600,4 +605,25 @@ func (r *Reporter) storageClassTopology(probeID string) (report.Topology, []Stor
 		return nil
 	})
 	return result, sc, err
+}
+
+func (r *Reporter) applicationPodTopology(probeID string) (report.Topology, []ApplicationPod, error) {
+	//TODO: Need to improve logic for topology.
+	var (
+		result = report.MakeTopology().
+			WithMetadataTemplates(PodMetadataTemplates).
+			WithMetricTemplates(PodMetricTemplates).
+			WithTableTemplates(TableTemplates)
+		ap = []ApplicationPod{}
+	)
+
+	err := r.client.WalkApplicationPods(func(p ApplicationPod) error {
+		if p.GetApp(probeID).ID != "" {
+			result.AddNode(p.GetApp(probeID))
+			ap = append(ap, p)
+			return nil
+		}
+		return nil
+	})
+	return result, ap, err
 }
