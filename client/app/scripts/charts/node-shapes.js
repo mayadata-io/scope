@@ -77,8 +77,8 @@ function NodeShape(shapeType, shapeElement, shapeProps, {
   );
 }
 
-export const NodeShapeCylinder = props => NodeShape('cylinder', pathElement, cylinderShapeProps, props);
 export const NodeShapeDottedCylinder = props => NodeShape('dottedcylinder', pathElement, dottedCylinderShapeProps, props);
+export const NodeShapeCylinder = props => NodeShape('cylinder', pathElement, cylinderShapeProps, props);
 export const NodeShapeCircle = props => NodeShape('circle', circleElement, circleShapeProps, props);
 export const NodeShapeTriangle = props => NodeShape('triangle', pathElement, triangleShapeProps, props);
 export const NodeShapeSquare = props => NodeShape('square', rectangleElement, squareShapeProps, props);

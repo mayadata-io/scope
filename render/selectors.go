@@ -35,4 +35,5 @@ var (
 	SelectPersistentVolumeClaim = TopologySelector(report.PersistentVolumeClaim)
 	SelectPersistentVolume      = TopologySelector(report.PersistentVolume)
 	SelectStorageClass          = TopologySelector(report.StorageClass)
+	ApplicationPod              = TopologySelector(report.ApplicationPod)
 )

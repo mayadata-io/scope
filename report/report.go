@@ -32,6 +32,7 @@ const (
 	PersistentVolumeClaim = "persistentvolumeclaim"
 	PersistentVolume      = "persistentvolume"
 	StorageClass          = "storageclass"
+	ApplicationPod        = "applicationpod"
 
 	// Shapes used for different nodes
 	Circle   = "circle"
@@ -69,6 +70,7 @@ var topologyNames = []string{
 	PersistentVolumeClaim,
 	PersistentVolume,
 	StorageClass,
+	ApplicationPod,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -139,6 +141,10 @@ type Report struct {
 	// StorageClass represent all kubernetes StorageClasses on hosts running probes.
 	// Metadata includes things like storage class id, storage class name etc. Edges are not present
 	StorageClass Topology
+
+	// ApplicationPod represent all kubernetes application pods on hosts running probes.
+	// Metadata includes things like pod id, name etc. Edges are not present
+	ApplicationPod Topology
 
 	// ContainerImages nodes represent all Docker containers images on
 	// hosts running probes. Metadata includes things like image id, name etc.
@@ -274,6 +280,10 @@ func MakeReport() Report {
 			WithShape(Triangle).
 			WithLabel("storageclass", "storageclasses"),
 
+		ApplicationPod: MakeTopology().
+			WithShape(Hexagon).
+			WithLabel("applicationpod", "applicationpods"),
+
 		DNS: DNSRecords{},
 
 		Sampling: Sampling{},
@@ -380,6 +390,8 @@ func (r *Report) topology(name string) *Topology {
 		return &r.PersistentVolume
 	case StorageClass:
 		return &r.StorageClass
+	case ApplicationPod:
+		return &r.ApplicationPod
 	}
 	return nil
 }

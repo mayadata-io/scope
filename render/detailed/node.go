@@ -212,6 +212,15 @@ var nodeSummaryGroupSpecs = []struct {
 			},
 		},
 	},
+	{
+		topologyID: report.ApplicationPod,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label: "Pod",
+			Columns: []Column{
+				{ID: kubernetes.State, Label: "State"},
+			},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {
