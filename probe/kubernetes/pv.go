@@ -27,6 +27,11 @@ func (p *persistentVolume) GetNode(probeID string) report.Node {
 	return p.MetaNode(report.MakePersistentVolumeNodeID(p.UID())).WithLatests(map[string]string{
 		report.ControlProbeID: probeID,
 		NodeType:              "PV",
-		Namespace:             p.GetNamespace(),
+		Claim:                 p.Spec.ClaimRef.Name,
+		StorageClassName:      p.Spec.StorageClassName,
+		Status:                string(p.Status.Phase),
+		AccessModes:           string(p.Spec.AccessModes[0]),
+		ReclaimPolicy:         string(p.Spec.PersistentVolumeReclaimPolicy),
+		Message:               p.Status.Message,
 	})
 }

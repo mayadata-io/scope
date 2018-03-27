@@ -32,6 +32,9 @@ func (p *persistentVolumeClaim) GetNode(probeID string) report.Node {
 		report.ControlProbeID: probeID,
 		NodeType:              "PVC",
 		Namespace:             p.GetNamespace(),
+		Status:                string(p.Status.Phase),
+		VolumeName:            p.Spec.VolumeName,
+		AccessModes:           string(p.Spec.AccessModes[0]),
 	})
 }
 
@@ -43,3 +46,4 @@ func (p *persistentVolumeClaim) Selector() (labels.Selector, error) {
 	}
 	return selector, nil
 }
+

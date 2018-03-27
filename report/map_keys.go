@@ -76,6 +76,13 @@ const (
 	KubernetesOpenebsCtrlSvcLabel  = "kubernetes_labels_openebs/controller-service"
 	KubernetesOpenebsRepLabel      = "kubernetes_labels_openebs/replica"
 	KubernetesVolumeClaimName      = "kubernetes_volume_claim_name"
+	KubernetesClaim                = "kubernetes_claim"
+	KubernetesStorageClassName     = "kubernetes_storage_class_name"
+	KubernetesAccessModes          = "kubernetes_access_modes"
+	KubernetesReclaimPolicy        = "kubernetes_reclaim_policy"
+	KubernetesStatus               = "kubernetes_status"
+	KubernetesMessage              = "kubernetes_message"
+	KubernetesVolumeName           = "kubernetes_volume_name"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

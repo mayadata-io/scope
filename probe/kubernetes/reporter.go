@@ -25,6 +25,13 @@ const (
 	NodeType           = report.KubernetesNodeType
 	Type               = report.KubernetesType
 	Ports              = report.KubernetesPorts
+	Claim              = report.KubernetesClaim
+	StorageClassName   = report.KubernetesStorageClassName
+	AccessModes        = report.KubernetesAccessModes
+	ReclaimPolicy      = report.KubernetesReclaimPolicy
+	Status             = report.KubernetesStatus
+	Message            = report.KubernetesMessage
+	VolumeName         = report.KubernetesVolumeName
 )
 
 // Exposed for testing
@@ -99,15 +106,24 @@ var (
 	CronJobMetricTemplates = PodMetricTemplates
 
 	PersistentVolumeClaimMetadataTemplates = report.MetadataTemplates{
-		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+		NodeType:         {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace:        {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+		StorageClassName: {ID: StorageClassName, Label: "Storage Class", From: report.FromLatest, Priority: 3},
+		Status:           {ID: Status, Label: "Status", From: report.FromLatest, Priority: 4},
+		VolumeName:       {ID: VolumeName, Label: "Volume", From: report.FromLatest, Priority: 5},
+		AccessModes:      {ID: AccessModes, Label: "Access Modes", From: report.FromLatest, Priority: 6},
 	}
 
 	PersistentVolumeClaimMetricTemplates = PodMetricTemplates
 
 	PersistentVolumeMetadataTemplates = report.MetadataTemplates{
-		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+		NodeType:         {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Claim:            {ID: Claim, Label: "Claim", From: report.FromLatest, Priority: 2},
+		StorageClassName: {ID: StorageClassName, Label: "Storage Class", From: report.FromLatest, Priority: 3},
+		ReclaimPolicy:    {ID: ReclaimPolicy, Label: "Reclaim Policy", From: report.FromLatest, Priority: 4},
+		AccessModes:      {ID: AccessModes, Label: "Access Modes", From: report.FromLatest, Priority: 5},
+		Status:           {ID: Status, Label: "Status", From: report.FromLatest, Priority: 6},
+		Message:          {ID: Message, Label: "Message", From: report.FromLatest, Priority: 7},
 	}
 
 	PersistentVolumeMetricTemplates = PodMetricTemplates
