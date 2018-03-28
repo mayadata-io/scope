@@ -30,6 +30,8 @@ export const UNIT_CYLINDER_PATH = 'm -1 -1.25' // this line is responsible for a
   + 'a 1 0.4 0 0 0 2 0'
   + 'v -1.8'
   + 'a 1 0.4 0 0 0 -2 0';
+export const SHEET = 'm -1.2 -1.6 m 0.4 0 v 2.4 m -0.4 -2.4 v 2.4 h 2 v -2.4 z m 0 0.4 h 2';
+
 // NOTE: This value represents the node unit radius (in pixels). Since zooming is
 // controlled at the top level now, this renormalization would be obsolete (i.e.
 // value 1 could be used instead), if it wasn't for the following factors:
