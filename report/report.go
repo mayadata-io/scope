@@ -35,10 +35,10 @@ const (
 	ApplicationPod        = "applicationpod"
 
 	// Shapes used for different nodes
-	Circle   	   = "circle"
-	Triangle 	   = "triangle"
-	Square   	   = "square"
-	Pentagon 	   = "pentagon"
+	Circle         = "circle"
+	Triangle       = "triangle"
+	Square         = "square"
+	Pentagon       = "pentagon"
 	Hexagon        = "hexagon"
 	Heptagon       = "heptagon"
 	Octagon        = "octagon"
