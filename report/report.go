@@ -35,14 +35,17 @@ const (
 	ApplicationPod        = "applicationpod"
 
 	// Shapes used for different nodes
-	Circle   = "circle"
-	Triangle = "triangle"
-	Square   = "square"
-	Pentagon = "pentagon"
-	Hexagon  = "hexagon"
-	Heptagon = "heptagon"
-	Octagon  = "octagon"
-	Cloud    = "cloud"
+	Circle   	   = "circle"
+	Triangle 	   = "triangle"
+	Square   	   = "square"
+	Pentagon 	   = "pentagon"
+	Hexagon        = "hexagon"
+	Heptagon       = "heptagon"
+	Octagon        = "octagon"
+	Cloud          = "cloud"
+	StorageSheet   = "storagesheet"
+	DottedCylinder = "dottedcylinder"
+	Cylinder       = "cylinder"
 
 	// Used when counting the number of containers
 	ContainersKey = "containers"
@@ -269,15 +272,15 @@ func MakeReport() Report {
 			WithLabel("service", "services"),
 
 		PersistentVolumeClaim: MakeTopology().
-			WithShape(Heptagon).
+			WithShape(DottedCylinder).
 			WithLabel("persistentvolumeclaim", "persistentvolumeclaims"),
 
 		PersistentVolume: MakeTopology().
-			WithShape(Heptagon).
+			WithShape(Cylinder).
 			WithLabel("persistentvolume", "persistentvolumes"),
 
 		StorageClass: MakeTopology().
-			WithShape(Triangle).
+			WithShape(StorageSheet).
 			WithLabel("storageclass", "storageclasses"),
 
 		ApplicationPod: MakeTopology().
