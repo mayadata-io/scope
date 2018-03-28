@@ -32,6 +32,11 @@ const (
 	Status             = report.KubernetesStatus
 	Message            = report.KubernetesMessage
 	VolumeName         = report.KubernetesVolumeName
+	Provisioner        = report.KubernetesProvisioner
+	APIVersion         = report.KubernetesAPIVersion
+	UID                = report.KubernetesUID
+	ResourceVersion    = report.KubernetesResourceVersion
+	SelfLink           = report.KubernetesSelfLink
 )
 
 // Exposed for testing
@@ -129,8 +134,13 @@ var (
 	PersistentVolumeMetricTemplates = PodMetricTemplates
 
 	StorageClassMetadataTemplates = report.MetadataTemplates{
-		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Namespace: {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+		NodeType:        {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Name:            {ID: Name, Label: "Name", From: report.FromLatest, Priority: 2},
+		Provisioner:     {ID: Provisioner, Label: "Provisioner", From: report.FromLatest, Priority: 3},
+		APIVersion:      {ID: APIVersion, Label: "APIVersion", From: report.FromLatest, Priority: 4},
+		UID:             {ID: UID, Label: "UID", From: report.FromLatest, Priority: 5},
+		ResourceVersion: {ID: ResourceVersion, Label: "ResourceVersion", From: report.FromLatest, Priority: 6},
+		SelfLink:        {ID: SelfLink, Label: "SelfLink", From: report.FromLatest, Priority: 7},
 	}
 
 	StorageClassMetricTemplates = PodMetricTemplates

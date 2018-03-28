@@ -83,6 +83,11 @@ const (
 	KubernetesStatus               = "kubernetes_status"
 	KubernetesMessage              = "kubernetes_message"
 	KubernetesVolumeName           = "kubernetes_volume_name"
+	KubernetesProvisioner          = "kubernetes_provisioner"
+	KubernetesAPIVersion           = "kubernetes_apiVersion"
+	KubernetesUID                  = "kubernetes_uid"
+	KubernetesResourceVersion      = "kubernetes_resource_version"
+	KubernetesSelfLink             = "kubernetes_self_link"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
