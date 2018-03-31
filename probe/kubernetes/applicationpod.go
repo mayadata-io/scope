@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/weaveworks/scope/report"
@@ -42,6 +43,11 @@ func (p *applicationPod) AddParent(topology, id string) {
 	p.parents = p.parents.Add(topology, report.MakeStringSet(id))
 }
 
+type annotation struct {
+	APIVersion string `json:"apiVersion"`
+	Kind       string `json:"kind"`
+}
+
 // NewApp creates a new Pod
 func NewApp(p *apiv1.Pod) ApplicationPod {
 	return &applicationPod{
@@ -52,6 +58,9 @@ func NewApp(p *apiv1.Pod) ApplicationPod {
 }
 
 func (p *applicationPod) GetApp(probeID string) report.Node {
+	var a annotation
+	store := []byte(p.Annotations["kubectl.kubernetes.io/last-applied-configuration"])
+	json.Unmarshal(store, &a)
 	for _, v := range p.Spec.Volumes {
 		if v.VolumeSource.PersistentVolumeClaim != nil {
 			latests := map[string]string{
@@ -60,6 +69,11 @@ func (p *applicationPod) GetApp(probeID string) report.Node {
 				report.ControlProbeID: probeID,
 				RestartCount:          strconv.FormatUint(uint64(p.RestartCount()), 10),
 				VolumeClaimName:       v.VolumeSource.PersistentVolumeClaim.ClaimName,
+				APIVersion:            a.APIVersion,
+				Kind:                  a.Kind,
+				UID:                   p.UID(),
+				ResourceVersion:       p.ResourceVersion,
+				Generation:            strconv.FormatUint(uint64(p.GetGeneration()), 10),
 			}
 
 			if p.Pod.Spec.HostNetwork {

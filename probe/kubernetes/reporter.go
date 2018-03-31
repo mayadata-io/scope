@@ -37,6 +37,8 @@ const (
 	UID                = report.KubernetesUID
 	ResourceVersion    = report.KubernetesResourceVersion
 	SelfLink           = report.KubernetesSelfLink
+	Generation         = report.KubernetesGeneration
+	Kind               = report.KubernetesKind
 )
 
 // Exposed for testing
@@ -144,6 +146,24 @@ var (
 	}
 
 	StorageClassMetricTemplates = PodMetricTemplates
+
+	ApplicationPodMetadataTemplates = report.MetadataTemplates{
+
+		Kind:             {ID: Kind, Label: "Kind", From: report.FromLatest, Priority: 1},
+		IP:               {ID: IP, Label: "IP", From: report.FromLatest, Datatype: report.IP, Priority: 2},
+		State:            {ID: State, Label: "State", From: report.FromLatest, Priority: 3},
+		report.Container: {ID: report.Container, Label: "# Containers", From: report.FromCounters, Datatype: report.Number, Priority: 4},
+		Namespace:        {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 5},
+		Created:          {ID: Created, Label: "Created", From: report.FromLatest, Datatype: report.DateTime, Priority: 6},
+		VolumeClaimName:  {ID: VolumeClaimName, Label: "Claim Name", From: report.FromLatest, Priority: 7},
+		RestartCount:     {ID: RestartCount, Label: "Restart #", From: report.FromLatest, Priority: 8},
+		ResourceVersion:  {ID: ResourceVersion, Label: "Resource Version", From: report.FromLatest, Priority: 9},
+		APIVersion:       {ID: APIVersion, Label: "APIVersion", From: report.FromLatest, Priority: 10},
+		Generation:       {ID: Generation, Label: "Generation", From: report.FromLatest, Priority: 11},
+		UID:              {ID: UID, Label: "Uid", From: report.FromLatest, Priority: 12},
+	}
+
+	ApplicationPodMetricTemplates = docker.ContainerMetricTemplates
 
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
@@ -637,8 +657,8 @@ func (r *Reporter) applicationPodTopology(probeID string) (report.Topology, []Ap
 	//TODO: Need to improve logic for topology.
 	var (
 		result = report.MakeTopology().
-			WithMetadataTemplates(PodMetadataTemplates).
-			WithMetricTemplates(PodMetricTemplates).
+			WithMetadataTemplates(ApplicationPodMetadataTemplates).
+			WithMetricTemplates(ApplicationPodMetricTemplates).
 			WithTableTemplates(TableTemplates)
 		ap = []ApplicationPod{}
 	)
