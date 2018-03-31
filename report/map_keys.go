@@ -88,6 +88,8 @@ const (
 	KubernetesUID                  = "kubernetes_uid"
 	KubernetesResourceVersion      = "kubernetes_resource_version"
 	KubernetesSelfLink             = "kubernetes_self_link"
+	KubernetesGeneration           = "kubernetes_generation"
+	KubernetesKind                 = "kubernetes_kind"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
