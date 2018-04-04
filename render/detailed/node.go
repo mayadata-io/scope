@@ -185,6 +185,34 @@ var nodeSummaryGroupSpecs = []struct {
 			Columns: []Column{},
 		},
 	},
+	{
+		topologyID: report.PersistentVolume,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Persistent Volumes",
+			Columns: []Column{},
+		},
+	},
+	{
+		topologyID: report.PersistentVolumeClaim,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Persistent Volume Claims",
+			Columns: []Column{},
+		},
+	},
+	{
+		topologyID: report.StorageClass,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Storage Classes",
+			Columns: []Column{},
+		},
+	},
+	{
+		topologyID: report.ApplicationPod,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Appliaction Pod",
+			Columns: []Column{},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {
