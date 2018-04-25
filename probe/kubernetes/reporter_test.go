@@ -894,3 +894,44 @@ func TestReporter_applicationPodTopology(t *testing.T) {
 		})
 	}
 }
+
+func TestNewPV(t *testing.T) {
+	type args struct {
+		p *apiv1.PersistentVolume
+	}
+	tests := []struct {
+		name string
+		args args
+		want PersistentVolume
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewPV(tt.args.p); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewPV() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_persistentVolume_GetNode(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name string
+		p    *persistentVolume
+		args args
+		want report.Node
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.GetNode(tt.args.probeID); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("persistentVolume.GetNode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
