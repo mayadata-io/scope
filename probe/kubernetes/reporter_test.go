@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
+	"reflect"
 
 	"github.com/weaveworks/scope/common/xfer"
 	"github.com/weaveworks/scope/probe"
