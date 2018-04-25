@@ -7,16 +7,17 @@ import (
 	"strings"
 	"testing"
 
-	apiv1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-
 	"github.com/weaveworks/scope/common/xfer"
+	"github.com/weaveworks/scope/probe"
 	"github.com/weaveworks/scope/probe/controls"
 	"github.com/weaveworks/scope/probe/docker"
 	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/report"
 	"github.com/weaveworks/scope/test/reflect"
+	apiv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 var (
@@ -146,6 +147,18 @@ func (c *mockClient) WalkDeployments(f func(kubernetes.Deployment) error) error 
 	return nil
 }
 func (c *mockClient) WalkNamespaces(f func(kubernetes.NamespaceResource) error) error {
+	return nil
+}
+func (c *mockClient) WalkPersistentVolumeClaims(f func(kubernetes.PersistentVolumeClaim) error) error {
+	return nil
+}
+func (c *mockClient) WalkPersistentVolumes(f func(kubernetes.PersistentVolume) error) error {
+	return nil
+}
+func (c *mockClient) WalkStorageClasses(f func(kubernetes.StorageClass) error) error {
+	return nil
+}
+func (c *mockClient) WalkApplicationPods(f func(kubernetes.ApplicationPod) error) error {
 	return nil
 }
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
@@ -350,5 +363,534 @@ func TestReporterGetLogs(t *testing.T) {
 	}
 	if !closed {
 		t.Errorf("Expected pipe to close the underlying log stream")
+	}
+}
+
+func TestNewReporter(t *testing.T) {
+	type args struct {
+		client          Client
+		pipes           controls.PipeClient
+		probeID         string
+		hostID          string
+		probe           *probe.Probe
+		handlerRegistry *controls.HandlerRegistry
+		nodeName        string
+		kubeletPort     uint
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Reporter
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewReporter(tt.args.client, tt.args.pipes, tt.args.probeID, tt.args.hostID, tt.args.probe, tt.args.handlerRegistry, tt.args.nodeName, tt.args.kubeletPort); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewReporter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_Stop(t *testing.T) {
+	tests := []struct {
+		name string
+		r    *Reporter
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.r.Stop()
+		})
+	}
+}
+
+func TestReporter_Name(t *testing.T) {
+	tests := []struct {
+		name string
+		r    Reporter
+		want string
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.r.Name(); got != tt.want {
+				t.Errorf("Reporter.Name() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_podEvent(t *testing.T) {
+	type args struct {
+		e   Event
+		pod Pod
+	}
+	tests := []struct {
+		name string
+		r    *Reporter
+		args args
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.r.podEvent(tt.args.e, tt.args.pod)
+		})
+	}
+}
+
+func TestIsPauseImageName(t *testing.T) {
+	type args struct {
+		imageName string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsPauseImageName(tt.args.imageName); got != tt.want {
+				t.Errorf("IsPauseImageName() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_isPauseContainer(t *testing.T) {
+	type args struct {
+		n   report.Node
+		rpt report.Report
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isPauseContainer(tt.args.n, tt.args.rpt); got != tt.want {
+				t.Errorf("isPauseContainer() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_Tag(t *testing.T) {
+	type args struct {
+		rpt report.Report
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Report
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.r.Tag(tt.args.rpt)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.Tag() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.Tag() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_Report(t *testing.T) {
+	tests := []struct {
+		name    string
+		r       *Reporter
+		want    report.Report
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.r.Report()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.Report() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.Report() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_serviceTopology(t *testing.T) {
+	tests := []struct {
+		name    string
+		r       *Reporter
+		want    report.Topology
+		want1   []Service
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.serviceTopology()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.serviceTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.serviceTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.serviceTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_hostTopology(t *testing.T) {
+	type args struct {
+		services []Service
+	}
+	tests := []struct {
+		name string
+		r    *Reporter
+		args args
+		want report.Topology
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.r.hostTopology(tt.args.services); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.hostTopology() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_deploymentTopology(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Topology
+		want1   []Deployment
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.deploymentTopology(tt.args.probeID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.deploymentTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.deploymentTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.deploymentTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_daemonSetTopology(t *testing.T) {
+	tests := []struct {
+		name    string
+		r       *Reporter
+		want    report.Topology
+		want1   []DaemonSet
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.daemonSetTopology()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.daemonSetTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.daemonSetTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.daemonSetTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_statefulSetTopology(t *testing.T) {
+	tests := []struct {
+		name    string
+		r       *Reporter
+		want    report.Topology
+		want1   []StatefulSet
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.statefulSetTopology()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.statefulSetTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.statefulSetTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.statefulSetTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_cronJobTopology(t *testing.T) {
+	tests := []struct {
+		name    string
+		r       *Reporter
+		want    report.Topology
+		want1   []CronJob
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.cronJobTopology()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.cronJobTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.cronJobTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.cronJobTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func Test_match(t *testing.T) {
+	type args struct {
+		namespace string
+		selector  labels.Selector
+		topology  string
+		id        string
+	}
+	tests := []struct {
+		name string
+		args args
+		want func(labelledChild)
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := match(tt.args.namespace, tt.args.selector, tt.args.topology, tt.args.id); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("match() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_podTopology(t *testing.T) {
+	type args struct {
+		services     []Service
+		deployments  []Deployment
+		daemonSets   []DaemonSet
+		statefulSets []StatefulSet
+		cronJobs     []CronJob
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Topology
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.r.podTopology(tt.args.services, tt.args.deployments, tt.args.daemonSets, tt.args.statefulSets, tt.args.cronJobs)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.podTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.podTopology() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_namespaceTopology(t *testing.T) {
+	tests := []struct {
+		name    string
+		r       *Reporter
+		want    report.Topology
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.r.namespaceTopology()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.namespaceTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.namespaceTopology() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReporter_persistentVolumeClaimTopology(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Topology
+		want1   []PersistentVolumeClaim
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.persistentVolumeClaimTopology(tt.args.probeID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.persistentVolumeClaimTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.persistentVolumeClaimTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.persistentVolumeClaimTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_persistentVolumeTopology(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Topology
+		want1   []PersistentVolume
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.persistentVolumeTopology(tt.args.probeID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.persistentVolumeTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.persistentVolumeTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.persistentVolumeTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_storageClassTopology(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Topology
+		want1   []StorageClass
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.storageClassTopology(tt.args.probeID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.storageClassTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.storageClassTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.storageClassTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestReporter_applicationPodTopology(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name    string
+		r       *Reporter
+		args    args
+		want    report.Topology
+		want1   []ApplicationPod
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1, err := tt.r.applicationPodTopology(tt.args.probeID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reporter.applicationPodTopology() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reporter.applicationPodTopology() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("Reporter.applicationPodTopology() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
 	}
 }
