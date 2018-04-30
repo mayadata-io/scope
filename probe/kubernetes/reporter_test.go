@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"strings"
+	"reflect"
 	"testing"
 
 	apiv1 "k8s.io/api/core/v1"
@@ -146,6 +147,18 @@ func (c *mockClient) WalkDeployments(f func(kubernetes.Deployment) error) error 
 	return nil
 }
 func (c *mockClient) WalkNamespaces(f func(kubernetes.NamespaceResource) error) error {
+	return nil
+}
+func (c *mockClient) WalkPersistentVolumeClaims(f func(kubernetes.PersistentVolumeClaim) error) error {
+	return nil
+}
+func (c *mockClient) WalkPersistentVolumes(f func(kubernetes.PersistentVolume) error) error {
+	return nil
+}
+func (c *mockClient) WalkStorageClasses(f func(kubernetes.StorageClass) error) error {
+	return nil
+}
+func (c *mockClient) WalkApplicationPods(f func(kubernetes.ApplicationPod) error) error {
 	return nil
 }
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
@@ -351,4 +364,44 @@ func TestReporterGetLogs(t *testing.T) {
 	if !closed {
 		t.Errorf("Expected pipe to close the underlying log stream")
 	}
+}
+
+func TestNewPV(t *testing.T) {
+	type args struct {
+		p *apiv1.PersistentVolume
+	}
+	tests := []struct {
+		name string
+		args args
+		want PersistentVolume
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewPV(tt.args.p); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewPV() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_persistentVolume_GetNode(t *testing.T) {
+	type args struct {
+		probeID string
+	}
+	tests := []struct {
+		name string
+		p    *persistentVolume
+		args args
+		want report.Node
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.GetNode(tt.args.probeID); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("persistentVolume.GetNode() = %v, want %v", got, tt.want)
+			}
+		})
 }
