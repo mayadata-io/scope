@@ -67,6 +67,29 @@ func TestEndpointNodeID(t *testing.T) {
 	}
 }
 
+func TestScopedEndpointNodeID(t *testing.T) {
+
+	for input, want := range map[string]struct{ scope, address, port string }{
+		report.MakeScopedEndpointNodeID("host.com", "1.2.3.4", "80"): {"host.com", "1.2.3.4", "80"},
+		report.MakeScopedEndpointNodeID("host.com", "1.2.3.4", ""):   {"host.com", "1.2.3.4", ""},
+		report.MakeScopedEndpointNodeID("","127.0.0.1", "443"): {"", "127.0.0.1", "443"},
+		"a;b;c": {"a", "b", "c"},
+		"a;;": {"a", "", ""},
+
+	} {
+		haveScope, haveAddress, havePort, ok := report.ParseEndpointNodeID(input)
+		if !ok {
+			t.Errorf("%q: not OK", input)
+			continue
+		}
+		if want.scope != haveScope ||
+			want.address != haveAddress ||
+			want.port != havePort {
+			t.Errorf("%q: want %q, have {%q, %q, %q}", input, want, haveScope, haveAddress, havePort)
+		}
+	}
+}
+
 func TestECSServiceNodeIDCompat(t *testing.T) {
 	testID := "my-service;<ecs_service>"
 	testName := "my-service"
