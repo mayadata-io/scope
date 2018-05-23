@@ -1026,7 +1026,7 @@ a {
     width: 100%;
     border-spacing: 0;
     /* need fixed for truncating, but that does not extend wide columns dynamically */
-    table-layout: fixed;
+
 
     &-wrapper {
       margin: 24px -4px;
@@ -1037,7 +1037,8 @@ a {
       color: $text-tertiary-color;
       font-size: 90%;
       text-align: right;
-      padding: 0;
+      padding: 0;     
+
 
       .node-details-table-header-sortable {
         padding: 3px 2px;
@@ -2053,7 +2054,7 @@ a {
     }
 
     .node-details-table-node > * {
-      padding: 3px 4px;
+      padding: 3px 4px;  
     }
 
     // Keeping the row height fixed is important for locking the rows on hover.
