@@ -1025,8 +1025,6 @@ a {
   &-table {
     width: 100%;
     border-spacing: 0;
-    /* need fixed for truncating, but that does not extend wide columns dynamically */
-    table-layout: fixed;
 
     &-wrapper {
       margin: 24px -4px;
@@ -1123,7 +1121,6 @@ a {
           margin-left: 1em;
         }
       }
-
     }
   }
 
@@ -2041,6 +2038,7 @@ a {
     display: flex;
     flex-direction: row;
     width: 100%;
+    overflow-x: auto;
 
     .node-details-table-wrapper {
       margin: 0;
