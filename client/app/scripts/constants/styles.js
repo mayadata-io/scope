@@ -92,6 +92,8 @@ export const NODE_DETAILS_TABLE_COLUMN_WIDTHS = {
   label: NODE_DETAILS_TABLE_CW.XL,
   hosts: NODE_DETAILS_TABLE_CW.XL,
   services: NODE_DETAILS_TABLE_CW.XL,
+  r: NODE_DETAILS_TABLE_CW.S,
+  w: NODE_DETAILS_TABLE_CW.S,
 
   // e.g. details panel > pods
   kubernetes_name: NODE_DETAILS_TABLE_CW.M,
