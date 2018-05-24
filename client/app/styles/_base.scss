@@ -1025,8 +1025,6 @@ a {
   &-table {
     width: 100%;
     border-spacing: 0;
-    /* need fixed for truncating, but that does not extend wide columns dynamically */
-
 
     &-wrapper {
       margin: 24px -4px;
@@ -1038,7 +1036,6 @@ a {
       font-size: 90%;
       text-align: right;
       padding: 0;     
-
 
       .node-details-table-header-sortable {
         padding: 3px 2px;
@@ -1124,7 +1121,6 @@ a {
           margin-left: 1em;
         }
       }
-
     }
   }
 
@@ -2042,6 +2038,7 @@ a {
     display: flex;
     flex-direction: row;
     width: 100%;
+    overflow-x: auto;
 
     .node-details-table-wrapper {
       margin: 0;

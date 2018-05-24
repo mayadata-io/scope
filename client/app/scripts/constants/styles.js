@@ -91,7 +91,6 @@ export const NODE_DETAILS_TABLE_COLUMN_WIDTHS = {
   threads: NODE_DETAILS_TABLE_CW.M,
   label: NODE_DETAILS_TABLE_CW.XL,
   hosts: NODE_DETAILS_TABLE_CW.XL,
-  'kube-controllers': NODE_DETAILS_TABLE_CW.XXL,
   services: NODE_DETAILS_TABLE_CW.XL,
 
   // e.g. details panel > pods
@@ -110,6 +109,7 @@ export const NODE_DETAILS_TABLE_COLUMN_WIDTHS = {
   kubernetes_storage_class_name: NODE_DETAILS_TABLE_CW.XL,
   kubernetes_node_type: NODE_DETAILS_TABLE_CW.XL,
   kubernetes_status: NODE_DETAILS_TABLE_CW.XL,
+  'kube-controllers': NODE_DETAILS_TABLE_CW.XXL,
 
   // weave connections
   weave_connection_connection: NODE_DETAILS_TABLE_CW.XXXL,
