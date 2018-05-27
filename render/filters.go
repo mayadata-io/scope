@@ -139,10 +139,26 @@ func IsStorageComponent(node report.Node) bool {
 	}
 	if node.Topology == "pod" {
 		volumeClaim, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
-		if !ok {
-			storageComponent = false
-		} else if volumeClaim == "" {
-			storageComponent = false
+		if !ok || volumeClaim == "" {
+			name, _ := node.Latest.Lookup(kubernetes.Name)
+			containerName, _ := node.Latest.Lookup(docker.ContainerName)
+
+			if strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc") {
+				_, ok := node.Latest.Lookup(kubernetes.ControllerLabel)
+				if ok {
+					storageComponent = true
+				}
+				_, ok = node.Latest.Lookup(kubernetes.ControllerServiceLabel)
+				if ok {
+					storageComponent = true
+				}
+				_, ok = node.Latest.Lookup(kubernetes.ReplicaLabel)
+				if ok {
+					storageComponent = true
+				}
+			} else {
+				storageComponent = false
+			}
 		} else {
 			storageComponent = true
 		}

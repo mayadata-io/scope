@@ -1,6 +1,8 @@
 package render
 
 import (
+	"strings"
+
 	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/report"
 )
@@ -31,6 +33,12 @@ func (c connectionStorageJoin) Render(rpt report.Report) Nodes {
 	return MapStorageEndpoints(
 		func(m report.Node) []string {
 			storageName, ok := m.Latest.Lookup(kubernetes.Name)
+			if m.Topology == report.Pod {
+				if strings.Contains(storageName, "-ctrl-") {
+					podName := strings.Split(storageName, "-ctrl-")
+					storageName = podName[0]
+				}
+			}
 			if !ok {
 				return []string{""}
 			}
@@ -61,9 +69,9 @@ func Map2PVCName(m report.Node) []string {
 	return []string{pvcName}
 }
 
-// Map2PVNode returns pv node ID
+// Map2PVNode returns pv Name
 func Map2PVNode(n report.Node) []string {
-	if pvNodeID, ok := n.Latest.Lookup(report.MakePersistentVolumeNodeID(n.ID)); ok {
+	if pvNodeID, ok := n.Latest.Lookup(kubernetes.Name); ok {
 		return []string{pvNodeID}
 	}
 	return []string{""}
@@ -86,10 +94,12 @@ func (e mapStorageEndpoints) Render(rpt report.Report) Nodes {
 	var endpoints Nodes
 	if e.topology == report.PersistentVolumeClaim {
 		endpoints = SelectPersistentVolume.Render(rpt)
-		endpoints.Merge(SelectStorageClass.Render(rpt))
 	}
 	if e.topology == report.Pod {
 		endpoints = SelectPersistentVolumeClaim.Render(rpt)
+	}
+	if e.topology == report.PersistentVolume {
+		endpoints = SelectPod.Render(rpt)
 	}
 	ret := newJoinResults(TopologySelector(e.topology).Render(rpt).Nodes)
 

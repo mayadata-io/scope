@@ -73,7 +73,7 @@ var PodRenderer = Memoise(ConditionalRenderer(renderKubernetesTopologies,
 				Map2PVCName,
 				report.Pod,
 			),
-			MapStorageEndpoints(
+			ConnectionStorageJoin(
 				Map2PVNode,
 				report.PersistentVolume,
 			),

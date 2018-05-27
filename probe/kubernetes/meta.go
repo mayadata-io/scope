@@ -10,11 +10,14 @@ import (
 
 // These constants are keys used in node metadata
 const (
-	Name            = report.KubernetesName
-	Namespace       = report.KubernetesNamespace
-	Created         = report.KubernetesCreated
-	LabelPrefix     = "kubernetes_labels_"
-	VolumeClaimName = report.KubernetesVolumeClaim
+	Name                   = report.KubernetesName
+	Namespace              = report.KubernetesNamespace
+	Created                = report.KubernetesCreated
+	LabelPrefix            = "kubernetes_labels_"
+	VolumeClaimName        = report.KubernetesVolumeClaim
+	ControllerLabel        = report.KubernetesControllerLabel
+	ControllerServiceLabel = report.KubernetesControllerServiceLabel
+	ReplicaLabel           = report.KubernetesReplicaLabel
 )
 
 // Meta represents a metadata information about a Kubernetes object
