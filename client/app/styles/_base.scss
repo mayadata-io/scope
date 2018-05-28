@@ -164,7 +164,6 @@ a {
   left: 0;
   line-height: 150%;
   margin: 0;
-  overflow: auto;
   position: fixed;
   right: 0;
   top: 0;
@@ -2043,6 +2042,8 @@ a {
     .node-details-table-wrapper {
       margin: 0;
       flex: 1;
+      overflow-x: scroll;
+      overflow-y: hidden;
     }
 
     .nodes-grid-graph {
