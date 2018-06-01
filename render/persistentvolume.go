@@ -5,115 +5,86 @@ import (
 	"github.com/weaveworks/scope/report"
 )
 
-// ConnectionStorageJoin returns connectionStorageJoin object
-func ConnectionStorageJoin(toStorageResource func(report.Node) []string, topology string) Renderer {
-	return connectionStorageJoin{toStorageResource: toStorageResource, topology: topology}
+// KubernetesVolumesRenderer renders Kubernetes volume components
+var KubernetesVolumesRenderer = MakeReduce(
+	VolumesRenderer(),
+	PodToVolumeRenderer(),
+	PVCToStorageClassRenderer(),
+)
+
+// VolumesRenderer returns renderer
+func VolumesRenderer() Renderer {
+	return volumesRenderer{}
 }
 
-// connectionStorageJoin holds the information about mapping of storage components
-// along with TopologySelector
-type connectionStorageJoin struct {
-	toStorageResource func(report.Node) []string
-	topology          string
-}
+// volumesRenderer is the renderer to render PVC & PV
+type volumesRenderer struct{}
 
-func (c connectionStorageJoin) Render(rpt report.Report) Nodes {
-	inputNodes := TopologySelector(c.topology).Render(rpt).Nodes
-
-	var storageNodes = map[string][]string{}
-	for _, n := range inputNodes {
-		storageName := c.toStorageResource(n)
-		for _, name := range storageName {
-			storageNodes[name] = append(storageNodes[name], n.ID)
-		}
-	}
-
-	return MapStorageEndpoints(
-		func(m report.Node) []string {
-			storageComponentName, ok := m.Latest.Lookup(kubernetes.Name)
-			if !ok {
-				return []string{""}
+// Render renders the nodes
+func (v volumesRenderer) Render(rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for id, n := range rpt.PersistentVolumeClaim.Nodes {
+		volume, _ := n.Latest.Lookup(kubernetes.VolumeName)
+		for pvNodeID, p := range rpt.PersistentVolume.Nodes {
+			volumeName, _ := p.Latest.Lookup(kubernetes.Name)
+			if volume == volumeName {
+				n.Adjacency = n.Adjacency.Add(p.ID)
+				n.Children = n.Children.Add(p)
 			}
-			id := storageNodes[storageComponentName]
-			return id
-		}, c.topology).Render(rpt)
+			nodes[pvNodeID] = p
+		}
+		nodes[id] = n
+	}
+	return Nodes{Nodes: nodes}
 }
 
-// Map2PVName accepts PV Node and returns Volume name associated with PV Node.
-func Map2PVName(m report.Node) []string {
-	pvName, ok := m.Latest.Lookup(kubernetes.VolumeName)
-	scName, ok1 := m.Latest.Lookup(kubernetes.StorageClassName)
-	if !ok {
-		pvName = ""
-	}
-	if !ok1 {
-		scName = ""
-	}
-	return []string{pvName, scName}
+//PodToVolumeRenderer renders Pod and PVC resources
+func PodToVolumeRenderer() Renderer {
+	return podToVolumesRenderer{}
 }
 
-// Map2PVCName returns pvc name
-func Map2PVCName(m report.Node) []string {
-	pvcName, ok := m.Latest.Lookup(kubernetes.VolumeClaim)
-	if !ok {
-		pvcName = ""
-	}
-	return []string{pvcName}
-}
+// VolumesRenderer is the renderer to render volumes
+type podToVolumesRenderer struct{}
 
-// Map2PVNode returns pv node ID
-func Map2PVNode(n report.Node) []string {
-	if pvNodeID, ok := n.Latest.Lookup(report.MakePersistentVolumeNodeID(n.ID)); ok {
-		return []string{pvNodeID}
-	}
-	return []string{""}
-}
-
-type storageEndpointMapFunc func(report.Node) []string
-
-// mapStorageEndpoints is the Renderer for rendering storage components together.
-type mapStorageEndpoints struct {
-	f        storageEndpointMapFunc
-	topology string
-}
-
-// MapStorageEndpoints instantiates mapStorageEndpoints and returns same
-func MapStorageEndpoints(f storageEndpointMapFunc, topology string) Renderer {
-	return mapStorageEndpoints{f: f, topology: topology}
-}
-
-func (e mapStorageEndpoints) Render(rpt report.Report) Nodes {
-	var endpoints Nodes
-	if e.topology == report.PersistentVolumeClaim {
-		endpoints = SelectPersistentVolume.Render(rpt)
-	}
-	if e.topology == report.Pod {
-		endpoints = SelectPersistentVolumeClaim.Render(rpt)
-	}
-	ret := newJoinResults(TopologySelector(e.topology).Render(rpt).Nodes)
-
-	for _, n := range endpoints.Nodes {
-		if id := e.f(n); len(id) > 0 {
-			for _, nodeID := range id {
-				if nodeID != "" {
-					ret.addChild(n, nodeID, e.topology)
-				}
+// Render renders the nodes
+func (v podToVolumesRenderer) Render(rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for podID, podNode := range rpt.Pod.Nodes {
+		ClaimName, _ := podNode.Latest.Lookup(kubernetes.VolumeClaim)
+		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
+			pvcName, _ := pvcNode.Latest.Lookup(kubernetes.Name)
+			if pvcName == ClaimName {
+				podNode.Adjacency = podNode.Adjacency.Add(pvcNode.ID)
+				podNode.Children = podNode.Children.Add(pvcNode)
 			}
 		}
+		nodes[podID] = podNode
 	}
-	if e.topology == report.PersistentVolumeClaim {
-		ret.storageResult(endpoints)
-		endpoints = SelectStorageClass.Render(rpt)
-		for _, n := range endpoints.Nodes {
-			if id := e.f(n); len(id) > 0 {
-				for _, nodeID := range id {
-					if nodeID != "" {
-						ret.addChild(n, nodeID, e.topology)
-					}
-				}
+
+	return Nodes{Nodes: nodes}
+}
+
+// PVCToStorageClassRenderer renders PVC and Storage class objects.
+func PVCToStorageClassRenderer() Renderer {
+	return pvcToStorageClassRenderer{}
+}
+
+// pvcToStorageClassRenderer is the renderer to render PVC & StorageClass
+type pvcToStorageClassRenderer struct{}
+
+// Render renders the nodes
+func (v pvcToStorageClassRenderer) Render(rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for scID, scNode := range rpt.StorageClass.Nodes {
+		storageClass, _ := scNode.Latest.Lookup(kubernetes.Name)
+		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
+			storageClassName, _ := pvcNode.Latest.Lookup(kubernetes.StorageClassName)
+			if storageClassName == storageClass {
+				scNode.Adjacency = scNode.Adjacency.Add(pvcNode.ID)
+				scNode.Children = scNode.Children.Add(pvcNode)
 			}
 		}
-		return ret.storageResult(endpoints)
+		nodes[scID] = scNode
 	}
-	return ret.storageResult(endpoints)
+	return Nodes{Nodes: nodes}
 }

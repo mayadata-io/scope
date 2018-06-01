@@ -51,8 +51,8 @@ var (
 		ID:      "storage",
 		Default: "hide",
 		Options: []APITopologyOption{
-			{Value: "show", Label: "Show Storage", filter: render.IsStorageComponent, filterPseudo: false},
-			{Value: "hide", Label: "Hide Storage", filter: render.IsNotStorageComponent, filterPseudo: false},
+			{Value: "show", Label: "Show Storage", filter: render.IsVolumesComponent, filterPseudo: false},
+			{Value: "hide", Label: "Hide Storage", filter: render.IsPodComponent, filterPseudo: false},
 		},
 	}
 )

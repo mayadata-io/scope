@@ -54,7 +54,6 @@ func (p *persistentVolumeClaim) GetNode(probeID string) report.Node {
 		NodeType:              "Persistent Volume Claim",
 		Status:                string(p.Status.Phase),
 		VolumeName:            p.Spec.VolumeName,
-		AccessModes:           string(p.Spec.AccessModes[0]),
 		StorageClassName:      p.GetStorageClass(),
 	})
 }
