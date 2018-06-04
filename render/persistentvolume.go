@@ -5,22 +5,22 @@ import (
 	"github.com/weaveworks/scope/report"
 )
 
-// KubernetesVolumesRenderer renders Kubernetes volume components
+// KubernetesVolumesRenderer is a Renderer which combines all Kubernetes
+// volumes components such as stateful Pods, Persistent Volume, Persistent Volume Claim, Storage Class.
 var KubernetesVolumesRenderer = MakeReduce(
-	VolumesRenderer(),
-	PodToVolumeRenderer(),
-	PVCToStorageClassRenderer(),
+	VolumesRenderer,
+	PodToVolumeRenderer,
+	PVCToStorageClassRenderer,
 )
 
-// VolumesRenderer returns renderer
-func VolumesRenderer() Renderer {
-	return volumesRenderer{}
-}
+// VolumesRenderer is a Renderer which produces a renderable kubernetes PV & PVC
+// graph by merging the pods graph and the Persistent Volume topology.
+var VolumesRenderer = volumesRenderer{}
 
-// volumesRenderer is the renderer to render PVC & PV
+// volumesRenderer is a Renderer to render PV & PVC nodes.
 type volumesRenderer struct{}
 
-// Render renders the nodes
+// Render renders PV & PVC nodes along with adjacency
 func (v volumesRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for id, n := range rpt.PersistentVolumeClaim.Nodes {
@@ -38,15 +38,15 @@ func (v volumesRenderer) Render(rpt report.Report) Nodes {
 	return Nodes{Nodes: nodes}
 }
 
-//PodToVolumeRenderer renders Pod and PVC resources
-func PodToVolumeRenderer() Renderer {
-	return podToVolumesRenderer{}
-}
+// PodToVolumeRenderer is a Renderer which produces a renderable kubernetes Pod
+// graph by merging the pods graph and the Persistent Volume Claim topology.
+// Pods having persistent volumes are rendered.
+var PodToVolumeRenderer = podToVolumesRenderer{}
 
-// VolumesRenderer is the renderer to render volumes
+// VolumesRenderer is a Renderer to render Pods & PVCs.
 type podToVolumesRenderer struct{}
 
-// Render renders the nodes
+// Render renders the Pod nodes having volumes adjacency.
 func (v podToVolumesRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for podID, podNode := range rpt.Pod.Nodes {
@@ -60,19 +60,17 @@ func (v podToVolumesRenderer) Render(rpt report.Report) Nodes {
 		}
 		nodes[podID] = podNode
 	}
-
 	return Nodes{Nodes: nodes}
 }
 
-// PVCToStorageClassRenderer renders PVC and Storage class objects.
-func PVCToStorageClassRenderer() Renderer {
-	return pvcToStorageClassRenderer{}
-}
+// PVCToStorageClassRenderer is a Renderer which produces a renderable kubernetes PVC
+// & Storage class graph.
+var PVCToStorageClassRenderer = pvcToStorageClassRenderer{}
 
-// pvcToStorageClassRenderer is the renderer to render PVC & StorageClass
+// pvcToStorageClassRenderer is a Renderer to render PVC & StorageClass.
 type pvcToStorageClassRenderer struct{}
 
-// Render renders the nodes
+// Render renders the PVC & Storage Class nodes with adjacency.
 func (v pvcToStorageClassRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for scID, scNode := range rpt.StorageClass.Nodes {
