@@ -5,6 +5,15 @@ import classNames from 'classnames';
 import { enterEdge, leaveEdge } from '../actions/app-actions';
 import { encodeIdAttribute, decodeIdAttribute } from '../utils/dom-utils';
 
+function IsStorageComponent(id) {
+  if (id === 'persietent_volume' || id === 'storage_class' || id === 'persistent_volume_claim') {
+    return true;
+  }
+  return false;
+}
+
+// getAdjacencyClass takes id which contains information about edge as a topology
+// of parent and child node.
 
 function getAdjacencyClass(id) {
   const topologyId = id.split('---');
@@ -13,12 +22,13 @@ function getAdjacencyClass(id) {
   if (from[1] !== undefined && to[1] !== undefined) {
     from[1] = from[1].slice(1, -1);
     to[1] = to[1].slice(1, -1);
-    if ((from[1] === 'persistent_volume' || from[1] === 'storage_class' || from[1] === 'persistent_volume_claim') || (to[1] === 'persistent_volume' || to[1] === 'storage_class' || to[1] === 'persistent_volume_claim')) {
+    if (IsStorageComponent(from[1]) || IsStorageComponent(to[1])) {
       return 'link-storage';
     }
   }
   return 'link-none';
 }
+
 class Edge extends React.Component {
   constructor(props, context) {
     super(props, context);
