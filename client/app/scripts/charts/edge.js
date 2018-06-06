@@ -6,7 +6,7 @@ import { enterEdge, leaveEdge } from '../actions/app-actions';
 import { encodeIdAttribute, decodeIdAttribute } from '../utils/dom-utils';
 
 function isStorageComponent(id) {
-  if (id === 'persitent_volume' || id === 'storage_class' || id === 'persistent_volume_claim') {
+  if (id === '<persistent_volume>' || id === '<storage_class>' || id === '<persistent_volume_claim>') {
     return true;
   }
   return false;
@@ -14,16 +14,13 @@ function isStorageComponent(id) {
 
 // getAdjacencyClass takes id which contains information about edge as a topology
 // of parent and child node.
-// For example: id is of form "nodeA;storage_class---nodeB;persistent_volume_claim"
-
+// For example: id is of form "nodeA;<storage_class>---nodeB;<persistent_volume_claim>"
 function getAdjacencyClass(id) {
   const topologyId = id.split('---');
-  const from = topologyId[0].split(';');
-  const to = topologyId[1].split(';');
-  if (from[1] !== undefined && to[1] !== undefined) {
-    const fromStorageType = from[1].slice(1, -1);
-    const toStorageType = to[1].slice(1, -1);
-    if (isStorageComponent(fromStorageType) || isStorageComponent(toStorageType)) {
+  const fromNode = topologyId[0].split(';');
+  const toNode = topologyId[1].split(';');
+  if (fromNode[1] !== undefined && toNode[1] !== undefined) {
+    if (isStorageComponent(fromNode[1]) || isStorageComponent(toNode[1])) {
       return 'link-storage';
     }
   }
