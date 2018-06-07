@@ -128,25 +128,6 @@ func IsConnected(node report.Node) bool {
 	return ok
 }
 
-// IsVolumesComponent check whether given node is PV, PVC, SC or not
-func IsVolumesComponent(node report.Node) bool {
-	var storageComponent bool
-	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" {
-		storageComponent = true
-	}
-	if node.Topology == "pod" {
-		volumeClaim, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
-		if !ok {
-			storageComponent = false
-		} else if volumeClaim == "" {
-			storageComponent = false
-		} else {
-			storageComponent = true
-		}
-	}
-	return storageComponent
-}
-
 // IsPodComponent check whether given node is everything but PV, PVC, SC
 func IsPodComponent(node report.Node) bool {
 	var ok bool
@@ -317,6 +298,11 @@ func IsNamespace(namespace string) FilterFunc {
 		if namespace == docker.DefaultNamespace && gotNamespace == "" {
 			return true
 		}
+		// PV and Storage Class do not have any namespace. Hence, return current namespace
+		if n.Topology == report.PersistentVolume || n.Topology == report.StorageClass {
+			return true
+		}
+
 		return namespace == gotNamespace
 	}
 }
