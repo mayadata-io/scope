@@ -32,17 +32,21 @@ dependencies:
       make deps &&
       mkdir -p $(dirname $SRCDIR) &&
       cp -r $(pwd)/ $SRCDIR
-    - "cd $SRCDIR/client; ../tools/rebuild-image openebs/scope-ui-build . Dockerfile package.json webpack.production.config.js .eslintrc .babelrc && touch $SRCDIR/.scope_ui_build.uptodate"
-    - "cd $SRCDIR/backend; ../tools/rebuild-image openebs/scope-backend-build . Dockerfile build.sh && touch $SRCDIR/.scope_backend_build.uptodate"
+    - "cd $SRCDIR/client; ../tools/rebuild-image weaveworks/scope-ui-build . Dockerfile package.json webpack.production.config.js .eslintrc .babelrc && touch $SRCDIR/.scope_ui_build.uptodate"
+    - "cd $SRCDIR/backend; ../tools/rebuild-image weaveworks/scope-backend-build . Dockerfile build.sh && touch $SRCDIR/.scope_backend_build.uptodate"
     - test -z "$SECRET_PASSWORD" || (cd $SRCDIR/integration; ./gce.sh make_template):
         parallel: false
     - sudo apt-get update && sudo apt-get install python-pip && sudo pip install awscli
 
 test:
   override:
+    - cd $SRCDIR; make RM= lint:
+        parallel: true
     - cd $SRCDIR; COVERDIR=./coverage make RM= CODECGEN_UID=23 tests:
         parallel: true
     - cd $SRCDIR; make RM= client-test static:
+        parallel: true
+    - cd $SRCDIR; make RM= client-lint static:
         parallel: true
     - cd $SRCDIR; rm -f prog/scope; if [ "$CIRCLE_NODE_INDEX" = "0" ]; then GOARCH=arm make GO_BUILD_INSTALL_DEPS= RM= prog/scope; else GOOS=darwin make GO_BUILD_INSTALL_DEPS= RM= prog/scope; fi:
         parallel: true
@@ -56,6 +60,8 @@ test:
         parallel: true
     - test "$CIRCLE_NODE_INDEX" != "0" || (cd $SRCDIR; cp scope.tar $CIRCLE_ARTIFACTS):
         parallel: true
+    - docker tag weaveworks/scope openebs/scope:$(./tools/image-tag)
+    - docker tag weaveworks/scope:latest openebs/scope:ci
 
 deployment:
   hub:
@@ -66,5 +72,4 @@ deployment:
     branch: master
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push openebs/scope:latest
-
+      - docker push openebs/scope:ci
