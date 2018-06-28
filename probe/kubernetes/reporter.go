@@ -108,20 +108,18 @@ var (
 
 	PersistentVolumeMetadataTemplates = report.MetadataTemplates{
 		NodeType:         {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		VolumeClaim:      {ID: VolumeClaim, Label: "Volume Claim", From: report.FromLatest, Priority: 2},
-		StorageClassName: {ID: StorageClassName, Label: "Storage Class", From: report.FromLatest, Priority: 3},
-		ReclaimPolicy:    {ID: ReclaimPolicy, Label: "Reclaim Policy", From: report.FromLatest, Priority: 4},
-		AccessModes:      {ID: AccessModes, Label: "Access Modes", From: report.FromLatest, Priority: 5},
+		VolumeClaim:      {ID: VolumeClaim, Label: "Volume claim", From: report.FromLatest, Priority: 2},
+		StorageClassName: {ID: StorageClassName, Label: "Storage class", From: report.FromLatest, Priority: 3},
+		AccessModes:      {ID: AccessModes, Label: "Access modes", From: report.FromLatest, Priority: 5},
 		Status:           {ID: Status, Label: "Status", From: report.FromLatest, Priority: 6},
-		Message:          {ID: Message, Label: "Message", From: report.FromLatest, Priority: 7},
 	}
 
 	PersistentVolumeClaimMetadataTemplates = report.MetadataTemplates{
-		NodeType:    {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Namespace:   {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
-		Status:      {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
-		VolumeName:  {ID: VolumeName, Label: "Volume", From: report.FromLatest, Priority: 4},
-		AccessModes: {ID: AccessModes, Label: "Access Modes", From: report.FromLatest, Priority: 5},
+		NodeType:         {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace:        {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
+		Status:           {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
+		VolumeName:       {ID: VolumeName, Label: "Volume", From: report.FromLatest, Priority: 4},
+		StorageClassName: {ID: StorageClassName, Label: "Storage class", From: report.FromLatest, Priority: 5},
 	}
 
 	StorageClassMetadataTemplates = report.MetadataTemplates{
@@ -429,7 +427,7 @@ func (r *Reporter) persistentVolumeTopology() (report.Topology, []PersistentVolu
 		WithMetadataTemplates(PersistentVolumeMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	err := r.client.WalkPersistentVolumes(func(p PersistentVolume) error {
-		result.AddNode(p.GetNode(r.probeID))
+		result.AddNode(p.GetNode())
 		persistentVolumes = append(persistentVolumes, p)
 		return nil
 	})
@@ -442,7 +440,7 @@ func (r *Reporter) persistentVolumeClaimTopology() (report.Topology, []Persisten
 		WithMetadataTemplates(PersistentVolumeClaimMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	err := r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
-		result.AddNode(p.GetNode(r.probeID))
+		result.AddNode(p.GetNode())
 		persistentVolumeClaims = append(persistentVolumeClaims, p)
 		return nil
 	})
@@ -455,7 +453,7 @@ func (r *Reporter) storageClassTopology() (report.Topology, []StorageClass, erro
 		WithMetadataTemplates(StorageClassMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	err := r.client.WalkStorageClasses(func(p StorageClass) error {
-		result.AddNode(p.GetNode(r.probeID))
+		result.AddNode(p.GetNode())
 		storageClasses = append(storageClasses, p)
 		return nil
 	})

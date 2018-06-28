@@ -80,10 +80,7 @@ func (f FilterFunc) Transform(nodes Nodes) Nodes {
 				newAdjacency = newAdjacency.Add(dstID)
 			}
 		}
-		claimName, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
-		if claimName == "" || !ok {
-			node.Adjacency = newAdjacency
-		}
+		node.Adjacency = newAdjacency
 		output[id] = node
 	}
 
@@ -131,43 +128,8 @@ func IsConnected(node report.Node) bool {
 	return ok
 }
 
-// IsStorageComponent check whether given node is PV, PVC, SC or not
-func IsStorageComponent(node report.Node) bool {
-	var storageComponent bool
-	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" {
-		storageComponent = true
-	}
-	if node.Topology == "pod" {
-		volumeClaim, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
-		if !ok || volumeClaim == "" {
-			name, _ := node.Latest.Lookup(kubernetes.Name)
-			containerName, _ := node.Latest.Lookup(docker.ContainerName)
-
-			if strings.Contains(name, "pvc") || strings.Contains(containerName, "pvc") {
-				_, ok := node.Latest.Lookup(kubernetes.ControllerLabel)
-				if ok {
-					storageComponent = true
-				}
-				_, ok = node.Latest.Lookup(kubernetes.ControllerServiceLabel)
-				if ok {
-					storageComponent = true
-				}
-				_, ok = node.Latest.Lookup(kubernetes.ReplicaLabel)
-				if ok {
-					storageComponent = true
-				}
-			} else {
-				storageComponent = false
-			}
-		} else {
-			storageComponent = true
-		}
-	}
-	return storageComponent
-}
-
-// IsNotStorageComponent check whether given node is PV, PVC, SC or not
-func IsNotStorageComponent(node report.Node) bool {
+// IsPodComponent check whether given node is everything but PV, PVC, SC
+func IsPodComponent(node report.Node) bool {
 	var ok bool
 	ok = true
 	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" {
