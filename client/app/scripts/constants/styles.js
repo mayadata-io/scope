@@ -66,17 +66,19 @@ export const NODE_DETAILS_TABLE_CW = {
   S: '56px',
   M: '70px',
   L: '85px',
-  XL: '120px',
-  XXL: '140px',
-  XXXL: '170px',
+  XL: '100px',
+  XXL: '120px',
+  XXXL: '140px',
+  XXXXL: '170px',
 };
 
 export const NODE_DETAILS_TABLE_COLUMN_WIDTHS = {
   count: NODE_DETAILS_TABLE_CW.XS,
   container: NODE_DETAILS_TABLE_CW.XS,
-  docker_container_created: NODE_DETAILS_TABLE_CW.XXXL,
+  docker_container_hostname: NODE_DETAILS_TABLE_CW.M,
+  docker_container_created: NODE_DETAILS_TABLE_CW.XXXXL,
   docker_container_restart_count: NODE_DETAILS_TABLE_CW.M,
-  docker_container_state_human: NODE_DETAILS_TABLE_CW.XXXL,
+  docker_container_state_human: NODE_DETAILS_TABLE_CW.XXXXL,
   docker_container_uptime: NODE_DETAILS_TABLE_CW.L,
   docker_cpu_total_usage: NODE_DETAILS_TABLE_CW.M,
   docker_memory_usage: NODE_DETAILS_TABLE_CW.M,
@@ -87,15 +89,34 @@ export const NODE_DETAILS_TABLE_COLUMN_WIDTHS = {
   process_cpu_usage_percent: NODE_DETAILS_TABLE_CW.M,
   process_memory_usage_bytes: NODE_DETAILS_TABLE_CW.M,
   threads: NODE_DETAILS_TABLE_CW.M,
+  label: NODE_DETAILS_TABLE_CW.XL,
+  hosts: NODE_DETAILS_TABLE_CW.XL,
+  services: NODE_DETAILS_TABLE_CW.XL,
+  r: NODE_DETAILS_TABLE_CW.S,
+  w: NODE_DETAILS_TABLE_CW.S,
 
   // e.g. details panel > pods
-  kubernetes_ip: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_name: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_namespace: NODE_DETAILS_TABLE_CW.L,
+  kubernetes_ip: NODE_DETAILS_TABLE_CW.XXL,
   kubernetes_state: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_created: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_volume_claim: NODE_DETAILS_TABLE_CW.XXL,
+  kubernetes_volume_name: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_message: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_access_modes: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_provisioner: NODE_DETAILS_TABLE_CW.L,
+  kubernetes_reclaim_policy: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_restart_count: NODE_DETAILS_TABLE_CW.L,
+  kubernetes_storage_class_name: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_node_type: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_status: NODE_DETAILS_TABLE_CW.XL,
+  'kube-controllers': NODE_DETAILS_TABLE_CW.XXL,
 
   // weave connections
-  weave_connection_connection: NODE_DETAILS_TABLE_CW.XXL,
+  weave_connection_connection: NODE_DETAILS_TABLE_CW.XXXL,
   weave_connection_state: NODE_DETAILS_TABLE_CW.L,
-  weave_connection_info: NODE_DETAILS_TABLE_CW.XL,
+  weave_connection_info: NODE_DETAILS_TABLE_CW.XXL,
 };
 
 export const NODE_DETAILS_TABLE_XS_LABEL = {

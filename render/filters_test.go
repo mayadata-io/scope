@@ -98,3 +98,40 @@ func TestFilterUnconnectedSelf(t *testing.T) {
 		}
 	}
 }
+
+func TestIsStorageComponent(t *testing.T) {
+	type args struct {
+		node report.Node
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "storage-component",
+			args: args{
+				node: report.Node{
+					Topology: "persistent_volume",
+				},
+			},
+			want: true,
+		},
+		{
+			name: "non-storage-component",
+			args: args{
+				node: report.Node{
+					Topology: "container",
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := render.IsStorageComponent(tt.args.node); got != tt.want {
+				t.Errorf("IsStorageComponent() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
