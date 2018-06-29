@@ -54,64 +54,22 @@ test:
         parallel: true
     - cd $SRCDIR/extras; ./build_on_circle.sh:
         parallel: true
-    - "test -z \"$SECRET_PASSWORD\" || (cd $SRCDIR/integration; ./gce.sh setup && eval $(./gce.sh hosts); ./setup.sh)":
-        parallel: true
-    - test -z "$SECRET_PASSWORD" || (cd $SRCDIR/integration; eval $(./gce.sh hosts); ./run_all.sh):
-        parallel: true
-        timeout: 300
-  post:
-    - test -z "$SECRET_PASSWORD" || (cd $SRCDIR/integration; ./gce.sh destroy):
-        parallel: true
     - test "$CIRCLE_NODE_INDEX" != "0" || (cd $SRCDIR; ./tools/cover/gather_coverage.sh ./coverage $SRCDIR/coverage):
         parallel: true
     - test "$CIRCLE_NODE_INDEX" != "0" || (goveralls -repotoken $COVERALLS_REPO_TOKEN -coverprofile=$SRCDIR/profile.cov -service=circleci || true):
         parallel: true
-    - test "$CIRCLE_NODE_INDEX" != "0" || (cd $SRCDIR; cp */*.codecgen.go $CIRCLE_ARTIFACTS):
+    - test "$CIRCLE_NODE_INDEX" != "0" || (cd $SRCDIR; cp scope.tar $CIRCLE_ARTIFACTS):
         parallel: true
+    - docker tag weaveworks/scope openebs/scope:$(./tools/image-tag)
+    - docker tag weaveworks/scope:latest openebs/scope:ci
 
 deployment:
   hub:
+    branch: staging
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push openebs/scope:$(./tools/image-tag)
     branch: master
     commands:
-      - |
-        test -z "${DOCKER_USER}" || (
-          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS &&
-          (test "${DOCKER_ORGANIZATION:-$DOCKER_USER}" = "weaveworks" || (
-            for IMAGE in $IMAGES; do
-              docker tag weaveworks/$IMAGE:latest ${DOCKER_ORGANIZATION:-$DOCKER_USER}/$IMAGE:latest &&
-              docker tag weaveworks/$IMAGE:$(./tools/image-tag) ${DOCKER_ORGANIZATION:-$DOCKER_USER}/$IMAGE:$(./tools/image-tag)
-            done
-          )) &&
-          for IMAGE in $IMAGES; do
-            docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/$IMAGE &&
-            docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/$IMAGE:$(./tools/image-tag)
-          done
-        )
-      - |
-        test -z "${QUAY_USER}" || (
-          docker login -e '.' -u "$QUAY_USER" -p "$QUAY_PASSWORD" quay.io &&
-          docker tag weaveworks/scope:$(./tools/image-tag) "quay.io/${QUAY_ORGANIZATION}/scope:$(./tools/image-tag)" &&
-          docker push "quay.io/${QUAY_ORGANIZATION}/scope:$(./tools/image-tag)"
-        )
-      - test -z "${UI_BUCKET_KEY_ID}" || (cd $SRCDIR && make ui-upload && make ui-pkg-upload)
-  hub-dev:
-    branch: /^((?!master).)*$/  # not the master branch
-    commands:
-      - >
-        test -z "${DEPLOY_BRANCH}" || test -z "${DOCKER_USER}" || (
-          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS &&
-          docker tag weaveworks/scope:latest ${DOCKER_ORGANIZATION:-$DOCKER_USER}/scope:${CIRCLE_BRANCH//\//-} &&
-          docker push ${DOCKER_ORGANIZATION:-$DOCKER_USER}/scope:${CIRCLE_BRANCH//\//-}
-        )
-#  release:
-#    branch: /release-[0-9]+\.[0-9]+/
-#    owner: weaveworks
-#    commands:
-#      - go get github.com/weaveworks/wordepress && cd /home/ubuntu/src/github.com/weaveworks/wordepress && git checkout v1.0.0 && cd cmd/wordepress && go get
-#      - cd $SRCDIR; PRODUCT=scope tools/publish-site "$WP_LIVE_URL" "$WP_LIVE_USER" "$WP_LIVE_PASSWORD"
-#  issues:
-#    branch: /.*/
-#    owner: weaveworks
-#    commands:
-#      - go get github.com/weaveworks/wordepress && cd /home/ubuntu/src/github.com/weaveworks/wordepress && git checkout v1.0.0 && cd cmd/wordepress && go get
-#      - cd $SRCDIR; PRODUCT=scope tools/publish-site "$WP_DEV_URL" "$WP_DEV_USER" "$WP_DEV_PASSWORD"
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push openebs/scope:ci
