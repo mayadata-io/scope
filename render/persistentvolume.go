@@ -1,6 +1,8 @@
 package render
 
 import (
+	"strings"
+
 	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/report"
 )
@@ -11,6 +13,7 @@ var KubernetesVolumesRenderer = MakeReduce(
 	VolumesRenderer,
 	PodToVolumeRenderer,
 	PVCToStorageClassRenderer,
+	PVToControllerRenderer,
 )
 
 // VolumesRenderer is a Renderer which produces a renderable kubernetes PV & PVC
@@ -83,6 +86,33 @@ func (v pvcToStorageClassRenderer) Render(rpt report.Report) Nodes {
 			}
 		}
 		nodes[scID] = scNode
+	}
+	return Nodes{Nodes: nodes}
+}
+
+//PVToControllerRenderer is a Renderer which produces a renderable kubernetes PVC
+var PVToControllerRenderer = pvTocontrollerRenderer{}
+
+//pvTocontrollerRenderer is a Renderer to render PV & Controller.
+type pvTocontrollerRenderer struct{}
+
+//Render renders the PV & Controller nodes with adjacency.
+func (v pvTocontrollerRenderer) Render(rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for pvNodeID, p := range rpt.PersistentVolume.Nodes {
+		volumeName, _ := p.Latest.Lookup(kubernetes.Name)
+		for _, podNode := range rpt.Pod.Nodes {
+			Controller, _ := podNode.Latest.Lookup(kubernetes.Name)
+			if strings.Contains(Controller, "-ctrl-") {
+				podName := strings.Split(Controller, "-ctrl-")
+				Controller = podName[0]
+				if volumeName == Controller {
+					p.Adjacency = p.Adjacency.Add(podNode.ID)
+					p.Children = p.Children.Add(podNode)
+				}
+			}
+		}
+		nodes[pvNodeID] = p
 	}
 	return Nodes{Nodes: nodes}
 }
