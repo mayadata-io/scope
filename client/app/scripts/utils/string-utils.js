@@ -50,6 +50,18 @@ function makeFormatters(renderFn) {
       return formatLargeValue(value);
     },
 
+    seconds(value) {
+      return renderFn(formatters.number(value), 's');
+    },
+
+    bytes(value) {
+      return renderFn(formatters.number(value), 'MB');
+    },
+
+    millisecond(value) {
+      return renderFn(formatters.number(value), 'ms');
+    },
+
     percent(value) {
       return renderFn(formatters.number(value), '%');
     }
