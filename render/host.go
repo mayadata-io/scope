@@ -14,6 +14,7 @@ var HostRenderer = MakeReduce(
 	CustomRenderer{RenderFunc: nodes2Hosts, Renderer: ContainerImageRenderer},
 	CustomRenderer{RenderFunc: nodes2Hosts, Renderer: PodRenderer},
 	MapEndpoints(endpoint2Host, report.Host),
+	NdmRenderer,
 )
 
 // nodes2Hosts maps any Nodes to host Nodes.
@@ -55,4 +56,19 @@ func endpoint2Host(n report.Node) string {
 		return hostNodeID
 	}
 	return ""
+}
+
+// NdmRenderer is a Renderer which produces a renderable NDM Disk
+var NdmRenderer = ndmRenderer{}
+
+//ndmRenderer is a Renderer to render disk nodes.
+type ndmRenderer struct{}
+
+//Render renders disk nodes.
+func (v ndmRenderer) Render(rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for diskID, diskNode := range rpt.Disk.Nodes {
+		nodes[diskID] = diskNode
+	}
+	return Nodes{Nodes: nodes}
 }

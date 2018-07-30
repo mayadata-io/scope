@@ -74,6 +74,14 @@ const (
 	KubernetesPorts                = "kubernetes_ports"
 	KubernetesVolumeClaim          = "kubernetes_volume_claim"
 	KubernetesStorageClassName     = "kubernetes_storage_class_name"
+	KubernetesModel                = "kubernetes_model"
+	KubernetesLogicalSectorSize    = "kubernetes_logical_sector_size"
+	KubernetesStorage              = "kubernetes_storage"
+	KubernetesFirmwareRevision     = "kubernetes_firmware_revision"
+	KubernetesSerial               = "kubernetes_serial"
+	KubernetesSpcVersion           = "kubernetes_spc_version"
+	KubernetesVendor               = "kubernetes_vendor"
+	KubernetesDiskName             = "kubernetes_disk_name"
 	KubernetesAccessModes          = "kubernetes_access_modes"
 	KubernetesReclaimPolicy        = "kubernetes_reclaim_policy"
 	KubernetesStatus               = "kubernetes_status"
@@ -115,6 +123,7 @@ var commonKeys = map[string]string{
 	PersistentVolume:      PersistentVolume,
 	PersistentVolumeClaim: PersistentVolumeClaim,
 	StorageClass:          StorageClass,
+	Disk:                  Disk,
 
 	HostNodeID:             HostNodeID,
 	ControlProbeID:         ControlProbeID,

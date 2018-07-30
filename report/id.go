@@ -175,6 +175,12 @@ var (
 
 	// ParseStorageClassNodeID parses a storage class node ID
 	ParseStorageClassNodeID = parseSingleComponentID("storage_class")
+
+	// MakeDiskNodeID produces a disk node ID from its composite parts.
+	MakeDiskNodeID = makeSingleComponentID("disk")
+
+	// ParseDiskNodeID parses a disk node ID
+	ParseDiskNodeID = parseSingleComponentID("disk")
 )
 
 // makeSingleComponentID makes a single-component node id encoder

@@ -29,6 +29,7 @@ func renderKubernetesTopologies(rpt report.Report) bool {
 		&rpt.PersistentVolume,
 		&rpt.PersistentVolumeClaim,
 		&rpt.StorageClass,
+		&rpt.Disk,
 	}
 	for _, t := range topologies {
 		if len(t.Nodes) > 0 {
