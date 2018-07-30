@@ -104,7 +104,7 @@ var primaryAPITopology = map[string]string{
 	report.PersistentVolume:      "pods",
 	report.PersistentVolumeClaim: "pods",
 	report.StorageClass:          "pods",
-	report.Disk:                  "pods",
+	report.Disk:                  "hosts",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
