@@ -1643,6 +1643,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/openebs/node-disk-manager",
+			"repository": "https://github.com/openebs/node-disk-manager",
+			"vcs": "git",
+			"revision": "0a3e0a3e17250fc21d7a2bf32fab324774025801",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/opentracing-contrib/go-stdlib/nethttp",
 			"repository": "https://github.com/opentracing-contrib/go-stdlib",
 			"vcs": "git",

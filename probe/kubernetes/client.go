@@ -8,6 +8,8 @@ import (
 
 	"github.com/weaveworks/common/backoff"
 
+	ndmv1alpha1 "github.com/openebs/node-disk-manager/pkg/apis/openebs.io/v1alpha1"
+	ndmClient "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
 	log "github.com/sirupsen/logrus"
 	apiappsv1beta1 "k8s.io/api/apps/v1beta1"
 	apibatchv1 "k8s.io/api/batch/v1"
@@ -41,6 +43,7 @@ type Client interface {
 	WalkPersistentVolumes(f func(PersistentVolume) error) error
 	WalkPersistentVolumeClaims(f func(PersistentVolumeClaim) error) error
 	WalkStorageClasses(f func(StorageClass) error) error
+	WalkDisks(f func(Disk) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -53,6 +56,7 @@ type Client interface {
 type client struct {
 	quit                       chan struct{}
 	client                     *kubernetes.Clientset
+	ndmclient                  *ndmClient.Clientset
 	podStore                   cache.Store
 	serviceStore               cache.Store
 	deploymentStore            cache.Store
@@ -65,6 +69,7 @@ type client struct {
 	persistentVolumeStore      cache.Store
 	persistentVolumeClaimStore cache.Store
 	storageClassStore          cache.Store
+	diskStore                  cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -133,9 +138,15 @@ func NewClient(config ClientConfig) (Client, error) {
 		return nil, err
 	}
 
+	nc, err := ndmClient.NewForConfig(restConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	result := &client{
-		quit:   make(chan struct{}),
-		client: c,
+		quit:      make(chan struct{}),
+		client:    c,
+		ndmclient: nc,
 	}
 
 	result.podStore = NewEventStore(result.triggerPodWatches, cache.MetaNamespaceKeyFunc)
@@ -152,6 +163,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.persistentVolumeStore = result.setupStore("persistentvolumes")
 	result.persistentVolumeClaimStore = result.setupStore("persistentvolumeclaims")
 	result.storageClassStore = result.setupStore("storageclasses")
+	result.diskStore = result.setupStore("disks")
 
 	return result, nil
 }
@@ -204,6 +216,9 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.client.BatchV1().RESTClient(), &apibatchv1.Job{}, nil
 	case "statefulsets":
 		return c.client.AppsV1beta1().RESTClient(), &apiappsv1beta1.StatefulSet{}, nil
+	case "disks":
+		//ToDo: implement isResourceSupported to avoid any runtime panic
+		return c.ndmclient.OpenebsV1alpha1().RESTClient(), &ndmv1alpha1.Disk{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -302,6 +317,16 @@ func (c *client) WalkStorageClasses(f func(StorageClass) error) error {
 	for _, m := range c.storageClassStore.List() {
 		sc := m.(*storagev1.StorageClass)
 		if err := f(NewStorageClass(sc)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkDisks(f func(Disk) error) error {
+	for _, m := range c.diskStore.List() {
+		disk := m.(*ndmv1alpha1.Disk)
+		if err := f(NewDisk(disk)); err != nil {
 			return err
 		}
 	}

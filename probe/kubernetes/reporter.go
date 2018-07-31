@@ -23,10 +23,18 @@ const (
 	Replicas           = report.KubernetesReplicas
 	DesiredReplicas    = report.KubernetesDesiredReplicas
 	NodeType           = report.KubernetesNodeType
+	Model              = report.KubernetesModel
+	LogicalSectorSize  = report.KubernetesLogicalSectorSize
+	Storage            = report.KubernetesStorage
+	FirmwareRevision   = report.KubernetesFirmwareRevision
+	Serial             = report.KubernetesSerial
+	SpcVersion         = report.KubernetesSpcVersion
+	Vendor             = report.KubernetesVendor
 	Type               = report.KubernetesType
 	Ports              = report.KubernetesPorts
 	VolumeClaim        = report.KubernetesVolumeClaim
 	StorageClassName   = report.KubernetesStorageClassName
+	DiskName           = report.KubernetesDiskName
 	AccessModes        = report.KubernetesAccessModes
 	ReclaimPolicy      = report.KubernetesReclaimPolicy
 	Status             = report.KubernetesStatus
@@ -126,6 +134,18 @@ var (
 		NodeType:    {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		Name:        {ID: Name, Label: "Name", From: report.FromLatest, Priority: 2},
 		Provisioner: {ID: Provisioner, Label: "Provisioner", From: report.FromLatest, Priority: 3},
+	}
+
+	DiskMetadataTemplates = report.MetadataTemplates{
+		NodeType:          {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Name:              {ID: Name, Label: "Name", From: report.FromLatest, Priority: 2},
+		Model:             {ID: Model, Label: "Model", From: report.FromLatest, Priority: 3},
+		Serial:            {ID: Serial, Label: "Serial", From: report.FromLatest, Priority: 4},
+		Vendor:            {ID: Vendor, Label: "Vendor", From: report.FromLatest, Priority: 5},
+		SpcVersion:        {ID: SpcVersion, Label: "Spc Version", From: report.FromLatest, Priority: 6},
+		FirmwareRevision:  {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 7},
+		LogicalSectorSize: {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 8},
+		Storage:           {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 9},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -298,6 +318,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	diskTopology, _, err := r.diskTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -309,6 +333,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.PersistentVolume = result.PersistentVolume.Merge(persistentVolumeTopology)
 	result.PersistentVolumeClaim = result.PersistentVolumeClaim.Merge(persistentVolumeClaimTopology)
 	result.StorageClass = result.StorageClass.Merge(storageClassTopology)
+	result.Disk = result.Disk.Merge(diskTopology)
 	return result, nil
 }
 
@@ -455,6 +480,19 @@ func (r *Reporter) storageClassTopology() (report.Topology, []StorageClass, erro
 		return nil
 	})
 	return result, storageClasses, err
+}
+
+func (r *Reporter) diskTopology() (report.Topology, []Disk, error) {
+	disks := []Disk{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(DiskMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkDisks(func(p Disk) error {
+		result.AddNode(p.GetNode())
+		disks = append(disks, p)
+		return nil
+	})
+	return result, disks, err
 }
 
 type labelledChild interface {
