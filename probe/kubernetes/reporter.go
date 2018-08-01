@@ -30,6 +30,7 @@ const (
 	Serial             = report.KubernetesSerial
 	SpcVersion         = report.KubernetesSpcVersion
 	Vendor             = report.KubernetesVendor
+	Label              = report.KubernetesLabel
 	Type               = report.KubernetesType
 	Ports              = report.KubernetesPorts
 	VolumeClaim        = report.KubernetesVolumeClaim
