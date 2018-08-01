@@ -81,6 +81,7 @@ const (
 	KubernetesSerial               = "kubernetes_serial"
 	KubernetesSpcVersion           = "kubernetes_spc_version"
 	KubernetesVendor               = "kubernetes_vendor"
+	KubernetesLabel                = "kubernetes_label"
 	KubernetesDiskName             = "kubernetes_disk_name"
 	KubernetesAccessModes          = "kubernetes_access_modes"
 	KubernetesReclaimPolicy        = "kubernetes_reclaim_policy"

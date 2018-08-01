@@ -1,6 +1,9 @@
 package render
 
 import (
+	"strings"
+
+	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/report"
 )
 
@@ -64,11 +67,24 @@ var NdmRenderer = ndmRenderer{}
 //ndmRenderer is a Renderer to render disk nodes.
 type ndmRenderer struct{}
 
-//Render renders disk nodes.
+//Render will render the Disk and add Adjacency in host nodes i.e Host->Disk.
 func (v ndmRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
-	for diskID, diskNode := range rpt.Disk.Nodes {
-		nodes[diskID] = diskNode
+	for hostNodeID, h := range rpt.Host.Nodes {
+		hostName, _ := h.Latest.Lookup(report.HostNodeID)
+		if strings.Contains(hostName, ";") {
+			hostid := strings.Split(hostName, ";")
+			hostName = hostid[0]
+			for diskNode, d := range rpt.Disk.Nodes {
+				Label, _ := d.Latest.Lookup(kubernetes.Label)
+				if strings.ToLower(hostName) == Label {
+					h.Adjacency = h.Adjacency.Add(d.ID)
+					h.Children = h.Children.Add(d)
+				}
+				nodes[diskNode] = d
+			}
+			nodes[hostNodeID] = h
+		}
 	}
 	return Nodes{Nodes: nodes}
 }
