@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The OpenEBS Authors
+Copyright The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ limitations under the License.
 package versioned
 
 import (
-	glog "github.com/golang/glog"
-	openebsv1alpha1 "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
+	openebsv1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
@@ -74,7 +73,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 
 	cs.DiscoveryClient, err = discovery.NewDiscoveryClientForConfig(&configShallowCopy)
 	if err != nil {
-		glog.Errorf("failed to create the DiscoveryClient: %v", err)
 		return nil, err
 	}
 	return &cs, nil

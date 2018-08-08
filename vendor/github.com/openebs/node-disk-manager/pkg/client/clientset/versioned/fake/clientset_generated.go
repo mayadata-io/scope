@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The OpenEBS Authors
+Copyright The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
-	openebsv1alpha1 "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
-	fakeopenebsv1alpha1 "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1/fake"
+	clientset "github.com/weaveworks/scope/vendor/github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
+	openebsv1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
+	fakeopenebsv1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -41,11 +41,20 @@ func NewSimpleClientset(objects ...runtime.Object) *Clientset {
 		}
 	}
 
-	fakePtr := testing.Fake{}
-	fakePtr.AddReactor("*", "*", testing.ObjectReaction(o))
-	fakePtr.AddWatchReactor("*", testing.DefaultWatchReactor(watch.NewFake(), nil))
+	cs := &Clientset{}
+	cs.discovery = &fakediscovery.FakeDiscovery{Fake: &cs.Fake}
+	cs.AddReactor("*", "*", testing.ObjectReaction(o))
+	cs.AddWatchReactor("*", func(action testing.Action) (handled bool, ret watch.Interface, err error) {
+		gvr := action.GetResource()
+		ns := action.GetNamespace()
+		watch, err := o.Watch(gvr, ns)
+		if err != nil {
+			return false, nil, err
+		}
+		return true, watch, nil
+	})
 
-	return &Clientset{fakePtr, &fakediscovery.FakeDiscovery{Fake: &fakePtr}}
+	return cs
 }
 
 // Clientset implements clientset.Interface. Meant to be embedded into a
