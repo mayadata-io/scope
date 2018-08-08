@@ -19,9 +19,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
-	openebsv1alpha1 "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
-	fakeopenebsv1alpha1 "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1/fake"
+	clientset "github.com/openebs/maya/pkg/client/clientset/versioned"
+	openebsv1alpha1 "github.com/openebs/maya/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
+	fakeopenebsv1alpha1 "github.com/openebs/maya/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

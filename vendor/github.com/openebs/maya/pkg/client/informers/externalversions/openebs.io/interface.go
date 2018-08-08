@@ -19,8 +19,8 @@ limitations under the License.
 package openebs
 
 import (
-	internalinterfaces "github.com/openebs/node-disk-manager/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/openebs/node-disk-manager/pkg/client/informers/externalversions/openebs.io/v1alpha1"
+	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io/v1alpha1"
 )
 
 // Interface provides access to each of this group's versions.

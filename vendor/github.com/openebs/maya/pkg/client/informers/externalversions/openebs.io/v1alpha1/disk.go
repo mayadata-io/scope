@@ -21,10 +21,10 @@ package v1alpha1
 import (
 	time "time"
 
-	openebs_io_v1alpha1 "github.com/openebs/node-disk-manager/pkg/apis/openebs.io/v1alpha1"
-	versioned "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
-	internalinterfaces "github.com/openebs/node-disk-manager/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/openebs/node-disk-manager/pkg/client/listers/openebs.io/v1alpha1"
+	openebs_io_v1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	versioned "github.com/openebs/maya/pkg/client/clientset/versioned"
+	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/openebs/maya/pkg/client/listers/openebs.io/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"

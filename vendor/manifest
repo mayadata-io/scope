@@ -1667,6 +1667,24 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/openebs/maya/pkg/apis",
+			"repository": "https://github.com/openebs/maya",
+			"vcs": "git",
+			"revision": "86185a65b7dd9b2f7f76eec65d04f9fa0af81a20",
+			"branch": "master",
+			"path": "/pkg/apis",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/openebs/maya/pkg/client",
+			"repository": "https://github.com/openebs/maya",
+			"vcs": "git",
+			"revision": "86185a65b7dd9b2f7f76eec65d04f9fa0af81a20",
+			"branch": "master",
+			"path": "/pkg/client",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/openebs/node-disk-manager/hack/update-codegen.sh",
 			"repository": "https://github.com/openebs/node-disk-manager",
 			"vcs": "git",

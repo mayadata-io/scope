@@ -19,15 +19,21 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/openebs/node-disk-manager/pkg/apis/openebs.io/v1alpha1"
-	"github.com/openebs/node-disk-manager/pkg/client/clientset/versioned/scheme"
+	v1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	"github.com/openebs/maya/pkg/client/clientset/versioned/scheme"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )
 
 type OpenebsV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	CASTemplatesGetter
+	CStorPoolsGetter
+	CStorVolumesGetter
+	CStorVolumeReplicasGetter
 	DisksGetter
+	StoragePoolsGetter
+	StoragePoolClaimsGetter
 }
 
 // OpenebsV1alpha1Client is used to interact with features provided by the openebs.io group.
@@ -35,8 +41,32 @@ type OpenebsV1alpha1Client struct {
 	restClient rest.Interface
 }
 
+func (c *OpenebsV1alpha1Client) CASTemplates() CASTemplateInterface {
+	return newCASTemplates(c)
+}
+
+func (c *OpenebsV1alpha1Client) CStorPools() CStorPoolInterface {
+	return newCStorPools(c)
+}
+
+func (c *OpenebsV1alpha1Client) CStorVolumes(namespace string) CStorVolumeInterface {
+	return newCStorVolumes(c, namespace)
+}
+
+func (c *OpenebsV1alpha1Client) CStorVolumeReplicas(namespace string) CStorVolumeReplicaInterface {
+	return newCStorVolumeReplicas(c, namespace)
+}
+
 func (c *OpenebsV1alpha1Client) Disks() DiskInterface {
 	return newDisks(c)
+}
+
+func (c *OpenebsV1alpha1Client) StoragePools() StoragePoolInterface {
+	return newStoragePools(c)
+}
+
+func (c *OpenebsV1alpha1Client) StoragePoolClaims() StoragePoolClaimInterface {
+	return newStoragePoolClaims(c)
 }
 
 // NewForConfig creates a new OpenebsV1alpha1Client for the given config.
