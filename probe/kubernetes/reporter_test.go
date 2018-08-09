@@ -178,6 +178,9 @@ func (c *mockClient) GetLogs(namespaceID, podName string, _ []string) (io.ReadCl
 func (c *mockClient) DeletePod(namespaceID, podID string) error {
 	return nil
 }
+func (c *mockClient) DeletePersistentVolumeClaim(namespaceID, persistentvolumeclaimID string) error {
+	return nil
+}
 func (c *mockClient) ScaleUp(resource, namespaceID, id string) error {
 	return nil
 }
