@@ -44,51 +44,52 @@ const (
 	DockerContainerRestartCount  = "docker_container_restart_count"
 	DockerContainerNetworkMode   = "docker_container_network_mode"
 	// probe/kubernetes
-	KubernetesName                 = "kubernetes_name"
-	KubernetesNamespace            = "kubernetes_namespace"
-	KubernetesCreated              = "kubernetes_created"
-	KubernetesIP                   = "kubernetes_ip"
-	KubernetesObservedGeneration   = "kubernetes_observed_generation"
-	KubernetesReplicas             = "kubernetes_replicas"
-	KubernetesDesiredReplicas      = "kubernetes_desired_replicas"
-	KubernetesNodeType             = "kubernetes_node_type"
-	KubernetesGetLogs              = "kubernetes_get_logs"
-	KubernetesDeletePod            = "kubernetes_delete_pod"
-	KubernetesScaleUp              = "kubernetes_scale_up"
-	KubernetesScaleDown            = "kubernetes_scale_down"
-	KubernetesUpdatedReplicas      = "kubernetes_updated_replicas"
-	KubernetesAvailableReplicas    = "kubernetes_available_replicas"
-	KubernetesUnavailableReplicas  = "kubernetes_unavailable_replicas"
-	KubernetesStrategy             = "kubernetes_strategy"
-	KubernetesFullyLabeledReplicas = "kubernetes_fully_labeled_replicas"
-	KubernetesState                = "kubernetes_state"
-	KubernetesIsInHostNetwork      = "kubernetes_is_in_host_network"
-	KubernetesRestartCount         = "kubernetes_restart_count"
-	KubernetesMisscheduledReplicas = "kubernetes_misscheduled_replicas"
-	KubernetesPublicIP             = "kubernetes_public_ip"
-	KubernetesSchedule             = "kubernetes_schedule"
-	KubernetesSuspended            = "kubernetes_suspended"
-	KubernetesLastScheduled        = "kubernetes_last_scheduled"
-	KubernetesActiveJobs           = "kubernetes_active_jobs"
-	KubernetesType                 = "kubernetes_type"
-	KubernetesPorts                = "kubernetes_ports"
-	KubernetesVolumeClaim          = "kubernetes_volume_claim"
-	KubernetesStorageClassName     = "kubernetes_storage_class_name"
-	KubernetesModel                = "kubernetes_model"
-	KubernetesLogicalSectorSize    = "kubernetes_logical_sector_size"
-	KubernetesStorage              = "kubernetes_storage"
-	KubernetesFirmwareRevision     = "kubernetes_firmware_revision"
-	KubernetesSerial               = "kubernetes_serial"
-	KubernetesSpcVersion           = "kubernetes_spc_version"
-	KubernetesVendor               = "kubernetes_vendor"
-	KubernetesLabel                = "kubernetes_label"
-	KubernetesDiskName             = "kubernetes_disk_name"
-	KubernetesAccessModes          = "kubernetes_access_modes"
-	KubernetesReclaimPolicy        = "kubernetes_reclaim_policy"
-	KubernetesStatus               = "kubernetes_status"
-	KubernetesMessage              = "kubernetes_message"
-	KubernetesVolumeName           = "kubernetes_volume_name"
-	KubernetesProvisioner          = "kubernetes_provisioner"
+	KubernetesName                        = "kubernetes_name"
+	KubernetesNamespace                   = "kubernetes_namespace"
+	KubernetesCreated                     = "kubernetes_created"
+	KubernetesIP                          = "kubernetes_ip"
+	KubernetesObservedGeneration          = "kubernetes_observed_generation"
+	KubernetesReplicas                    = "kubernetes_replicas"
+	KubernetesDesiredReplicas             = "kubernetes_desired_replicas"
+	KubernetesNodeType                    = "kubernetes_node_type"
+	KubernetesGetLogs                     = "kubernetes_get_logs"
+	KubernetesDeletePod                   = "kubernetes_delete_pod"
+	KubernetesDeletePersistentVolumeClaim = "kubernetes_delete_persistent_volume_claim"
+	KubernetesScaleUp                     = "kubernetes_scale_up"
+	KubernetesScaleDown                   = "kubernetes_scale_down"
+	KubernetesUpdatedReplicas             = "kubernetes_updated_replicas"
+	KubernetesAvailableReplicas           = "kubernetes_available_replicas"
+	KubernetesUnavailableReplicas         = "kubernetes_unavailable_replicas"
+	KubernetesStrategy                    = "kubernetes_strategy"
+	KubernetesFullyLabeledReplicas        = "kubernetes_fully_labeled_replicas"
+	KubernetesState                       = "kubernetes_state"
+	KubernetesIsInHostNetwork             = "kubernetes_is_in_host_network"
+	KubernetesRestartCount                = "kubernetes_restart_count"
+	KubernetesMisscheduledReplicas        = "kubernetes_misscheduled_replicas"
+	KubernetesPublicIP                    = "kubernetes_public_ip"
+	KubernetesSchedule                    = "kubernetes_schedule"
+	KubernetesSuspended                   = "kubernetes_suspended"
+	KubernetesLastScheduled               = "kubernetes_last_scheduled"
+	KubernetesActiveJobs                  = "kubernetes_active_jobs"
+	KubernetesType                        = "kubernetes_type"
+	KubernetesPorts                       = "kubernetes_ports"
+	KubernetesVolumeClaim                 = "kubernetes_volume_claim"
+	KubernetesStorageClassName            = "kubernetes_storage_class_name"
+	KubernetesModel                       = "kubernetes_model"
+	KubernetesLogicalSectorSize           = "kubernetes_logical_sector_size"
+	KubernetesStorage                     = "kubernetes_storage"
+	KubernetesFirmwareRevision            = "kubernetes_firmware_revision"
+	KubernetesSerial                      = "kubernetes_serial"
+	KubernetesSpcVersion                  = "kubernetes_spc_version"
+	KubernetesVendor                      = "kubernetes_vendor"
+	KubernetesLabel                       = "kubernetes_label"
+	KubernetesDiskName                    = "kubernetes_disk_name"
+	KubernetesAccessModes                 = "kubernetes_access_modes"
+	KubernetesReclaimPolicy               = "kubernetes_reclaim_policy"
+	KubernetesStatus                      = "kubernetes_status"
+	KubernetesMessage                     = "kubernetes_message"
+	KubernetesVolumeName                  = "kubernetes_volume_name"
+	KubernetesProvisioner                 = "kubernetes_provisioner"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
@@ -171,34 +172,35 @@ var commonKeys = map[string]string{
 	DockerContainerRestartCount:  DockerContainerRestartCount,
 	DockerContainerNetworkMode:   DockerContainerNetworkMode,
 
-	KubernetesName:                 KubernetesName,
-	KubernetesNamespace:            KubernetesNamespace,
-	KubernetesCreated:              KubernetesCreated,
-	KubernetesIP:                   KubernetesIP,
-	KubernetesObservedGeneration:   KubernetesObservedGeneration,
-	KubernetesReplicas:             KubernetesReplicas,
-	KubernetesDesiredReplicas:      KubernetesDesiredReplicas,
-	KubernetesNodeType:             KubernetesNodeType,
-	KubernetesGetLogs:              KubernetesGetLogs,
-	KubernetesDeletePod:            KubernetesDeletePod,
-	KubernetesScaleUp:              KubernetesScaleUp,
-	KubernetesScaleDown:            KubernetesScaleDown,
-	KubernetesUpdatedReplicas:      KubernetesUpdatedReplicas,
-	KubernetesAvailableReplicas:    KubernetesAvailableReplicas,
-	KubernetesUnavailableReplicas:  KubernetesUnavailableReplicas,
-	KubernetesStrategy:             KubernetesStrategy,
-	KubernetesFullyLabeledReplicas: KubernetesFullyLabeledReplicas,
-	KubernetesState:                KubernetesState,
-	KubernetesIsInHostNetwork:      KubernetesIsInHostNetwork,
-	KubernetesRestartCount:         KubernetesRestartCount,
-	KubernetesMisscheduledReplicas: KubernetesMisscheduledReplicas,
-	KubernetesPublicIP:             KubernetesPublicIP,
-	KubernetesSchedule:             KubernetesSchedule,
-	KubernetesSuspended:            KubernetesSuspended,
-	KubernetesLastScheduled:        KubernetesLastScheduled,
-	KubernetesActiveJobs:           KubernetesActiveJobs,
-	KubernetesType:                 KubernetesType,
-	KubernetesPorts:                KubernetesPorts,
+	KubernetesName:                        KubernetesName,
+	KubernetesNamespace:                   KubernetesNamespace,
+	KubernetesCreated:                     KubernetesCreated,
+	KubernetesIP:                          KubernetesIP,
+	KubernetesObservedGeneration:          KubernetesObservedGeneration,
+	KubernetesReplicas:                    KubernetesReplicas,
+	KubernetesDesiredReplicas:             KubernetesDesiredReplicas,
+	KubernetesNodeType:                    KubernetesNodeType,
+	KubernetesGetLogs:                     KubernetesGetLogs,
+	KubernetesDeletePod:                   KubernetesDeletePod,
+	KubernetesDeletePersistentVolumeClaim: KubernetesDeletePersistentVolumeClaim,
+	KubernetesScaleUp:                     KubernetesScaleUp,
+	KubernetesScaleDown:                   KubernetesScaleDown,
+	KubernetesUpdatedReplicas:             KubernetesUpdatedReplicas,
+	KubernetesAvailableReplicas:           KubernetesAvailableReplicas,
+	KubernetesUnavailableReplicas:         KubernetesUnavailableReplicas,
+	KubernetesStrategy:                    KubernetesStrategy,
+	KubernetesFullyLabeledReplicas:        KubernetesFullyLabeledReplicas,
+	KubernetesState:                       KubernetesState,
+	KubernetesIsInHostNetwork:             KubernetesIsInHostNetwork,
+	KubernetesRestartCount:                KubernetesRestartCount,
+	KubernetesMisscheduledReplicas:        KubernetesMisscheduledReplicas,
+	KubernetesPublicIP:                    KubernetesPublicIP,
+	KubernetesSchedule:                    KubernetesSchedule,
+	KubernetesSuspended:                   KubernetesSuspended,
+	KubernetesLastScheduled:               KubernetesLastScheduled,
+	KubernetesActiveJobs:                  KubernetesActiveJobs,
+	KubernetesType:                        KubernetesType,
+	KubernetesPorts:                       KubernetesPorts,
 
 	ECSCluster:             ECSCluster,
 	ECSCreatedAt:           ECSCreatedAt,
