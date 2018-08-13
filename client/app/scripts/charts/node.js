@@ -27,6 +27,8 @@ import {
   NodeShapeSheet,
   NodeShapePool,
   NodeShapeDottedPool,
+  NodeShapeVolumeSnapshot,
+  NodeShapeDottedVolumeSnapshot
 } from './node-shapes';
 
 
@@ -44,7 +46,9 @@ const nodeShapes = {
   dottedcylinder: NodeShapeDottedCylinder,
   storagesheet: NodeShapeSheet,
   pool: NodeShapePool,
-  dottedpool: NodeShapeDottedPool
+  dottedpool: NodeShapeDottedPool,
+  volumesnapshot: NodeShapeVolumeSnapshot,
+  dottedvolumesnapshot: NodeShapeDottedVolumeSnapshot
 };
 
 function stackedShape(Shape) {

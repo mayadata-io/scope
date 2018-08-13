@@ -2,7 +2,7 @@ import React from 'react';
 import range from 'lodash/range';
 import { line, curveCardinalClosed } from 'd3-shape';
 
-import { UNIT_CLOUD_PATH, UNIT_CYLINDER_PATH, SHEET, POOL} from '../constants/styles';
+import { UNIT_CLOUD_PATH, UNIT_CYLINDER_PATH, SHEET, POOL, UNIT_SNAPSHOT_PATH} from '../constants/styles';
 
 
 export const pathElement = React.createFactory('path');
@@ -34,3 +34,5 @@ export const dottedCylinderShapeProps = { d: UNIT_CYLINDER_PATH };
 export const sheetShapeProps = { d: SHEET };
 export const poolShapeProps = { d: POOL };
 export const dottedPoolShapeProps = { d: POOL };
+export const volumeSnapshotProps = {d: UNIT_SNAPSHOT_PATH};
+export const dottedVolumeSnapshotProps = {d: UNIT_SNAPSHOT_PATH};

@@ -193,6 +193,17 @@ var (
 
 	// ParseStoragePoolClaimNodeID parses a Stoage Pool Claim node ID
 	ParseStoragePoolClaimNodeID = parseSingleComponentID("storage_pool_claim")
+	// MakeVolumeSnapshotNodeID produces a volume snapshot node ID from its composite parts.
+	MakeVolumeSnapshotNodeID = makeSingleComponentID("volume_snapshot")
+
+	// ParseVolumeSnapshotNodeID parses a volume snapshot node ID
+	ParseVolumeSnapshotNodeID = parseSingleComponentID("volume_snapshot")
+
+	// MakeVolumeSnapshotDataNodeID produces a volume snapshot data node ID from its composite parts.
+	MakeVolumeSnapshotDataNodeID = makeSingleComponentID("volume_snapshot_data")
+
+	// ParseVolumeSnapshotDataNodeID parses a volume snapshot data node ID
+	ParseVolumeSnapshotDataNodeID = parseSingleComponentID("volume_snapshot_data")
 )
 
 // makeSingleComponentID makes a single-component node id encoder
