@@ -11,10 +11,11 @@ import (
 
 // Control IDs used by the kubernetes integration.
 const (
-	GetLogs   = report.KubernetesGetLogs
-	DeletePod = report.KubernetesDeletePod
-	ScaleUp   = report.KubernetesScaleUp
-	ScaleDown = report.KubernetesScaleDown
+	GetLogs                     = report.KubernetesGetLogs
+	DeletePod                   = report.KubernetesDeletePod
+	DeletePersistentVolumeClaim = report.KubernetesDeletePersistentVolumeClaim
+	ScaleUp                     = report.KubernetesScaleUp
+	ScaleDown                   = report.KubernetesScaleDown
 )
 
 // GetLogs is the control to get the logs for a kubernetes pod
@@ -52,6 +53,16 @@ func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []st
 	}
 }
 
+// deletePersistentVolumeClaim is the control to delete kubernetes persistentVolumeClaim
+func (r *Reporter) deletePersistentVolumeClaim(req xfer.Request, namespaceID, persistentVolumeClaimID string) xfer.Response {
+	if err := r.client.DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID); err != nil {
+		return xfer.ResponseError(err)
+	}
+	return xfer.Response{
+		RemovedNode: req.NodeID,
+	}
+}
+
 // CapturePod is exported for testing
 func (r *Reporter) CapturePod(f func(xfer.Request, string, string, []string) xfer.Response) func(xfer.Request) xfer.Response {
 	return func(req xfer.Request) xfer.Response {
@@ -71,6 +82,28 @@ func (r *Reporter) CapturePod(f func(xfer.Request, string, string, []string) xfe
 			return xfer.ResponseErrorf("Pod not found: %s", uid)
 		}
 		return f(req, pod.Namespace(), pod.Name(), pod.ContainerNames())
+	}
+}
+
+// CapturePersistentVolumeClaim is exported for testing
+func (r *Reporter) CapturePersistentVolumeClaim(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParsePersistentVolumeClaimNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find persistentVolumeClaim by UID
+		var persistentVolumeClaim PersistentVolumeClaim
+		r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
+			if p.UID() == uid {
+				persistentVolumeClaim = p
+			}
+			return nil
+		})
+		if persistentVolumeClaim == nil {
+			return xfer.ResponseErrorf("PersistentVolumeClaim not found: %s", uid)
+		}
+		return f(req, persistentVolumeClaim.Namespace(), persistentVolumeClaim.Name())
 	}
 }
 
@@ -107,10 +140,11 @@ func (r *Reporter) ScaleDown(req xfer.Request, namespace, id string) xfer.Respon
 
 func (r *Reporter) registerControls() {
 	controls := map[string]xfer.ControlHandlerFunc{
-		GetLogs:   r.CapturePod(r.GetLogs),
-		DeletePod: r.CapturePod(r.deletePod),
-		ScaleUp:   r.CaptureDeployment(r.ScaleUp),
-		ScaleDown: r.CaptureDeployment(r.ScaleDown),
+		GetLogs:                     r.CapturePod(r.GetLogs),
+		DeletePod:                   r.CapturePod(r.deletePod),
+		DeletePersistentVolumeClaim: r.CapturePersistentVolumeClaim(r.deletePersistentVolumeClaim),
+		ScaleUp:                     r.CaptureDeployment(r.ScaleUp),
+		ScaleDown:                   r.CaptureDeployment(r.ScaleDown),
 	}
 	r.handlerRegistry.Batch(nil, controls)
 }
