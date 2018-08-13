@@ -25,6 +25,7 @@ import (
 	apiextensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	storagev1 "k8s.io/api/storage/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -57,10 +58,12 @@ type Client interface {
 
 	WatchPods(f func(Event, Pod))
 
-	CreateSnapshot(namespaceID, persistentVolumeClaimID string) error
+	CloneVolumeSnapshot(namespaceID, volumeSnapshotID string) error
+	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID string) error
 	GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
 	DeletePod(namespaceID, podID string) error
 	DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID string) error
+	DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error
 	ScaleUp(resource, namespaceID, id string) error
 	ScaleDown(resource, namespaceID, id string) error
 }
@@ -495,7 +498,52 @@ func (c *client) WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 	return nil
 }
 
-func (c *client) CreateSnapshot(namespaceID, persistentVolumeClaimID string) error {
+func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID string) error {
+	UID := strings.Split(uuid.New(), "-")
+
+	scName := "snapshot-promoter"
+	claimSize := "5G"
+
+	volumeSnapshot, _ := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Get(volumeSnapshotID, metav1.GetOptions{})
+	if volumeSnapshot.Spec.PersistentVolumeClaimName != "" {
+		persistentVolumeClaim, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Get(volumeSnapshot.Spec.PersistentVolumeClaimName, metav1.GetOptions{})
+		if err == nil {
+			storage := persistentVolumeClaim.Spec.Resources.Requests[apiv1.ResourceStorage]
+			if string(storage.String()) != "" {
+				claimSize = string(storage.String())
+			}
+		}
+	}
+
+	persistentVolumeClaim := &apiv1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      volumeSnapshotID + "-volume-claim" + "-" + UID[1],
+			Namespace: namespaceID,
+			Annotations: map[string]string{
+				"snapshot.alpha.kubernetes.io/snapshot": volumeSnapshotID,
+			},
+		},
+		Spec: apiv1.PersistentVolumeClaimSpec{
+			StorageClassName: &scName,
+			AccessModes: []apiv1.PersistentVolumeAccessMode{
+				apiv1.ReadWriteOnce,
+			},
+			Resources: apiv1.ResourceRequirements{
+				Requests: apiv1.ResourceList{
+					apiv1.ResourceName(apiv1.ResourceStorage): resource.MustParse(claimSize),
+				},
+			},
+		},
+	}
+
+	_, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(persistentVolumeClaim)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID string) error {
 	UID := strings.Split(uuid.New(), "-")
 
 	volumeSnapshot := &snapshotv1.VolumeSnapshot{
@@ -545,6 +593,10 @@ func (c *client) DeletePod(namespaceID, podID string) error {
 
 func (c *client) DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID string) error {
 	return c.client.CoreV1().PersistentVolumeClaims(namespaceID).Delete(persistentVolumeClaimID, &metav1.DeleteOptions{})
+}
+
+func (c *client) DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error {
+	return c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Delete(volumeSnapshotID, &metav1.DeleteOptions{})
 }
 
 func (c *client) ScaleUp(resource, namespaceID, id string) error {

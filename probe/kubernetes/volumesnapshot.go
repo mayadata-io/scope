@@ -35,5 +35,5 @@ func (p *volumeSnapshot) GetNode(probeID string) report.Node {
 		VolumeClaim:           p.Spec.PersistentVolumeClaimName,
 		SnapshotData:          p.Spec.SnapshotDataName,
 		VolumeName:            p.GetLabels()[SnapshotPVName],
-	})
+	}).WithLatestActiveControls(CloneVolumeSnapshot, DeleteVolumeSnapshot)
 }

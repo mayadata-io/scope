@@ -11,16 +11,26 @@ import (
 
 // Control IDs used by the kubernetes integration.
 const (
-	CreateSnapshot              = report.KubernetesCreateSnapshot
+	CloneVolumeSnapshot         = report.KubernetesCloneVolumeSnapshot
+	CreateVolumeSnapshot        = report.KubernetesCreateVolumeSnapshot
 	GetLogs                     = report.KubernetesGetLogs
 	DeletePod                   = report.KubernetesDeletePod
 	DeletePersistentVolumeClaim = report.KubernetesDeletePersistentVolumeClaim
+	DeleteVolumeSnapshot        = report.KubernetesDeleteVolumeSnapshot
 	ScaleUp                     = report.KubernetesScaleUp
 	ScaleDown                   = report.KubernetesScaleDown
 )
 
-func (r *Reporter) createSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID string) xfer.Response {
-	err := r.client.CreateSnapshot(namespaceID, persistentVolumeClaimID)
+func (r *Reporter) cloneVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID string) xfer.Response {
+	err := r.client.CloneVolumeSnapshot(namespaceID, volumeSnapshotID)
+	if err != nil {
+		return xfer.ResponseError(err)
+	}
+	return xfer.Response{}
+}
+
+func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID string) xfer.Response {
+	err := r.client.CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID)
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -65,6 +75,15 @@ func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []st
 // deletePersistentVolumeClaim is the control to delete kubernetes persistentVolumeClaim
 func (r *Reporter) deletePersistentVolumeClaim(req xfer.Request, namespaceID, persistentVolumeClaimID string) xfer.Response {
 	if err := r.client.DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID); err != nil {
+		return xfer.ResponseError(err)
+	}
+	return xfer.Response{
+		RemovedNode: req.NodeID,
+	}
+}
+
+func (r *Reporter) deleteVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID string) xfer.Response {
+	if err := r.client.DeleteVolumeSnapshot(namespaceID, volumeSnapshotID); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -137,6 +156,28 @@ func (r *Reporter) CaptureDeployment(f func(xfer.Request, string, string) xfer.R
 	}
 }
 
+// CaptureVolumeSnapshot is exported for testing
+func (r *Reporter) CaptureVolumeSnapshot(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseVolumeSnapshotNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find pod by UID
+		var volumeSnapshot VolumeSnapshot
+		r.client.WalkVolumeSnapshots(func(p VolumeSnapshot) error {
+			if p.UID() == uid {
+				volumeSnapshot = p
+			}
+			return nil
+		})
+		if volumeSnapshot == nil {
+			return xfer.ResponseErrorf("VolumeSnapshot not found: %s", uid)
+		}
+		return f(req, volumeSnapshot.Namespace(), volumeSnapshot.Name())
+	}
+}
+
 // ScaleUp is the control to scale up a deployment
 func (r *Reporter) ScaleUp(req xfer.Request, namespace, id string) xfer.Response {
 	return xfer.ResponseError(r.client.ScaleUp(report.Deployment, namespace, id))
@@ -149,10 +190,12 @@ func (r *Reporter) ScaleDown(req xfer.Request, namespace, id string) xfer.Respon
 
 func (r *Reporter) registerControls() {
 	controls := map[string]xfer.ControlHandlerFunc{
-		CreateSnapshot:              r.CapturePersistentVolumeClaim(r.createSnapshot),
+		CloneVolumeSnapshot:         r.CaptureVolumeSnapshot(r.cloneVolumeSnapshot),
+		CreateVolumeSnapshot:        r.CapturePersistentVolumeClaim(r.createVolumeSnapshot),
 		GetLogs:                     r.CapturePod(r.GetLogs),
 		DeletePod:                   r.CapturePod(r.deletePod),
 		DeletePersistentVolumeClaim: r.CapturePersistentVolumeClaim(r.deletePersistentVolumeClaim),
+		DeleteVolumeSnapshot:        r.CaptureVolumeSnapshot(r.deleteVolumeSnapshot),
 		ScaleUp:                     r.CaptureDeployment(r.ScaleUp),
 		ScaleDown:                   r.CaptureDeployment(r.ScaleDown),
 	}
@@ -161,9 +204,12 @@ func (r *Reporter) registerControls() {
 
 func (r *Reporter) deregisterControls() {
 	controls := []string{
-		CreateSnapshot,
+		CloneVolumeSnapshot,
+		CreateVolumeSnapshot,
 		GetLogs,
 		DeletePod,
+		DeletePersistentVolumeClaim,
+		DeleteVolumeSnapshot,
 		ScaleUp,
 		ScaleDown,
 	}

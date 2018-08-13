@@ -517,7 +517,7 @@ func (r *Reporter) persistentVolumeClaimTopology() (report.Topology, []Persisten
 		WithMetadataTemplates(PersistentVolumeClaimMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	result.Controls.AddControl(report.Control{
-		ID:    CreateSnapshot,
+		ID:    CreateVolumeSnapshot,
 		Human: "Create snapshot",
 		Icon:  "fa-camera",
 		Rank:  0,
@@ -593,6 +593,18 @@ func (r *Reporter) volumeSnapshotTopology() (report.Topology, []VolumeSnapshot, 
 	result := report.MakeTopology().
 		WithMetadataTemplates(VolumeSnapshotMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(report.Control{
+		ID:    CloneVolumeSnapshot,
+		Human: "Clone snapshot",
+		Icon:  "fa-clone",
+		Rank:  0,
+	})
+	result.Controls.AddControl(report.Control{
+		ID:    DeleteVolumeSnapshot,
+		Human: "Delete",
+		Icon:  "fa-trash-o",
+		Rank:  1,
+	})
 	err := r.client.WalkVolumeSnapshots(func(p VolumeSnapshot) error {
 		result.AddNode(p.GetNode(r.probeID))
 		volumeSnapshots = append(volumeSnapshots, p)
