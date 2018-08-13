@@ -31,13 +31,12 @@ func (v volumesRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for id, n := range rpt.PersistentVolumeClaim.Nodes {
 		volume, _ := n.Latest.Lookup(kubernetes.VolumeName)
-		for pvNodeID, p := range rpt.PersistentVolume.Nodes {
+		for _, p := range rpt.PersistentVolume.Nodes {
 			volumeName, _ := p.Latest.Lookup(kubernetes.Name)
 			if volume == volumeName {
 				n.Adjacency = n.Adjacency.Add(p.ID)
 				n.Children = n.Children.Add(p)
 			}
-			nodes[pvNodeID] = p
 		}
 		nodes[id] = n
 	}
@@ -109,13 +108,13 @@ func (v pvcToStorageClassRenderer) Render(rpt report.Report) Nodes {
 }
 
 //PVToControllerRenderer is a Renderer which produces a renderable kubernetes PVC
-var PVToControllerRenderer = pvTocontrollerRenderer{}
+var PVToControllerRenderer = pvToControllerRenderer{}
 
 //pvTocontrollerRenderer is a Renderer to render PV & Controller.
-type pvTocontrollerRenderer struct{}
+type pvToControllerRenderer struct{}
 
 //Render renders the PV & Controller nodes with adjacency.
-func (v pvTocontrollerRenderer) Render(rpt report.Report) Nodes {
+func (v pvToControllerRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for pvNodeID, p := range rpt.PersistentVolume.Nodes {
 		volumeName, _ := p.Latest.Lookup(kubernetes.Name)
@@ -128,6 +127,13 @@ func (v pvTocontrollerRenderer) Render(rpt report.Report) Nodes {
 					p.Adjacency = p.Adjacency.Add(podNode.ID)
 					p.Children = p.Children.Add(podNode)
 				}
+			}
+		}
+		for _, volumeSnapshotNode := range rpt.VolumeSnapshot.Nodes {
+			snapshotPVName, _ := volumeSnapshotNode.Latest.Lookup(kubernetes.VolumeName)
+			if volumeName == snapshotPVName {
+				p.Adjacency = p.Adjacency.Add(volumeSnapshotNode.ID)
+				p.Children = p.Children.Add(volumeSnapshotNode)
 			}
 		}
 		nodes[pvNodeID] = p
