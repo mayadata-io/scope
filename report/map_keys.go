@@ -98,6 +98,7 @@ const (
 	KubernetesProvisioner                 = "kubernetes_provisioner"
 	KubernetesVolumeSnapshotName          = "kubernetes_volume_snapshot_name"
 	KubernetesSnapshotData                = "kuberneets_snapshot_data"
+	KubernetesCreateSnapshot              = "kubernetes_create_snapshot"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

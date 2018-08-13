@@ -11,12 +11,21 @@ import (
 
 // Control IDs used by the kubernetes integration.
 const (
+	CreateSnapshot              = report.KubernetesCreateSnapshot
 	GetLogs                     = report.KubernetesGetLogs
 	DeletePod                   = report.KubernetesDeletePod
 	DeletePersistentVolumeClaim = report.KubernetesDeletePersistentVolumeClaim
 	ScaleUp                     = report.KubernetesScaleUp
 	ScaleDown                   = report.KubernetesScaleDown
 )
+
+func (r *Reporter) createSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID string) xfer.Response {
+	err := r.client.CreateSnapshot(namespaceID, persistentVolumeClaimID)
+	if err != nil {
+		return xfer.ResponseError(err)
+	}
+	return xfer.Response{}
+}
 
 // GetLogs is the control to get the logs for a kubernetes pod
 func (r *Reporter) GetLogs(req xfer.Request, namespaceID, podID string, containerNames []string) xfer.Response {
@@ -140,6 +149,7 @@ func (r *Reporter) ScaleDown(req xfer.Request, namespace, id string) xfer.Respon
 
 func (r *Reporter) registerControls() {
 	controls := map[string]xfer.ControlHandlerFunc{
+		CreateSnapshot:              r.CapturePersistentVolumeClaim(r.createSnapshot),
 		GetLogs:                     r.CapturePod(r.GetLogs),
 		DeletePod:                   r.CapturePod(r.deletePod),
 		DeletePersistentVolumeClaim: r.CapturePersistentVolumeClaim(r.deletePersistentVolumeClaim),
@@ -151,6 +161,7 @@ func (r *Reporter) registerControls() {
 
 func (r *Reporter) deregisterControls() {
 	controls := []string{
+		CreateSnapshot,
 		GetLogs,
 		DeletePod,
 		ScaleUp,

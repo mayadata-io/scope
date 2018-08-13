@@ -517,10 +517,16 @@ func (r *Reporter) persistentVolumeClaimTopology() (report.Topology, []Persisten
 		WithMetadataTemplates(PersistentVolumeClaimMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	result.Controls.AddControl(report.Control{
+		ID:    CreateSnapshot,
+		Human: "Create snapshot",
+		Icon:  "fa-camera",
+		Rank:  0,
+	})
+	result.Controls.AddControl(report.Control{
 		ID:    DeletePersistentVolumeClaim,
 		Human: "Delete",
 		Icon:  "fa-trash-o",
-		Rank:  0,
+		Rank:  1,
 	})
 	err := r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
 		result.AddNode(p.GetNode(r.probeID))

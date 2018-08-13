@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	mayaclient "github.com/openebs/maya/pkg/client/clientset/versioned"
 	ndmv1alpha1 "github.com/openebs/node-disk-manager/pkg/apis/openebs.io/v1alpha1"
 	ndmclient "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
+	"github.com/pborman/uuid"
 	log "github.com/sirupsen/logrus"
 	apiappsv1beta1 "k8s.io/api/apps/v1beta1"
 	apibatchv1 "k8s.io/api/batch/v1"
@@ -55,6 +57,7 @@ type Client interface {
 
 	WatchPods(f func(Event, Pod))
 
+	CreateSnapshot(namespaceID, persistentVolumeClaimID string) error
 	GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
 	DeletePod(namespaceID, podID string) error
 	DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID string) error
@@ -488,6 +491,26 @@ func (c *client) WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 		if err := f(NewVolumeSnapshotData(volumeSnapshotData)); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (c *client) CreateSnapshot(namespaceID, persistentVolumeClaimID string) error {
+	UID := strings.Split(uuid.New(), "-")
+
+	volumeSnapshot := &snapshotv1.VolumeSnapshot{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1],
+			Namespace: namespaceID,
+		},
+		Spec: snapshotv1.VolumeSnapshotSpec{
+			PersistentVolumeClaimName: persistentVolumeClaimID,
+		},
+	}
+
+	_, err := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Create(volumeSnapshot)
+	if err != nil {
+		return err
 	}
 	return nil
 }
