@@ -6,7 +6,7 @@ import { enterEdge, leaveEdge } from '../actions/app-actions';
 import { encodeIdAttribute, decodeIdAttribute } from '../utils/dom-utils';
 
 function isStorageComponent(id) {
-  if (id === '<persistent_volume>' || id === '<storage_class>' || id === '<persistent_volume_claim>') {
+  if (id === '<persistent_volume>' || id === '<storage_class>' || id === '<persistent_volume_claim>' || id === '<storage_pool>' || id === '<disk>' || id === '<storage_pool_claim>') {
     return true;
   }
   return false;

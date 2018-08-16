@@ -132,7 +132,7 @@ func IsConnected(node report.Node) bool {
 func IsPodComponent(node report.Node) bool {
 	var ok bool
 	ok = true
-	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" {
+	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" || node.Topology == "storage_pool" || node.Topology == "storage_pool_claim" || node.Topology == "disk" {
 		ok = false
 	}
 	return ok

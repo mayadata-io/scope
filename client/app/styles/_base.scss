@@ -631,6 +631,12 @@ a {
     }
   }
 
+  .shape-dottedpool {
+    .border{
+      stroke-dasharray: 0.07;
+    }
+  }
+
   .stack .shape .border {
     stroke-width: $node-border-stroke-width * 0.8;
   }

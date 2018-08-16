@@ -84,6 +84,8 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.PersistentVolumeClaim: persistentVolumeClaimNodeSummary,
 	report.StorageClass:          storageClassNodeSummary,
 	report.Disk:                  diskNodeSummary,
+	report.StoragePool:           storagePoolNodeSummary,
+	report.StoragePoolClaim:      storagePoolClaimNodeSummary,
 }
 
 // For each report.Topology, map to a 'primary' API topology. This can then be used in a variety of places.
@@ -395,6 +397,16 @@ func storageClassNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSumm
 }
 
 func diskNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	return base
+}
+
+func storagePoolNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	return base
+}
+
+func storagePoolClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
 	return base
 }

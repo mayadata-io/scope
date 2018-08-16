@@ -21,7 +21,9 @@ import {
   cloudShapeProps,
   cylinderShapeProps,
   dottedCylinderShapeProps,
-  sheetShapeProps
+  sheetShapeProps,
+  poolShapeProps,
+  dottedPoolShapeProps
 } from '../utils/node-shape-utils';
 import { encodeIdAttribute } from '../utils/dom-utils';
 
@@ -89,3 +91,5 @@ export const NodeShapeCloud = props => NodeShape('cloud', pathElement, cloudShap
 export const NodeShapeCylinder = props => NodeShape('cylinder', pathElement, cylinderShapeProps, props);
 export const NodeShapeDottedCylinder = props => NodeShape('dottedcylinder', pathElement, dottedCylinderShapeProps, props);
 export const NodeShapeSheet = props => NodeShape('sheet', pathElement, sheetShapeProps, props);
+export const NodeShapePool = props => NodeShape('pool', pathElement, poolShapeProps, props);
+export const NodeShapeDottedPool = props => NodeShape('dottedpool', pathElement, dottedPoolShapeProps, props);

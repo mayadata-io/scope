@@ -32,6 +32,8 @@ const (
 	PersistentVolumeClaim = "persistent_volume_claim"
 	StorageClass          = "storage_class"
 	Disk                  = "disk"
+	StoragePool           = "storage_pool"
+	StoragePoolClaim      = "storage_pool_claim"
 
 	// Shapes used for different nodes
 	Circle         = "circle"
@@ -45,6 +47,8 @@ const (
 	Cylinder       = "cylinder"
 	DottedCylinder = "dottedcylinder"
 	StorageSheet   = "storagesheet"
+	Pool           = "pool"
+	DottedPool     = "dottedpool"
 
 	// Used when counting the number of containers
 	ContainersKey = "containers"
@@ -73,6 +77,8 @@ var topologyNames = []string{
 	PersistentVolumeClaim,
 	StorageClass,
 	Disk,
+	StoragePool,
+	StoragePoolClaim,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -176,6 +182,14 @@ type Report struct {
 	// Disk represent all NDM Disks on hosts running probes.
 	// Metadata is limited for now, more to come later.
 	Disk Topology
+
+	// StoragePool represent all the CRD kubernetes Storage Pools on hosts running probes.
+	// Metadata is limited for now, more to come later.
+	StoragePool Topology
+
+	// StoragePoolClaim represent all the CRD kubernetes Storage Pool Claims on hosts running probes.
+	// Metadata is limited for now, more to come later.
+	StoragePoolClaim Topology
 
 	DNS DNSRecords
 
@@ -285,6 +299,14 @@ func MakeReport() Report {
 		Disk: MakeTopology().
 			WithShape(Square).
 			WithLabel("disk", "disks"),
+
+		StoragePool: MakeTopology().
+			WithShape(Pool).
+			WithLabel("storage pool", "storage pools"),
+
+		StoragePoolClaim: MakeTopology().
+			WithShape(DottedPool).
+			WithLabel("storage pool claim", "storage pool claims"),
 
 		DNS: DNSRecords{},
 
@@ -400,6 +422,10 @@ func (r *Report) topology(name string) *Topology {
 		return &r.StorageClass
 	case Disk:
 		return &r.Disk
+	case StoragePool:
+		return &r.StoragePool
+	case StoragePoolClaim:
+		return &r.StoragePoolClaim
 	}
 	return nil
 }
