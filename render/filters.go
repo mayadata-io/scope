@@ -14,6 +14,17 @@ const (
 	swarmNamespaceLabel = "com.docker.stack.namespace"
 )
 
+// Creting a map of kubernetes storage and kubernetes CRD storage resources for filtering it out.
+// It's used in show storage and hide storage filter.
+var storageComponents = map[string]string{
+	"persistent_volume":       "persistent_volume",
+	"persistent_volume_claim": "persistent_volume_claim",
+	"storage_class":           "storage_class",
+	"storage_pool":            "storage_pool",
+	"storage_pool_claim":      "storage_pool_claim",
+	"disk":                    "disk",
+}
+
 // CustomRenderer allow for mapping functions that received the entire topology
 // in one call - useful for functions that need to consider the entire graph.
 // We should minimise the use of this renderer type, as it is very inflexible.
@@ -131,11 +142,10 @@ func IsConnected(node report.Node) bool {
 // IsPodComponent check whether given node is everything but PV, PVC, SC
 func IsPodComponent(node report.Node) bool {
 	var ok bool
-	ok = true
-	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" || node.Topology == "storage_pool" || node.Topology == "storage_pool_claim" || node.Topology == "disk" {
-		ok = false
+	if _, ok := storageComponents[node.Topology]; ok {
+		return !ok
 	}
-	return ok
+	return !ok
 }
 
 // connected returns the node ids of nodes which have edges to/from
