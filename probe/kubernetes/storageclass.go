@@ -28,5 +28,6 @@ func (p *storageClass) GetNode() report.Node {
 		NodeType:    "Storage Class",
 		Name:        p.GetName(),
 		Provisioner: p.Provisioner,
+		Value:       p.GetAnnotations()["cas.openebs.io/config"],
 	})
 }

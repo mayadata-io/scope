@@ -30,12 +30,18 @@ const (
 	Serial             = report.KubernetesSerial
 	SpcVersion         = report.KubernetesSpcVersion
 	Vendor             = report.KubernetesVendor
+	DiskList           = report.KubernetesDiskList
+	MaxPools           = report.KubernetesMaxPools
+	APIVersion         = report.KubernetesAPIVersion
+	Value              = report.KubernetesValue
 	Label              = report.KubernetesLabel
 	Type               = report.KubernetesType
 	Ports              = report.KubernetesPorts
 	VolumeClaim        = report.KubernetesVolumeClaim
 	StorageClassName   = report.KubernetesStorageClassName
 	DiskName           = report.KubernetesDiskName
+	PoolName           = report.KubernetesPoolName
+	PoolClaim          = report.KubernetesPoolClaim
 	AccessModes        = report.KubernetesAccessModes
 	ReclaimPolicy      = report.KubernetesReclaimPolicy
 	Status             = report.KubernetesStatus
@@ -147,6 +153,18 @@ var (
 		FirmwareRevision:  {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 7},
 		LogicalSectorSize: {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 8},
 		Storage:           {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 9},
+	}
+
+	StoragePoolMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		APIVersion: {ID: APIVersion, Label: "API Version", From: report.FromLatest, Priority: 2},
+	}
+
+	StoragePoolClaimMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		APIVersion: {ID: APIVersion, Label: "API Version", From: report.FromLatest, Priority: 2},
+		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
+		MaxPools:   {ID: MaxPools, Label: "MaxPools", From: report.FromLatest, Priority: 4},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -323,6 +341,14 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	storagePoolTopology, _, err := r.storagePoolTopology()
+	if err != nil {
+		return result, err
+	}
+	storagePoolClaimTopology, _, err := r.storagePoolClaimTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -335,6 +361,8 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.PersistentVolumeClaim = result.PersistentVolumeClaim.Merge(persistentVolumeClaimTopology)
 	result.StorageClass = result.StorageClass.Merge(storageClassTopology)
 	result.Disk = result.Disk.Merge(diskTopology)
+	result.StoragePool = result.StoragePool.Merge(storagePoolTopology)
+	result.StoragePoolClaim = result.StoragePoolClaim.Merge(storagePoolClaimTopology)
 	return result, nil
 }
 
@@ -500,6 +528,32 @@ func (r *Reporter) diskTopology() (report.Topology, []Disk, error) {
 		return nil
 	})
 	return result, disks, err
+}
+
+func (r *Reporter) storagePoolTopology() (report.Topology, []StoragePool, error) {
+	storagePools := []StoragePool{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(StoragePoolMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkStoragePools(func(p StoragePool) error {
+		result.AddNode(p.GetNode())
+		storagePools = append(storagePools, p)
+		return nil
+	})
+	return result, storagePools, err
+}
+
+func (r *Reporter) storagePoolClaimTopology() (report.Topology, []StoragePoolClaim, error) {
+	storagePoolClaims := []StoragePoolClaim{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(StoragePoolClaimMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkStoragePoolClaims(func(p StoragePoolClaim) error {
+		result.AddNode(p.GetNode())
+		storagePoolClaims = append(storagePoolClaims, p)
+		return nil
+	})
+	return result, storagePoolClaims, err
 }
 
 type labelledChild interface {

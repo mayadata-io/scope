@@ -8,6 +8,8 @@ import (
 
 	"github.com/weaveworks/common/backoff"
 
+	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	mayaclient "github.com/openebs/maya/pkg/client/clientset/versioned"
 	ndmv1alpha1 "github.com/openebs/node-disk-manager/pkg/apis/openebs.io/v1alpha1"
 	ndmclient "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
 	log "github.com/sirupsen/logrus"
@@ -44,6 +46,8 @@ type Client interface {
 	WalkPersistentVolumeClaims(f func(PersistentVolumeClaim) error) error
 	WalkStorageClasses(f func(StorageClass) error) error
 	WalkDisks(f func(Disk) error) error
+	WalkStoragePools(f func(StoragePool) error) error
+	WalkStoragePoolClaims(f func(StoragePoolClaim) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -58,6 +62,7 @@ type client struct {
 	quit                       chan struct{}
 	client                     *kubernetes.Clientset
 	ndmClient                  *ndmclient.Clientset
+	mayaClient                 *mayaclient.Clientset
 	podStore                   cache.Store
 	serviceStore               cache.Store
 	deploymentStore            cache.Store
@@ -71,6 +76,8 @@ type client struct {
 	persistentVolumeClaimStore cache.Store
 	storageClassStore          cache.Store
 	diskStore                  cache.Store
+	storagePoolStore           cache.Store
+	storagePoolClaimStore      cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -144,10 +151,16 @@ func NewClient(config ClientConfig) (Client, error) {
 		return nil, err
 	}
 
+	mc, err := mayaclient.NewForConfig(restConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	result := &client{
-		quit:      make(chan struct{}),
-		client:    c,
-		ndmClient: nc,
+		quit:       make(chan struct{}),
+		client:     c,
+		ndmClient:  nc,
+		mayaClient: mc,
 	}
 
 	result.podStore = NewEventStore(result.triggerPodWatches, cache.MetaNamespaceKeyFunc)
@@ -165,6 +178,8 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.persistentVolumeClaimStore = result.setupStore("persistentvolumeclaims")
 	result.storageClassStore = result.setupStore("storageclasses")
 	result.diskStore = result.setupStore("disks")
+	result.storagePoolStore = result.setupStore("storagepools")
+	result.storagePoolClaimStore = result.setupStore("storagepoolclaims")
 
 	return result, nil
 }
@@ -220,6 +235,10 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 	case "disks":
 		//ToDo: implement isResourceSupported to avoid any runtime panic
 		return c.ndmClient.OpenebsV1alpha1().RESTClient(), &ndmv1alpha1.Disk{}, nil
+	case "storagepools":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePool{}, nil
+	case "storagepoolclaims":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePoolClaim{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -328,6 +347,26 @@ func (c *client) WalkDisks(f func(Disk) error) error {
 	for _, m := range c.diskStore.List() {
 		disk := m.(*ndmv1alpha1.Disk)
 		if err := f(NewDisk(disk)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkStoragePools(f func(StoragePool) error) error {
+	for _, m := range c.storagePoolStore.List() {
+		sp := m.(*mayav1alpha1.StoragePool)
+		if err := f(NewStoragePool(sp)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkStoragePoolClaims(f func(StoragePoolClaim) error) error {
+	for _, m := range c.storagePoolClaimStore.List() {
+		spc := m.(*mayav1alpha1.StoragePoolClaim)
+		if err := f(NewStoragePoolClaim(spc)); err != nil {
 			return err
 		}
 	}

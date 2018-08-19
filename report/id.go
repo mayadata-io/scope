@@ -181,6 +181,18 @@ var (
 
 	// ParseDiskNodeID parses a disk node ID
 	ParseDiskNodeID = parseSingleComponentID("disk")
+
+	// MakeStoragePoolNodeID produces a Stoage Pool node ID from its composite parts.
+	MakeStoragePoolNodeID = makeSingleComponentID("storage_pool")
+
+	// ParseStoragePoolNodeID parses a Stoage Pool node ID
+	ParseStoragePoolNodeID = parseSingleComponentID("storage_pool")
+
+	// MakeStoragePoolClaimNodeID produces a Stoage Pool Claim node ID from its composite parts.
+	MakeStoragePoolClaimNodeID = makeSingleComponentID("storage_pool_claim")
+
+	// ParseStoragePoolClaimNodeID parses a Stoage Pool Claim node ID
+	ParseStoragePoolClaimNodeID = parseSingleComponentID("storage_pool_claim")
 )
 
 // makeSingleComponentID makes a single-component node id encoder
