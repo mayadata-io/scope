@@ -3,15 +3,19 @@ package kubernetes
 import (
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/weaveworks/common/backoff"
 
+	snapshotv1 "github.com/openebs/external-storage/snapshot/pkg/apis/volumesnapshot/v1"
+	snapshotclient "github.com/openebs/external-storage/snapshot/pkg/client/clientset/versioned"
 	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 	mayaclient "github.com/openebs/maya/pkg/client/clientset/versioned"
 	ndmv1alpha1 "github.com/openebs/node-disk-manager/pkg/apis/openebs.io/v1alpha1"
 	ndmclient "github.com/openebs/node-disk-manager/pkg/client/clientset/versioned"
+	"github.com/pborman/uuid"
 	log "github.com/sirupsen/logrus"
 	apiappsv1beta1 "k8s.io/api/apps/v1beta1"
 	apibatchv1 "k8s.io/api/batch/v1"
@@ -21,6 +25,7 @@ import (
 	apiextensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	storagev1 "k8s.io/api/storage/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -48,12 +53,17 @@ type Client interface {
 	WalkDisks(f func(Disk) error) error
 	WalkStoragePools(f func(StoragePool) error) error
 	WalkStoragePoolClaims(f func(StoragePoolClaim) error) error
+	WalkVolumeSnapshots(f func(VolumeSnapshot) error) error
+	WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 
 	WatchPods(f func(Event, Pod))
 
+	CloneVolumeSnapshot(namespaceID, volumeSnapshotID string) error
+	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID string) error
 	GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
 	DeletePod(namespaceID, podID string) error
 	DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID string) error
+	DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error
 	ScaleUp(resource, namespaceID, id string) error
 	ScaleDown(resource, namespaceID, id string) error
 }
@@ -63,6 +73,7 @@ type client struct {
 	client                     *kubernetes.Clientset
 	ndmClient                  *ndmclient.Clientset
 	mayaClient                 *mayaclient.Clientset
+	snapshotClient             *snapshotclient.Clientset
 	podStore                   cache.Store
 	serviceStore               cache.Store
 	deploymentStore            cache.Store
@@ -78,6 +89,8 @@ type client struct {
 	diskStore                  cache.Store
 	storagePoolStore           cache.Store
 	storagePoolClaimStore      cache.Store
+	volumeSnapshotStore        cache.Store
+	volumeSnapshotDataStore    cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -156,11 +169,17 @@ func NewClient(config ClientConfig) (Client, error) {
 		return nil, err
 	}
 
+	sc, err := snapshotclient.NewForConfig(restConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	result := &client{
-		quit:       make(chan struct{}),
-		client:     c,
-		ndmClient:  nc,
-		mayaClient: mc,
+		quit:           make(chan struct{}),
+		client:         c,
+		ndmClient:      nc,
+		mayaClient:     mc,
+		snapshotClient: sc,
 	}
 
 	result.podStore = NewEventStore(result.triggerPodWatches, cache.MetaNamespaceKeyFunc)
@@ -180,6 +199,8 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.diskStore = result.setupStore("disks")
 	result.storagePoolStore = result.setupStore("storagepools")
 	result.storagePoolClaimStore = result.setupStore("storagepoolclaims")
+	result.volumeSnapshotStore = result.setupStore("volumesnapshots")
+	result.volumeSnapshotDataStore = result.setupStore("volumesnapshotdatas")
 
 	return result, nil
 }
@@ -239,6 +260,10 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePool{}, nil
 	case "storagepoolclaims":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePoolClaim{}, nil
+	case "volumesnapshots":
+		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshot{}, nil
+	case "volumesnapshotdatas":
+		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshotData{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -453,6 +478,91 @@ func (c *client) WalkNamespaces(f func(NamespaceResource) error) error {
 	return nil
 }
 
+func (c *client) WalkVolumeSnapshots(f func(VolumeSnapshot) error) error {
+	for _, m := range c.volumeSnapshotStore.List() {
+		volumeSnapshot := m.(*snapshotv1.VolumeSnapshot)
+		if err := f(NewVolumeSnapshot(volumeSnapshot)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error {
+	for _, m := range c.volumeSnapshotDataStore.List() {
+		volumeSnapshotData := m.(*snapshotv1.VolumeSnapshotData)
+		if err := f(NewVolumeSnapshotData(volumeSnapshotData)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID string) error {
+	UID := strings.Split(uuid.New(), "-")
+
+	scName := "snapshot-promoter"
+	claimSize := "5G"
+
+	volumeSnapshot, _ := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Get(volumeSnapshotID, metav1.GetOptions{})
+	if volumeSnapshot.Spec.PersistentVolumeClaimName != "" {
+		persistentVolumeClaim, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Get(volumeSnapshot.Spec.PersistentVolumeClaimName, metav1.GetOptions{})
+		if err == nil {
+			storage := persistentVolumeClaim.Spec.Resources.Requests[apiv1.ResourceStorage]
+			if string(storage.String()) != "" {
+				claimSize = string(storage.String())
+			}
+		}
+	}
+
+	persistentVolumeClaim := &apiv1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      volumeSnapshotID + "-volume-claim" + "-" + UID[1],
+			Namespace: namespaceID,
+			Annotations: map[string]string{
+				"snapshot.alpha.kubernetes.io/snapshot": volumeSnapshotID,
+			},
+		},
+		Spec: apiv1.PersistentVolumeClaimSpec{
+			StorageClassName: &scName,
+			AccessModes: []apiv1.PersistentVolumeAccessMode{
+				apiv1.ReadWriteOnce,
+			},
+			Resources: apiv1.ResourceRequirements{
+				Requests: apiv1.ResourceList{
+					apiv1.ResourceName(apiv1.ResourceStorage): resource.MustParse(claimSize),
+				},
+			},
+		},
+	}
+
+	_, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(persistentVolumeClaim)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID string) error {
+	UID := strings.Split(uuid.New(), "-")
+
+	volumeSnapshot := &snapshotv1.VolumeSnapshot{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1],
+			Namespace: namespaceID,
+		},
+		Spec: snapshotv1.VolumeSnapshotSpec{
+			PersistentVolumeClaimName: persistentVolumeClaimID,
+		},
+	}
+
+	_, err := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Create(volumeSnapshot)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *client) GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error) {
 	readClosersWithLabel := map[io.ReadCloser]string{}
 	for _, container := range containerNames {
@@ -483,6 +593,10 @@ func (c *client) DeletePod(namespaceID, podID string) error {
 
 func (c *client) DeletePersistentVolumeClaim(namespaceID, persistentVolumeClaimID string) error {
 	return c.client.CoreV1().PersistentVolumeClaims(namespaceID).Delete(persistentVolumeClaimID, &metav1.DeleteOptions{})
+}
+
+func (c *client) DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error {
+	return c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Delete(volumeSnapshotID, &metav1.DeleteOptions{})
 }
 
 func (c *client) ScaleUp(resource, namespaceID, id string) error {

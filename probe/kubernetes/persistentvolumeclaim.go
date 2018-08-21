@@ -55,7 +55,7 @@ func (p *persistentVolumeClaim) GetNode(probeID string) report.Node {
 		Status:                string(p.Status.Phase),
 		VolumeName:            p.Spec.VolumeName,
 		StorageClassName:      p.GetStorageClass(),
-	}).WithLatestActiveControls(DeletePersistentVolumeClaim)
+	}).WithLatestActiveControls(CreateVolumeSnapshot, DeletePersistentVolumeClaim)
 }
 
 // Selector returns all Persistent Volume Claim selector

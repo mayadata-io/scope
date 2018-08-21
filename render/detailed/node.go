@@ -221,9 +221,23 @@ var nodeSummaryGroupSpecs = []struct {
 		},
 	},
 	{
+		topologyID: report.VolumeSnapshot,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Volume Snapshots",
+			Columns: []Column{},
+		},
+	},
+	{
 		topologyID: report.StoragePoolClaim,
 		NodeSummaryGroup: NodeSummaryGroup{
 			Label:   "Storage Pool Claims",
+			Columns: []Column{},
+		},
+	},
+	{
+		topologyID: report.VolumeSnapshotData,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Volume Snapshot Datas",
 			Columns: []Column{},
 		},
 	},
