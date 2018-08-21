@@ -86,6 +86,8 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.Disk:                  diskNodeSummary,
 	report.StoragePool:           storagePoolNodeSummary,
 	report.StoragePoolClaim:      storagePoolClaimNodeSummary,
+	report.VolumeSnapshot:        volumeSnapshotNodeSummary,
+	report.VolumeSnapshotData:    volumeSnapshotDataNodeSummary,
 }
 
 // For each report.Topology, map to a 'primary' API topology. This can then be used in a variety of places.
@@ -107,6 +109,8 @@ var primaryAPITopology = map[string]string{
 	report.PersistentVolumeClaim: "pods",
 	report.StorageClass:          "pods",
 	report.Disk:                  "hosts",
+	report.VolumeSnapshot:        "pods",
+	report.VolumeSnapshotData:    "pods",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -406,7 +410,17 @@ func storagePoolNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSumma
 	return base
 }
 
+func volumeSnapshotNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	return base
+}
+
 func storagePoolClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	return base
+}
+
+func volumeSnapshotDataNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
 	return base
 }
