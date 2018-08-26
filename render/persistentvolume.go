@@ -119,16 +119,13 @@ func (v pvToControllerRenderer) Render(rpt report.Report) Nodes {
 	for pvNodeID, p := range rpt.PersistentVolume.Nodes {
 		volumeName, _ := p.Latest.Lookup(kubernetes.Name)
 		for _, podNode := range rpt.Pod.Nodes {
-			Controller, _ := podNode.Latest.Lookup(kubernetes.Name)
-			if strings.Contains(Controller, "-ctrl-") {
-				podName := strings.Split(Controller, "-ctrl-")
-				Controller = podName[0]
-				if volumeName == Controller {
-					p.Adjacency = p.Adjacency.Add(podNode.ID)
-					p.Children = p.Children.Add(podNode)
-				}
+			podVolumeName, _ := podNode.Latest.Lookup(kubernetes.VolumeName)
+			if volumeName == podVolumeName {
+				p.Adjacency = p.Adjacency.Add(podNode.ID)
+				p.Children = p.Children.Add(podNode)
 			}
 		}
+
 		for _, volumeSnapshotNode := range rpt.VolumeSnapshot.Nodes {
 			snapshotPVName, _ := volumeSnapshotNode.Latest.Lookup(kubernetes.VolumeName)
 			if volumeName == snapshotPVName {
@@ -154,8 +151,8 @@ func (v spcToSpRenderer) Render(rpt report.Report) Nodes {
 	for spcID, spcNode := range rpt.StoragePoolClaim.Nodes {
 		spcName, _ := spcNode.Latest.Lookup(kubernetes.Name)
 		for _, spNode := range rpt.StoragePool.Nodes {
-			spcNameFromLabel, _ := spNode.Latest.Lookup(kubernetes.Label)
-			if spcName == spcNameFromLabel {
+			spcNameFromLatest, _ := spNode.Latest.Lookup(kubernetes.StoragePoolClaimName)
+			if spcName == spcNameFromLatest {
 				spcNode.Adjacency = spcNode.Adjacency.Add(spNode.ID)
 				spcNode.Children = spcNode.Children.Add(spNode)
 			}
@@ -172,28 +169,22 @@ var SPToDiskRenderer = spToDiskRenderer{}
 type spToDiskRenderer struct{}
 
 // Render renders the SP & Disk nodes with adjacency.
-// First checking if sp and spc's are present if present we are obtaining the disk names from spc, adjacency is created by matching it with disk names.
 func (v spToDiskRenderer) Render(rpt report.Report) Nodes {
 	var disks []string
 	nodes := make(report.Nodes)
 	for spID, spNode := range rpt.StoragePool.Nodes {
-		spcNameFromLabel, _ := spNode.Latest.Lookup(kubernetes.Label)
-		for _, spcNode := range rpt.StoragePoolClaim.Nodes {
-			spcName, _ := spcNode.Latest.Lookup(kubernetes.Name)
-			if spcName == spcNameFromLabel {
-				disk, _ := spcNode.Latest.Lookup(kubernetes.DiskList)
-				if strings.Contains(disk, "/") {
-					disks = strings.Split(disk, "/")
-				} else {
-					disks = []string{disk}
-				}
-				break
-			}
+		disk, _ := spNode.Latest.Lookup(kubernetes.DiskList)
+		if strings.Contains(disk, "/") {
+			disks = strings.Split(disk, "/")
+		} else {
+			disks = []string{disk}
 		}
+
 		diskList := make(map[string]string)
 		for _, disk := range disks {
 			diskList[disk] = disk
 		}
+
 		for diskID, diskNode := range rpt.Disk.Nodes {
 			diskName, _ := diskNode.Latest.Lookup(kubernetes.Name)
 			if diskName == diskList[diskName] {

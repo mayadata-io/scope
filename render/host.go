@@ -76,7 +76,7 @@ func (v ndmRenderer) Render(rpt report.Report) Nodes {
 			hostid := strings.Split(hostName, ";")
 			hostName = hostid[0]
 			for diskNode, d := range rpt.Disk.Nodes {
-				Label, _ := d.Latest.Lookup(kubernetes.Label)
+				Label, _ := d.Latest.Lookup(kubernetes.HostName)
 				if strings.ToLower(hostName) == Label {
 					h.Adjacency = h.Adjacency.Add(d.ID)
 					h.Children = h.Children.Add(d)

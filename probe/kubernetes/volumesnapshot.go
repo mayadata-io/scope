@@ -7,7 +7,7 @@ import (
 
 // SnapshotPVName is the label key which provides PV name
 const (
-	SnapshotPVName = "SnapshotMetadata-PVName"
+	SnapshotPVNameLabel = "SnapshotMetadata-PVName"
 )
 
 // VolumeSnapshot represent kubernetes VolumeSnapshot interface
@@ -34,6 +34,6 @@ func (p *volumeSnapshot) GetNode(probeID string) report.Node {
 		NodeType:              "Volume Snapshot",
 		VolumeClaim:           p.Spec.PersistentVolumeClaimName,
 		SnapshotData:          p.Spec.SnapshotDataName,
-		VolumeName:            p.GetLabels()[SnapshotPVName],
+		VolumeName:            p.GetLabels()[SnapshotPVNameLabel],
 	}).WithLatestActiveControls(CloneVolumeSnapshot, DeleteVolumeSnapshot)
 }

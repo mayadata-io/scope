@@ -4,7 +4,6 @@ import (
 	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 
 	"strconv"
-	"strings"
 
 	"github.com/weaveworks/scope/report"
 )
@@ -31,7 +30,6 @@ func (p *storagePoolClaim) GetNode() report.Node {
 	return p.MetaNode(report.MakeStoragePoolClaimNodeID(p.UID())).WithLatests(map[string]string{
 		NodeType:   "Storage Pool Claim",
 		APIVersion: p.APIVersion,
-		DiskList:   strings.Join(p.Spec.Disks.DiskList, "/"),
 		MaxPools:   strconv.Itoa(int(p.Spec.MaxPools)),
 		Status:     p.Status.Phase,
 	})
