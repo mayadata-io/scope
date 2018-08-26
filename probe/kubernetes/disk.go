@@ -36,6 +36,6 @@ func (p *disk) GetNode() report.Node {
 		Serial:            p.Spec.Details.Serial,
 		SpcVersion:        p.Spec.Details.SPCVersion,
 		Vendor:            p.Spec.Details.Vendor,
-		Label:             p.GetLabels()["kubernetes.io/hostname"],
+		HostName:          p.GetLabels()["kubernetes.io/hostname"],
 	})
 }

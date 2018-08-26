@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/weaveworks/scope/report"
 
@@ -21,12 +22,19 @@ const (
 	StateFailed  = "Failed"
 )
 
+// Pod labels to get pv name, if it is a controller or replica pod
+const (
+	PersistentVolumeLabel = "openebs.io/persistent-volume"
+	VSMLabel              = "vsm"
+)
+
 // Pod represents a Kubernetes pod
 type Pod interface {
 	Meta
 	AddParent(topology, id string)
 	NodeName() string
 	GetNode(probeID string) report.Node
+	GetVolumeName() string
 	RestartCount() uint
 	ContainerNames() []string
 }
@@ -75,6 +83,18 @@ func (p *pod) RestartCount() uint {
 	return count
 }
 
+func (p *pod) GetVolumeName() string {
+	if strings.Contains(p.GetName(), "-rep-") {
+		return ""
+	}
+	if volumeName, ok := p.GetLabels()[VSMLabel]; ok {
+		return volumeName
+	} else if volumeName, ok := p.GetLabels()[PersistentVolumeLabel]; ok {
+		return volumeName
+	}
+	return ""
+}
+
 func (p *pod) VolumeClaimName() string {
 	var claimName string
 	for _, volume := range p.Spec.Volumes {
@@ -96,6 +116,10 @@ func (p *pod) GetNode(probeID string) report.Node {
 
 	if p.VolumeClaimName() != "" {
 		latests[VolumeClaim] = p.VolumeClaimName()
+	}
+
+	if p.GetVolumeName() != "" {
+		latests[VolumeName] = p.GetVolumeName()
 	}
 
 	if p.Pod.Spec.HostNetwork {

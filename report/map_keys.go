@@ -86,7 +86,7 @@ const (
 	KubernetesMaxPools                    = "kubernetes_max_pools"
 	KubernetesValue                       = "kubernetes_value"
 	KubernetesAPIVersion                  = "kubernetes_api_version"
-	KubernetesLabel                       = "kubernetes_label"
+	KubernetesStoragePoolClaimName        = "kubernetes_storage_pool_claim_name"
 	KubernetesDiskName                    = "kubernetes_disk_name"
 	KubernetesPoolName                    = "kubernetes_pool_name"
 	KubernetesPoolClaim                   = "kubernetes_pool_claim_name"
@@ -101,6 +101,7 @@ const (
 	KubernetesCreateVolumeSnapshot        = "kubernetes_create_volume_snapshot"
 	KubernetesCloneVolumeSnapshot         = "kubernetes_clone_volume_snapshot"
 	KubernetesDeleteVolumeSnapshot        = "kubernetes_delete_volume_snapshot"
+	KubernetesHostName                    = "kubernetes_host_name"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

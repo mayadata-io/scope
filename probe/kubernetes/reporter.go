@@ -18,38 +18,39 @@ import (
 
 // These constants are keys used in node metadata
 const (
-	IP                 = report.KubernetesIP
-	ObservedGeneration = report.KubernetesObservedGeneration
-	Replicas           = report.KubernetesReplicas
-	DesiredReplicas    = report.KubernetesDesiredReplicas
-	NodeType           = report.KubernetesNodeType
-	Model              = report.KubernetesModel
-	LogicalSectorSize  = report.KubernetesLogicalSectorSize
-	Storage            = report.KubernetesStorage
-	FirmwareRevision   = report.KubernetesFirmwareRevision
-	Serial             = report.KubernetesSerial
-	SpcVersion         = report.KubernetesSpcVersion
-	Vendor             = report.KubernetesVendor
-	DiskList           = report.KubernetesDiskList
-	MaxPools           = report.KubernetesMaxPools
-	APIVersion         = report.KubernetesAPIVersion
-	Value              = report.KubernetesValue
-	Label              = report.KubernetesLabel
-	Type               = report.KubernetesType
-	Ports              = report.KubernetesPorts
-	VolumeClaim        = report.KubernetesVolumeClaim
-	StorageClassName   = report.KubernetesStorageClassName
-	DiskName           = report.KubernetesDiskName
-	PoolName           = report.KubernetesPoolName
-	PoolClaim          = report.KubernetesPoolClaim
-	AccessModes        = report.KubernetesAccessModes
-	ReclaimPolicy      = report.KubernetesReclaimPolicy
-	Status             = report.KubernetesStatus
-	Message            = report.KubernetesMessage
-	VolumeName         = report.KubernetesVolumeName
-	Provisioner        = report.KubernetesProvisioner
-	VolumeSnapshotName = report.KubernetesVolumeSnapshotName
-	SnapshotData       = report.KubernetesSnapshotData
+	IP                   = report.KubernetesIP
+	ObservedGeneration   = report.KubernetesObservedGeneration
+	Replicas             = report.KubernetesReplicas
+	DesiredReplicas      = report.KubernetesDesiredReplicas
+	NodeType             = report.KubernetesNodeType
+	Model                = report.KubernetesModel
+	LogicalSectorSize    = report.KubernetesLogicalSectorSize
+	Storage              = report.KubernetesStorage
+	FirmwareRevision     = report.KubernetesFirmwareRevision
+	Serial               = report.KubernetesSerial
+	SpcVersion           = report.KubernetesSpcVersion
+	Vendor               = report.KubernetesVendor
+	DiskList             = report.KubernetesDiskList
+	MaxPools             = report.KubernetesMaxPools
+	APIVersion           = report.KubernetesAPIVersion
+	Value                = report.KubernetesValue
+	StoragePoolClaimName = report.KubernetesStoragePoolClaimName
+	Type                 = report.KubernetesType
+	Ports                = report.KubernetesPorts
+	VolumeClaim          = report.KubernetesVolumeClaim
+	StorageClassName     = report.KubernetesStorageClassName
+	DiskName             = report.KubernetesDiskName
+	PoolName             = report.KubernetesPoolName
+	PoolClaim            = report.KubernetesPoolClaim
+	AccessModes          = report.KubernetesAccessModes
+	ReclaimPolicy        = report.KubernetesReclaimPolicy
+	Status               = report.KubernetesStatus
+	Message              = report.KubernetesMessage
+	VolumeName           = report.KubernetesVolumeName
+	Provisioner          = report.KubernetesProvisioner
+	VolumeSnapshotName   = report.KubernetesVolumeSnapshotName
+	SnapshotData         = report.KubernetesSnapshotData
+	HostName             = report.KubernetesHostName
 )
 
 // Exposed for testing
@@ -160,6 +161,7 @@ var (
 	StoragePoolMetadataTemplates = report.MetadataTemplates{
 		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		APIVersion: {ID: APIVersion, Label: "API Version", From: report.FromLatest, Priority: 2},
+		DiskList:   {ID: DiskList, Label: "Disks", From: report.FromLatest, Priority: 3},
 	}
 
 	StoragePoolClaimMetadataTemplates = report.MetadataTemplates{
