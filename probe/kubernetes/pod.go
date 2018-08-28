@@ -26,6 +26,7 @@ const (
 const (
 	PersistentVolumeLabel = "openebs.io/persistent-volume"
 	VSMLabel              = "vsm"
+	PVLabel               = "openebs.io/pv"
 )
 
 // Pod represents a Kubernetes pod
@@ -87,9 +88,15 @@ func (p *pod) GetVolumeName() string {
 	if strings.Contains(p.GetName(), "-rep-") {
 		return ""
 	}
-	if volumeName, ok := p.GetLabels()[VSMLabel]; ok {
+
+	var volumeName string
+	var ok bool
+
+	if volumeName, ok = p.GetLabels()[VSMLabel]; ok {
 		return volumeName
-	} else if volumeName, ok := p.GetLabels()[PersistentVolumeLabel]; ok {
+	} else if volumeName, ok = p.GetLabels()[PersistentVolumeLabel]; ok {
+		return volumeName
+	} else if volumeName, ok = p.GetLabels()[PVLabel]; ok {
 		return volumeName
 	}
 	return ""
