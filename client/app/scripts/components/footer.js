@@ -39,7 +39,7 @@ class Footer extends React.Component {
     } = this.props;
 
     const otherContrastModeTitle = contrastMode
-      ? 'Switch to high contrast' : ' Switch to normal contrast';
+      ? 'Switch to high contrast' : 'Switch to normal contrast';
     const forceRelayoutTitle = 'Force re-layout (might reduce edge crossings, '
       + 'but may shift nodes around)';
     const versionUpdateTitle = versionUpdate
