@@ -35,7 +35,7 @@ class Footer extends React.Component {
 
   render() {
     const {
-      version, versionUpdate, contrastMode
+      hostname, version, versionUpdate, contrastMode
     } = this.props;
 
     const otherContrastModeTitle = contrastMode
@@ -61,6 +61,8 @@ class Footer extends React.Component {
           }
           <span className="footer-label">Version</span>
           {version || '...'}
+          <span className="footer-label">on</span>
+          {hostname}
         </div>
 
         <div className="footer-plugins">
@@ -97,6 +99,7 @@ class Footer extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    hostname: state.get('hostname'),
     topologyViewMode: state.get('topologyViewMode'),
     version: state.get('version'),
     versionUpdate: state.get('versionUpdate'),
