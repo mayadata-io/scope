@@ -1,4 +1,4 @@
-.PHONY: all deps static clean realclean client-lint client-test client-sync backend frontend shell lint ui-upload
+.PHONY: all cri deps static clean realclean client-lint client-test client-sync backend frontend shell lint ui-upload
 
 # If you can use Docker without being root, you can `make SUDO= <target>`
 SUDO=$(shell docker info >/dev/null 2>&1 || echo "sudo -E")
@@ -45,6 +45,16 @@ IMAGE_TAG=$(shell ./tools/image-tag)
 
 all: $(SCOPE_EXPORT)
 
+update-cri:
+	curl https://raw.githubusercontent.com/kubernetes/kubernetes/master/pkg/kubelet/apis/cri/runtime/v1alpha2/api.proto > cri/runtime/api.proto
+
+protoc-gen-gofast:
+	@go get -u -v github.com/gogo/protobuf/protoc-gen-gofast
+
+# Use cri target to download latest cri proto files and regenerate CRI runtime files. 
+cri: update-cri protoc-gen-gofast
+	@cd $(GOPATH)/src;protoc --proto_path=$(GOPATH)/src --gofast_out=plugins=grpc:. github.com/weaveworks/scope/cri/runtime/api.proto
+
 docker/weave:
 	curl -L https://github.com/weaveworks/weave/releases/download/v$(WEAVENET_VERSION)/weave -o docker/weave
 	chmod u+x docker/weave
@@ -89,7 +99,7 @@ $(SCOPE_EXE) $(RUNSVINIT) lint tests shell prog/staticui/staticui.go prog/extern
 
 else
 
-$(SCOPE_EXE): $(SCOPE_BACKEND_BUILD_UPTODATE)
+$(SCOPE_EXE):
 	time $(GO) build $(GO_BUILD_FLAGS) -o $@ ./$(@D)
 	@strings $@ | grep cgo_stub\\\.go >/dev/null || { \
 	        rm $@; \
@@ -108,24 +118,24 @@ $(CODECGEN_EXE): $(CODECGEN_DIR)/*.go
 	mkdir -p $(@D)
 	$(GO_HOST) build $(GO_BUILD_FLAGS) -o $@ ./$(CODECGEN_DIR)
 
-$(RUNSVINIT): $(SCOPE_BACKEND_BUILD_UPTODATE)
+$(RUNSVINIT):
 	time $(GO) build $(GO_BUILD_FLAGS) -o $@ ./$(@D)
 
-shell: $(SCOPE_BACKEND_BUILD_UPTODATE)
+shell:
 	/bin/bash
 
-tests: $(SCOPE_BACKEND_BUILD_UPTODATE) $(CODECGEN_TARGETS) prog/staticui/staticui.go prog/externalui/externalui.go
+tests: $(CODECGEN_TARGETS) prog/staticui/staticui.go prog/externalui/externalui.go
 	./tools/test -no-go-get -tags $(GO_BUILD_TAGS)
 
-lint: $(SCOPE_BACKEND_BUILD_UPTODATE)
+lint:
 	./tools/lint
 	./tools/shell-lint tools
 
-prog/staticui/staticui.go: $(SCOPE_BACKEND_BUILD_UPTODATE)
+prog/staticui/staticui.go:
 	mkdir -p prog/staticui
 	esc -o $@ -pkg staticui -prefix client/build client/build
 
-prog/externalui/externalui.go: $(SCOPE_BACKEND_BUILD_UPTODATE)
+prog/externalui/externalui.go:
 	mkdir -p prog/externalui
 	esc -o $@ -pkg externalui -prefix client/build-external -include '\.html$$' client/build-external
 
@@ -185,10 +195,12 @@ endif
 
 $(SCOPE_UI_BUILD_UPTODATE): client/Dockerfile client/package.json client/webpack.local.config.js client/webpack.production.config.js client/server.js client/.eslintrc
 	$(SUDO) docker build -t $(SCOPE_UI_BUILD_IMAGE) client
+	$(SUDO) docker tag $(SCOPE_UI_BUILD_IMAGE) $(SCOPE_UI_BUILD_IMAGE):$(IMAGE_TAG)
 	touch $@
 
 $(SCOPE_BACKEND_BUILD_UPTODATE): backend/*
 	$(SUDO) docker build -t $(SCOPE_BACKEND_BUILD_IMAGE) backend
+	$(SUDO) docker tag $(SCOPE_BACKEND_BUILD_IMAGE) $(SCOPE_BACKEND_BUILD_IMAGE):$(IMAGE_TAG)
 	touch $@
 
 ui-upload: client/build-external/index.html
@@ -249,3 +261,4 @@ netlify-site-preview:
 	@cp -r site site-build/_weave_scope_docs
 	@$(MAKE) -C site-build netlify_ensure_install
 	@$(MAKE) -C site-build BUILD_ENV=netlify
+
