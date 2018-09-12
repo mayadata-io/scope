@@ -117,7 +117,7 @@
     },
     "setupFiles": [
       "<rootDir>/test/support/raf.js",
-      "<rootDir>/test/support/localStorage.js"
+      "<rootDir>/test/support/storage.js"
     ],
     "roots": [
       "<rootDir>/app/scripts"
