@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -501,7 +502,25 @@ func (c *client) WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID string) error {
 	UID := strings.Split(uuid.New(), "-")
 
-	scName := "snapshot-promoter"
+	var scName string
+	scProvisionerName := "volumesnapshot.external-storage.k8s.io/snapshot-promoter"
+	scList, err := c.client.StorageV1().StorageClasses().List(metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	// Retrieve the first snapshot-promoter storage class
+	for _, sc := range scList.Items {
+		if sc.Provisioner == scProvisionerName {
+			scName = sc.Name
+			break
+		}
+	}
+	if scName == "" {
+		return errors.New("snapshot-promoter staorage class is not present")
+	}
+
+	// default claim size as 5G
+	// later it will be updated with the size of PVC
 	claimSize := "5G"
 
 	volumeSnapshot, _ := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Get(volumeSnapshotID, metav1.GetOptions{})
@@ -536,7 +555,7 @@ func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID string) error
 		},
 	}
 
-	_, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(persistentVolumeClaim)
+	_, err = c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(persistentVolumeClaim)
 	if err != nil {
 		return err
 	}
