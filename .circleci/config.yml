@@ -31,6 +31,9 @@ workflows:
             - lint
             - unit-test
             - build
+          filters:
+            branches:
+              only: staging
       - deploy:
           filters:
             branches:
