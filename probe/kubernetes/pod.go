@@ -22,11 +22,19 @@ const (
 	StateFailed  = "Failed"
 )
 
-// Pod labels to get pv name, if it is a controller or replica pod
+// Pod labels to get pv name, if it is a controller/target or replica pod
 const (
 	PersistentVolumeLabel = "openebs.io/persistent-volume"
 	VSMLabel              = "vsm"
 	PVLabel               = "openebs.io/pv"
+)
+
+// Pod label to distinguish replica pod or cstor pool pod
+const (
+	AppLabel         = "app"
+	AppValue         = "cstor-pool"
+	ReplicaPodLabel  = "openebs.io/replica"
+	JivaReplicaValue = "jiva-replica"
 )
 
 // Pod represents a Kubernetes pod
@@ -36,6 +44,8 @@ type Pod interface {
 	NodeName() string
 	GetNode(probeID string) report.Node
 	GetVolumeName() string
+	IsReplicaOrPoolPod() bool
+	VolumeClaimName() string
 	RestartCount() uint
 	ContainerNames() []string
 }
@@ -84,6 +94,15 @@ func (p *pod) RestartCount() uint {
 	return count
 }
 
+func (p *pod) IsReplicaOrPoolPod() bool {
+	replicaPod, _ := p.GetLabels()[ReplicaPodLabel]
+	cstorPoolPod, _ := p.GetLabels()[AppLabel]
+	if replicaPod == JivaReplicaValue || cstorPoolPod == AppValue {
+		return true
+	}
+	return false
+}
+
 func (p *pod) GetVolumeName() string {
 	if strings.Contains(p.GetName(), "-rep-") {
 		return ""
@@ -123,10 +142,16 @@ func (p *pod) GetNode(probeID string) report.Node {
 
 	if p.VolumeClaimName() != "" {
 		latests[VolumeClaim] = p.VolumeClaimName()
+		latests[VolumePod] = "true"
 	}
 
 	if p.GetVolumeName() != "" {
 		latests[VolumeName] = p.GetVolumeName()
+		latests[VolumePod] = "true"
+	}
+
+	if p.IsReplicaOrPoolPod() {
+		latests[VolumePod] = "true"
 	}
 
 	if p.Pod.Spec.HostNetwork {

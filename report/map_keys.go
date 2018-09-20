@@ -103,6 +103,7 @@ const (
 	KubernetesDeleteVolumeSnapshot        = "kubernetes_delete_volume_snapshot"
 	KubernetesHostName                    = "kubernetes_host_name"
 	KubernetesStorageDriver               = "kubernetes_storage_driver"
+	KubernetesVolumePod                   = "kubernetes_volume_pod"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
