@@ -3,6 +3,7 @@ package expected
 import (
 	"github.com/weaveworks/scope/probe/docker"
 	"github.com/weaveworks/scope/probe/host"
+	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/probe/process"
 	"github.com/weaveworks/scope/render"
 	"github.com/weaveworks/scope/report"
@@ -270,6 +271,7 @@ var (
 				RenderedProcesses[fixture.ServerProcessNodeID],
 				RenderedContainers[fixture.ServerContainerNodeID],
 			)),
+
 		UnmanagedServerID:         unmanagedServerNode,
 		render.IncomingInternetID: theIncomingInternetNode(fixture.ServerPodNodeID),
 		render.OutgoingInternetID: theOutgoingInternetNode,
@@ -326,6 +328,38 @@ var (
 		// UnknownPseudoNode1ID:      unknownPseudoNode1(fixture.ServerHostNodeID),
 		// UnknownPseudoNode2ID:      unknownPseudoNode2(fixture.ServerHostNodeID),
 		render.IncomingInternetID: theIncomingInternetNode(fixture.ServerHostNodeID),
+		render.OutgoingInternetID: theOutgoingInternetNode,
+	}
+	RenderedKubernetesVolumes = report.Nodes{
+		fixture.PersistentVolumeClaimNodeID: persistentVolumeClaim(fixture.PersistentVolumeClaimNodeID, fixture.PersistentVolumeNodeID).
+			WithLatests(map[string]string{
+				kubernetes.Name:             "pvc-6124",
+				kubernetes.Namespace:        "ping",
+				kubernetes.Status:           "bound",
+				kubernetes.VolumeName:       "pongvolume",
+				kubernetes.AccessModes:      "ReadWriteOnce",
+				kubernetes.StorageClassName: "standard",
+			}).WithChild(report.MakeNode(fixture.PersistentVolumeNodeID).WithTopology(report.PersistentVolume)),
+
+		fixture.PersistentVolumeNodeID: persistentVolume(fixture.PersistentVolumeNodeID).
+			WithLatests(map[string]string{
+				kubernetes.Name:             "pongvolume",
+				kubernetes.Namespace:        "ping",
+				kubernetes.Status:           "bound",
+				kubernetes.VolumeClaim:      "pvc-6124",
+				kubernetes.AccessModes:      "ReadWriteOnce",
+				kubernetes.StorageClassName: "standard",
+				kubernetes.StorageDriver:    "iSCSI",
+			}),
+
+		fixture.StorageClassNodeID: StorageClass(fixture.StorageClassNodeID, fixture.PersistentVolumeClaimNodeID).
+			WithLatests(map[string]string{
+				kubernetes.Name:        "standard",
+				kubernetes.Provisioner: "pong",
+			}).WithChild(report.MakeNode(fixture.PersistentVolumeClaimNodeID).WithTopology(report.PersistentVolumeClaim)),
+
+		UnmanagedServerID:         unmanagedServerNode,
+		render.IncomingInternetID: theIncomingInternetNode(),
 		render.OutgoingInternetID: theOutgoingInternetNode,
 	}
 )
