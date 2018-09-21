@@ -318,7 +318,7 @@ func TestMakeDetailedPodNode(t *testing.T) {
 			BasicNodeSummary: detailed.BasicNodeSummary{
 				ID:         id,
 				Label:      "pong-b",
-				LabelMinor: "1 container",
+				LabelMinor: "Pod of 1 container",
 				Rank:       "ping/pong-b",
 				Shape:      "heptagon",
 				Pseudo:     false,
@@ -374,7 +374,7 @@ func TestMakeDetailedPodNode(t *testing.T) {
 						ID:         connectionID(fixture.ClientPodNodeID, ""),
 						NodeID:     fixture.ClientPodNodeID,
 						Label:      "pong-a",
-						LabelMinor: "1 container",
+						LabelMinor: "Pod of 1 container",
 						Metadata: []report.MetadataRow{
 							{
 								ID:    "port",
