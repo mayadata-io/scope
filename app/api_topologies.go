@@ -31,6 +31,8 @@ const (
 	podsID                 = "pods"
 	kubeControllersID      = "kube-controllers"
 	servicesID             = "services"
+	volumesID              = "volumes"
+	storageID              = "storage"
 	hostsID                = "hosts"
 	weaveID                = "weave"
 	ecsTasksID             = "ecs-tasks"
@@ -246,7 +248,7 @@ func MakeRegistry() *Registry {
 			renderer:    render.PodRenderer,
 			Name:        "Pods",
 			Rank:        3,
-			Options:     []APITopologyOptionGroup{snapshotFilter, storageFilter, unmanagedFilter},
+			Options:     []APITopologyOptionGroup{unmanagedFilter},
 			HideIfEmpty: true,
 		},
 		APITopologyDesc{
@@ -295,11 +297,27 @@ func MakeRegistry() *Registry {
 			Name:     "Hosts",
 			Rank:     4,
 		},
+		// APITopologyDesc{
+		// 	id:       weaveID,
+		// 	parent:   hostsID,
+		// 	renderer: render.WeaveRenderer,
+		// 	Name:     "Weave Net",
+		// },
 		APITopologyDesc{
-			id:       weaveID,
-			parent:   hostsID,
-			renderer: render.WeaveRenderer,
-			Name:     "Weave Net",
+			id:          storageID,
+			parent:      hostsID,
+			renderer:    render.KubernetesStorageRenderer,
+			Name:        "Storage",
+			Options:     []APITopologyOptionGroup{},
+			HideIfEmpty: true,
+		},
+		APITopologyDesc{
+			id:          volumesID,
+			parent:      hostsID,
+			renderer:    render.KubernetesVolumesRenderer,
+			Name:        "Volumes",
+			Options:     []APITopologyOptionGroup{snapshotFilter, unmanagedFilter},
+			HideIfEmpty: true,
 		},
 	)
 

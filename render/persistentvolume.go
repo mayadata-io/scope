@@ -14,9 +14,17 @@ var KubernetesVolumesRenderer = MakeReduce(
 	PodToVolumeRenderer,
 	PVCToStorageClassRenderer,
 	PVToControllerRenderer,
-	SPCToSPRenderer,
-	SPToDiskRenderer,
 	VolumeSnapshotRenderer,
+	MakeFilter(
+		func(n report.Node) bool {
+			value, _ := n.Latest.Lookup(kubernetes.VolumePod)
+			if value == "true" {
+				return true
+			}
+			return false
+		},
+		PodRenderer,
+	),
 )
 
 // VolumesRenderer is a Renderer which produces a renderable kubernetes PV & PVC
@@ -56,6 +64,7 @@ func (v podToVolumesRenderer) Render(rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for podID, podNode := range rpt.Pod.Nodes {
 		ClaimName, _ := podNode.Latest.Lookup(kubernetes.VolumeClaim)
+		_, ok := podNode.Latest.Lookup(kubernetes.VolumePod)
 		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
 			pvcName, _ := pvcNode.Latest.Lookup(kubernetes.Name)
 			if pvcName == ClaimName {
@@ -63,7 +72,9 @@ func (v podToVolumesRenderer) Render(rpt report.Report) Nodes {
 				podNode.Children = podNode.Children.Add(pvcNode)
 			}
 		}
-		nodes[podID] = podNode
+		if ok {
+			nodes[podID] = podNode
+		}
 	}
 	return Nodes{Nodes: nodes}
 }
@@ -134,66 +145,6 @@ func (v pvToControllerRenderer) Render(rpt report.Report) Nodes {
 			}
 		}
 		nodes[pvNodeID] = p
-	}
-	return Nodes{Nodes: nodes}
-}
-
-// SPCToSPRenderer is a Renderer which produces a renderable kubernetes CRD SPC
-var SPCToSPRenderer = spcToSpRenderer{}
-
-// spcToSpRenderer is a Renderer to render SPC & SP nodes.
-type spcToSpRenderer struct{}
-
-// Render renders the SPC & SP nodes with adjacency.
-// Here we are obtaining the spc name from sp and adjacency is created by matching it with spc name.
-func (v spcToSpRenderer) Render(rpt report.Report) Nodes {
-	nodes := make(report.Nodes)
-	for spcID, spcNode := range rpt.StoragePoolClaim.Nodes {
-		spcName, _ := spcNode.Latest.Lookup(kubernetes.Name)
-		for _, spNode := range rpt.StoragePool.Nodes {
-			spcNameFromLatest, _ := spNode.Latest.Lookup(kubernetes.StoragePoolClaimName)
-			if spcName == spcNameFromLatest {
-				spcNode.Adjacency = spcNode.Adjacency.Add(spNode.ID)
-				spcNode.Children = spcNode.Children.Add(spNode)
-			}
-		}
-		nodes[spcID] = spcNode
-	}
-	return Nodes{Nodes: nodes}
-}
-
-// SPToDiskRenderer is a Renderer which produces a renderable kubernetes CRD Disk
-var SPToDiskRenderer = spToDiskRenderer{}
-
-// spToDiskRenderer is a Renderer to render SP & Disk .
-type spToDiskRenderer struct{}
-
-// Render renders the SP & Disk nodes with adjacency.
-func (v spToDiskRenderer) Render(rpt report.Report) Nodes {
-	var disks []string
-	nodes := make(report.Nodes)
-	for spID, spNode := range rpt.StoragePool.Nodes {
-		disk, _ := spNode.Latest.Lookup(kubernetes.DiskList)
-		if strings.Contains(disk, "/") {
-			disks = strings.Split(disk, "/")
-		} else {
-			disks = []string{disk}
-		}
-
-		diskList := make(map[string]string)
-		for _, disk := range disks {
-			diskList[disk] = disk
-		}
-
-		for diskID, diskNode := range rpt.Disk.Nodes {
-			diskName, _ := diskNode.Latest.Lookup(kubernetes.Name)
-			if diskName == diskList[diskName] {
-				spNode.Adjacency = spNode.Adjacency.Add(diskNode.ID)
-				spNode.Children = spNode.Children.Add(diskNode)
-			}
-			nodes[diskID] = diskNode
-		}
-		nodes[spID] = spNode
 	}
 	return Nodes{Nodes: nodes}
 }

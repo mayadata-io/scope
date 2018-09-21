@@ -52,6 +52,7 @@ const (
 	SnapshotData         = report.KubernetesSnapshotData
 	HostName             = report.KubernetesHostName
 	StorageDriver        = report.KubernetesStorageDriver
+	VolumePod            = report.KubernetesVolumePod
 )
 
 // Exposed for testing
@@ -175,7 +176,7 @@ var (
 
 	VolumeSnapshotMetadataTemplates = report.MetadataTemplates{
 		NodeType:     {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Namespace:    {ID: Namespace, Label: "Name", From: report.FromLatest, Priority: 2},
+		Namespace:    {ID: Namespace, Label: "Namespace", From: report.FromLatest, Priority: 2},
 		VolumeClaim:  {ID: VolumeClaim, Label: "Persistent volume claim", From: report.FromLatest, Priority: 3},
 		SnapshotData: {ID: SnapshotData, Label: "Volume snapshot data", From: report.FromLatest, Priority: 4},
 		VolumeName:   {ID: VolumeName, Label: "Persistent volume", From: report.FromLatest, Priority: 5},

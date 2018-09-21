@@ -105,12 +105,14 @@ var primaryAPITopology = map[string]string{
 	report.ECSService:            "ecs-services",
 	report.SwarmService:          "swarm-services",
 	report.Host:                  "hosts",
-	report.PersistentVolume:      "pods",
-	report.PersistentVolumeClaim: "pods",
-	report.StorageClass:          "pods",
+	report.PersistentVolume:      "volumes",
+	report.PersistentVolumeClaim: "volumes",
+	report.StorageClass:          "volumes",
 	report.Disk:                  "hosts",
-	report.VolumeSnapshot:        "pods",
-	report.VolumeSnapshotData:    "pods",
+	report.VolumeSnapshot:        "volumes",
+	report.VolumeSnapshotData:    "volumes",
+	report.StoragePoolClaim:      "storage",
+	report.StoragePool:           "storage",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -387,41 +389,49 @@ func weaveNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 
 func persistentVolumeNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "persistent volume"
 	return base
 }
 
 func persistentVolumeClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "persistent volume claim"
 	return base
 }
 
 func storageClassNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "storage class"
 	return base
 }
 
 func diskNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "disk"
 	return base
 }
 
 func storagePoolNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "storage pool"
 	return base
 }
 
 func volumeSnapshotNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "volume snapshot"
 	return base
 }
 
 func storagePoolClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "storage pool claim"
 	return base
 }
 
 func volumeSnapshotDataNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "volume snapshot data"
 	return base
 }
 
