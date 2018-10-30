@@ -237,3 +237,4 @@ DC/OS is short for Datacenter Operating System, a distributed operating system u
 **See Also**
 
  * [Understanding Weave Scope](/site/how-it-works.md)
+ * [Scope's FAQ](/site/faq.md)
