@@ -144,7 +144,9 @@ func (v pvToControllerRenderer) Render(rpt report.Report) Nodes {
 				p.Children = p.Children.Add(volumeSnapshotNode)
 			}
 		}
-		nodes[pvNodeID] = p
+		if p.ID != "" {
+			nodes[pvNodeID] = p
+		}
 	}
 	return Nodes{Nodes: nodes}
 }
