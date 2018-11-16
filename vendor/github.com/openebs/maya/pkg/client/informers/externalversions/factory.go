@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import (
 
 	versioned "github.com/openebs/maya/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
-	openebs_io "github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io"
+	openebsio "github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -172,9 +172,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Openebs() openebs_io.Interface
+	Openebs() openebsio.Interface
 }
 
-func (f *sharedInformerFactory) Openebs() openebs_io.Interface {
-	return openebs_io.New(f, f.namespace, f.tweakListOptions)
+func (f *sharedInformerFactory) Openebs() openebsio.Interface {
+	return openebsio.New(f, f.namespace, f.tweakListOptions)
 }

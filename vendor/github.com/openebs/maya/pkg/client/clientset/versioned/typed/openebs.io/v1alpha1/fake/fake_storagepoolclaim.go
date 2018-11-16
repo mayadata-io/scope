@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ func (c *FakeStoragePoolClaims) DeleteCollection(options *v1.DeleteOptions, list
 // Patch applies the patch and returns the patched storagePoolClaim.
 func (c *FakeStoragePoolClaims) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.StoragePoolClaim, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewRootPatchSubresourceAction(storagepoolclaimsResource, name, data, subresources...), &v1alpha1.StoragePoolClaim{})
+		Invokes(testing.NewRootPatchSubresourceAction(storagepoolclaimsResource, name, pt, data, subresources...), &v1alpha1.StoragePoolClaim{})
 	if obj == nil {
 		return nil, err
 	}

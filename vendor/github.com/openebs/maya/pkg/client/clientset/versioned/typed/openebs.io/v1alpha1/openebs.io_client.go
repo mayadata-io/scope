@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ type OpenebsV1alpha1Interface interface {
 	CStorVolumesGetter
 	CStorVolumeReplicasGetter
 	DisksGetter
+	RunTasksGetter
 	StoragePoolsGetter
 	StoragePoolClaimsGetter
 }
@@ -59,6 +60,10 @@ func (c *OpenebsV1alpha1Client) CStorVolumeReplicas(namespace string) CStorVolum
 
 func (c *OpenebsV1alpha1Client) Disks() DiskInterface {
 	return newDisks(c)
+}
+
+func (c *OpenebsV1alpha1Client) RunTasks(namespace string) RunTaskInterface {
+	return newRunTasks(c, namespace)
 }
 
 func (c *OpenebsV1alpha1Client) StoragePools() StoragePoolInterface {

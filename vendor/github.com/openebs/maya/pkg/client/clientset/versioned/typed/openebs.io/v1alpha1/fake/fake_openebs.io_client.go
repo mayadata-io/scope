@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -46,6 +46,10 @@ func (c *FakeOpenebsV1alpha1) CStorVolumeReplicas(namespace string) v1alpha1.CSt
 
 func (c *FakeOpenebsV1alpha1) Disks() v1alpha1.DiskInterface {
 	return &FakeDisks{c}
+}
+
+func (c *FakeOpenebsV1alpha1) RunTasks(namespace string) v1alpha1.RunTaskInterface {
+	return &FakeRunTasks{c, namespace}
 }
 
 func (c *FakeOpenebsV1alpha1) StoragePools() v1alpha1.StoragePoolInterface {
