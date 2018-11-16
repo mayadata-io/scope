@@ -38,16 +38,18 @@ type CASTemplate struct {
 // CASTemplateSpec is the specifications for a CASTemplate resource
 type CASTemplateSpec struct {
 	// Defaults are a list of default configurations that may be applied
-	// during provisioning of a CAS volume
+	// during execution of CAS template
 	Defaults []Config `json:"defaultConfig"`
-	// TaskNamespace is the namespace where the tasks
-	// are expected to be found
+	// TaskNamespace is the namespace where the tasks are expected to be found
 	TaskNamespace string `json:"taskNamespace"`
 	// RunTasks refers to a set of tasks to be run
 	RunTasks RunTasks `json:"run"`
 	// OutputTask is the task that has the CAS template result's output
 	// format
 	OutputTask string `json:"output"`
+	// Fallback is the CASTemplate to fallback to in-case of specific failures
+	// e.g. VersionMismatchError, etc
+	Fallback string `json:"fallback"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -84,6 +86,11 @@ type RunTasks struct {
 	Tasks []string `json:"tasks"`
 }
 
+// +genclient
+// +genclient:noStatus
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +resource:path=runtask
+
 // RunTask forms the specifications that deal with running a CAS template
 // engine based task
 type RunTask struct {
@@ -103,4 +110,15 @@ type RunTaskSpec struct {
 	// against the result of this task's execution. In other words, this
 	// is run post the task execution.
 	PostRun string `json:"post"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +resource:path=runtasks
+
+// RunTaskList is a list of RunTask resources
+type RunTaskList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+
+	Items []RunTask `json:"items"`
 }

@@ -43,12 +43,13 @@ type StoragePoolClaimSpec struct {
 	Type         string        `json:"type"`
 	NodeSelector []string      `json:"nodeSelector"`
 	Capacity     string        `json:"capacity"`
-	MaxPools     int16         `json:"maxPools"`
+	MaxPools     int           `json:"maxPools"`
+	MinPools     int           `json:"minPools"`
 	Disks        DiskAttr      `json:"disks"`
 	PoolSpec     CStorPoolAttr `json:"poolSpec"`
 }
 
-// StoragePoolClaim is for handling status of pool.
+// StoragePoolClaimStatus is for handling status of pool.
 type StoragePoolClaimStatus struct {
 	Phase string `json:"phase"`
 }

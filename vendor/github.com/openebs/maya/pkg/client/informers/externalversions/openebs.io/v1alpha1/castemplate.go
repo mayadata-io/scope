@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package v1alpha1
 import (
 	time "time"
 
-	openebs_io_v1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	openebsiov1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 	versioned "github.com/openebs/maya/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
 	v1alpha1 "github.com/openebs/maya/pkg/client/listers/openebs.io/v1alpha1"
@@ -69,7 +69,7 @@ func NewFilteredCASTemplateInformer(client versioned.Interface, resyncPeriod tim
 				return client.OpenebsV1alpha1().CASTemplates().Watch(options)
 			},
 		},
-		&openebs_io_v1alpha1.CASTemplate{},
+		&openebsiov1alpha1.CASTemplate{},
 		resyncPeriod,
 		indexers,
 	)
@@ -80,7 +80,7 @@ func (f *cASTemplateInformer) defaultInformer(client versioned.Interface, resync
 }
 
 func (f *cASTemplateInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&openebs_io_v1alpha1.CASTemplate{}, f.defaultInformer)
+	return f.factory.InformerFor(&openebsiov1alpha1.CASTemplate{}, f.defaultInformer)
 }
 
 func (f *cASTemplateInformer) Lister() v1alpha1.CASTemplateLister {
