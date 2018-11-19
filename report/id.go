@@ -204,6 +204,12 @@ var (
 
 	// ParseVolumeSnapshotDataNodeID parses a volume snapshot data node ID
 	ParseVolumeSnapshotDataNodeID = parseSingleComponentID("volume_snapshot_data")
+
+	// MakeCStorVolumeNodeID produces a CStor Volume node ID from its composite parts.
+	MakeCStorVolumeNodeID = makeSingleComponentID("cstor_volume")
+
+	// ParseCStorVolumeNodeID parses a CStor Volume node ID
+	ParseCStorVolumeNodeID = parseSingleComponentID("cstor_volume")
 )
 
 // makeSingleComponentID makes a single-component node id encoder

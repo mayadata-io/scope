@@ -56,6 +56,7 @@ type Client interface {
 	WalkStoragePoolClaims(f func(StoragePoolClaim) error) error
 	WalkVolumeSnapshots(f func(VolumeSnapshot) error) error
 	WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
+	WalkCStorVolumes(f func(CStorVolume) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -92,6 +93,7 @@ type client struct {
 	storagePoolClaimStore      cache.Store
 	volumeSnapshotStore        cache.Store
 	volumeSnapshotDataStore    cache.Store
+	cStorvolumeStore           cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -202,6 +204,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.storagePoolClaimStore = result.setupStore("storagepoolclaims")
 	result.volumeSnapshotStore = result.setupStore("volumesnapshots")
 	result.volumeSnapshotDataStore = result.setupStore("volumesnapshotdatas")
+	result.cStorvolumeStore = result.setupStore("cstorvolumes")
 
 	return result, nil
 }
@@ -265,6 +268,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshot{}, nil
 	case "volumesnapshotdatas":
 		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshotData{}, nil
+	case "cstorvolumes":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolume{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -493,6 +498,16 @@ func (c *client) WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 	for _, m := range c.volumeSnapshotDataStore.List() {
 		volumeSnapshotData := m.(*snapshotv1.VolumeSnapshotData)
 		if err := f(NewVolumeSnapshotData(volumeSnapshotData)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkCStorVolumes(f func(CStorVolume) error) error {
+	for _, m := range c.cStorvolumeStore.List() {
+		cStorVolume := m.(*mayav1alpha1.CStorVolume)
+		if err := f(NewCStorVolume(cStorVolume)); err != nil {
 			return err
 		}
 	}

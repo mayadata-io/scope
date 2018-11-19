@@ -53,6 +53,7 @@ const (
 	HostName             = report.KubernetesHostName
 	StorageDriver        = report.KubernetesStorageDriver
 	VolumePod            = report.KubernetesVolumePod
+	CStorVolumeName      = report.KubernetesCStorVolumeName
 )
 
 // Exposed for testing
@@ -186,6 +187,11 @@ var (
 		NodeType:           {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		VolumeName:         {ID: VolumeName, Label: "Persistent volume", From: report.FromLatest, Priority: 2},
 		VolumeSnapshotName: {ID: VolumeSnapshotName, Label: "Volume snapshot", From: report.FromLatest, Priority: 3},
+	}
+
+	CStorVolumeMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -378,6 +384,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	cStorVolumeTopology, _, err := r.cStorVolumeTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -394,6 +404,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.StoragePoolClaim = result.StoragePoolClaim.Merge(storagePoolClaimTopology)
 	result.VolumeSnapshot = result.VolumeSnapshot.Merge(volumeSnapshotTopology)
 	result.VolumeSnapshotData = result.VolumeSnapshotData.Merge(volumeSnapshotDataTopology)
+	result.CStorVolume = result.CStorVolume.Merge(cStorVolumeTopology)
 	return result, nil
 }
 
@@ -629,6 +640,19 @@ func (r *Reporter) volumeSnapshotDataTopology() (report.Topology, []VolumeSnapsh
 		return nil
 	})
 	return result, volumeSnapshotDatas, err
+}
+
+func (r *Reporter) cStorVolumeTopology() (report.Topology, []CStorVolume, error) {
+	cStorVolumes := []CStorVolume{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorVolumeMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkCStorVolumes(func(p CStorVolume) error {
+		result.AddNode(p.GetNode())
+		cStorVolumes = append(cStorVolumes, p)
+		return nil
+	})
+	return result, cStorVolumes, err
 }
 
 type labelledChild interface {
