@@ -18,42 +18,43 @@ import (
 
 // These constants are keys used in node metadata
 const (
-	IP                   = report.KubernetesIP
-	ObservedGeneration   = report.KubernetesObservedGeneration
-	Replicas             = report.KubernetesReplicas
-	DesiredReplicas      = report.KubernetesDesiredReplicas
-	NodeType             = report.KubernetesNodeType
-	Model                = report.KubernetesModel
-	LogicalSectorSize    = report.KubernetesLogicalSectorSize
-	Storage              = report.KubernetesStorage
-	FirmwareRevision     = report.KubernetesFirmwareRevision
-	Serial               = report.KubernetesSerial
-	SpcVersion           = report.KubernetesSpcVersion
-	Vendor               = report.KubernetesVendor
-	DiskList             = report.KubernetesDiskList
-	MaxPools             = report.KubernetesMaxPools
-	APIVersion           = report.KubernetesAPIVersion
-	Value                = report.KubernetesValue
-	StoragePoolClaimName = report.KubernetesStoragePoolClaimName
-	Type                 = report.KubernetesType
-	Ports                = report.KubernetesPorts
-	VolumeClaim          = report.KubernetesVolumeClaim
-	StorageClassName     = report.KubernetesStorageClassName
-	DiskName             = report.KubernetesDiskName
-	PoolName             = report.KubernetesPoolName
-	PoolClaim            = report.KubernetesPoolClaim
-	AccessModes          = report.KubernetesAccessModes
-	ReclaimPolicy        = report.KubernetesReclaimPolicy
-	Status               = report.KubernetesStatus
-	Message              = report.KubernetesMessage
-	VolumeName           = report.KubernetesVolumeName
-	Provisioner          = report.KubernetesProvisioner
-	VolumeSnapshotName   = report.KubernetesVolumeSnapshotName
-	SnapshotData         = report.KubernetesSnapshotData
-	HostName             = report.KubernetesHostName
-	StorageDriver        = report.KubernetesStorageDriver
-	VolumePod            = report.KubernetesVolumePod
-	CStorVolumeName      = report.KubernetesCStorVolumeName
+	IP                     = report.KubernetesIP
+	ObservedGeneration     = report.KubernetesObservedGeneration
+	Replicas               = report.KubernetesReplicas
+	DesiredReplicas        = report.KubernetesDesiredReplicas
+	NodeType               = report.KubernetesNodeType
+	Model                  = report.KubernetesModel
+	LogicalSectorSize      = report.KubernetesLogicalSectorSize
+	Storage                = report.KubernetesStorage
+	FirmwareRevision       = report.KubernetesFirmwareRevision
+	Serial                 = report.KubernetesSerial
+	SpcVersion             = report.KubernetesSpcVersion
+	Vendor                 = report.KubernetesVendor
+	DiskList               = report.KubernetesDiskList
+	MaxPools               = report.KubernetesMaxPools
+	APIVersion             = report.KubernetesAPIVersion
+	Value                  = report.KubernetesValue
+	StoragePoolClaimName   = report.KubernetesStoragePoolClaimName
+	Type                   = report.KubernetesType
+	Ports                  = report.KubernetesPorts
+	VolumeClaim            = report.KubernetesVolumeClaim
+	StorageClassName       = report.KubernetesStorageClassName
+	DiskName               = report.KubernetesDiskName
+	PoolName               = report.KubernetesPoolName
+	PoolClaim              = report.KubernetesPoolClaim
+	AccessModes            = report.KubernetesAccessModes
+	ReclaimPolicy          = report.KubernetesReclaimPolicy
+	Status                 = report.KubernetesStatus
+	Message                = report.KubernetesMessage
+	VolumeName             = report.KubernetesVolumeName
+	Provisioner            = report.KubernetesProvisioner
+	VolumeSnapshotName     = report.KubernetesVolumeSnapshotName
+	SnapshotData           = report.KubernetesSnapshotData
+	HostName               = report.KubernetesHostName
+	StorageDriver          = report.KubernetesStorageDriver
+	VolumePod              = report.KubernetesVolumePod
+	CStorVolumeName        = report.KubernetesCStorVolumeName
+	CStorVolumeReplicaName = report.KubernetesCStorVolumeReplicaName
 )
 
 // Exposed for testing
@@ -192,6 +193,10 @@ var (
 	CStorVolumeMetadataTemplates = report.MetadataTemplates{
 		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		VolumeName: {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
+	}
+	CStorVolumeReplicaMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -388,6 +393,11 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+
+	cStorVolumeReplicaTopology, _, err := r.cStorVolumeReplicaTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.Host = result.Host.Merge(hostTopology)
@@ -405,6 +415,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.VolumeSnapshot = result.VolumeSnapshot.Merge(volumeSnapshotTopology)
 	result.VolumeSnapshotData = result.VolumeSnapshotData.Merge(volumeSnapshotDataTopology)
 	result.CStorVolume = result.CStorVolume.Merge(cStorVolumeTopology)
+	result.CStorVolumeReplica = result.CStorVolumeReplica.Merge(cStorVolumeReplicaTopology)
 	return result, nil
 }
 
@@ -653,6 +664,19 @@ func (r *Reporter) cStorVolumeTopology() (report.Topology, []CStorVolume, error)
 		return nil
 	})
 	return result, cStorVolumes, err
+}
+
+func (r *Reporter) cStorVolumeReplicaTopology() (report.Topology, []CStorVolumeReplica, error) {
+	cStorVolumeReplicas := []CStorVolumeReplica{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorVolumeReplicaMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkCStorVolumeReplicas(func(p CStorVolumeReplica) error {
+		result.AddNode(p.GetNode())
+		cStorVolumeReplicas = append(cStorVolumeReplicas, p)
+		return nil
+	})
+	return result, cStorVolumeReplicas, err
 }
 
 type labelledChild interface {

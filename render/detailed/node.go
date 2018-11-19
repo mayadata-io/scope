@@ -248,6 +248,13 @@ var nodeSummaryGroupSpecs = []struct {
 			Columns: []Column{},
 		},
 	},
+	{
+		topologyID: report.CStorVolumeReplica,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "CStor Volume Replica",
+			Columns: []Column{},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {

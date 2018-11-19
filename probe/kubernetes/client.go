@@ -57,6 +57,7 @@ type Client interface {
 	WalkVolumeSnapshots(f func(VolumeSnapshot) error) error
 	WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 	WalkCStorVolumes(f func(CStorVolume) error) error
+	WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -94,6 +95,7 @@ type client struct {
 	volumeSnapshotStore        cache.Store
 	volumeSnapshotDataStore    cache.Store
 	cStorvolumeStore           cache.Store
+	cStorvolumeReplicaStore    cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -205,6 +207,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.volumeSnapshotStore = result.setupStore("volumesnapshots")
 	result.volumeSnapshotDataStore = result.setupStore("volumesnapshotdatas")
 	result.cStorvolumeStore = result.setupStore("cstorvolumes")
+	result.cStorvolumeReplicaStore = result.setupStore("cstorvolumereplicas")
 
 	return result, nil
 }
@@ -270,6 +273,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshotData{}, nil
 	case "cstorvolumes":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolume{}, nil
+	case "cstorvolumereplicas":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolumeReplica{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -508,6 +513,16 @@ func (c *client) WalkCStorVolumes(f func(CStorVolume) error) error {
 	for _, m := range c.cStorvolumeStore.List() {
 		cStorVolume := m.(*mayav1alpha1.CStorVolume)
 		if err := f(NewCStorVolume(cStorVolume)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error {
+	for _, m := range c.cStorvolumeReplicaStore.List() {
+		cStorVolumeReplica := m.(*mayav1alpha1.CStorVolumeReplica)
+		if err := f(NewCStorVolumeReplica(cStorVolumeReplica)); err != nil {
 			return err
 		}
 	}
