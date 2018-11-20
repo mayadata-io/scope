@@ -58,6 +58,7 @@ type Client interface {
 	WalkVolumeSnapshotDatas(f func(VolumeSnapshotData) error) error
 	WalkCStorVolumes(f func(CStorVolume) error) error
 	WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error
+	WalkCStorPools(f func(CStorPool) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -96,6 +97,7 @@ type client struct {
 	volumeSnapshotDataStore    cache.Store
 	cStorvolumeStore           cache.Store
 	cStorvolumeReplicaStore    cache.Store
+	cStorPoolStore             cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -208,6 +210,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.volumeSnapshotDataStore = result.setupStore("volumesnapshotdatas")
 	result.cStorvolumeStore = result.setupStore("cstorvolumes")
 	result.cStorvolumeReplicaStore = result.setupStore("cstorvolumereplicas")
+	result.cStorPoolStore = result.setupStore("cstorpools")
 
 	return result, nil
 }
@@ -275,6 +278,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolume{}, nil
 	case "cstorvolumereplicas":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolumeReplica{}, nil
+	case "cstorpools":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPool{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -523,6 +528,16 @@ func (c *client) WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error
 	for _, m := range c.cStorvolumeReplicaStore.List() {
 		cStorVolumeReplica := m.(*mayav1alpha1.CStorVolumeReplica)
 		if err := f(NewCStorVolumeReplica(cStorVolumeReplica)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkCStorPools(f func(CStorPool) error) error {
+	for _, m := range c.cStorPoolStore.List() {
+		cStorPool := m.(*mayav1alpha1.CStorPool)
+		if err := f(NewCStorPool(cStorPool)); err != nil {
 			return err
 		}
 	}

@@ -33,3 +33,18 @@ func (v cStorVolumeReplicaRenderer) Render(rpt report.Report) Nodes {
 	}
 	return Nodes{Nodes: nodes}
 }
+
+//CStorPoolRenderer is a Renderer which produces a renderable openebs CStor Pool.
+var CStorPoolRenderer = cStorPoolRenderer{}
+
+//cStorPoolRenderer is a Renderer to render CStor Pool.
+type cStorPoolRenderer struct{}
+
+//Render renders the CVR.
+func (v cStorPoolRenderer) Render(rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for cspID, cspNode := range rpt.CStorPool.Nodes {
+		nodes[cspID] = cspNode
+	}
+	return Nodes{Nodes: nodes}
+}

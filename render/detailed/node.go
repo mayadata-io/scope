@@ -255,6 +255,13 @@ var nodeSummaryGroupSpecs = []struct {
 			Columns: []Column{},
 		},
 	},
+	{
+		topologyID: report.CStorPool,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "CStor Pool",
+			Columns: []Column{},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {

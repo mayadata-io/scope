@@ -55,6 +55,7 @@ const (
 	VolumePod              = report.KubernetesVolumePod
 	CStorVolumeName        = report.KubernetesCStorVolumeName
 	CStorVolumeReplicaName = report.KubernetesCStorVolumeReplicaName
+	CStorPoolName          = report.KubernetesCStorPoolName
 )
 
 // Exposed for testing
@@ -198,7 +199,10 @@ var (
 		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		VolumeName: {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
 	}
-
+	CStorPoolMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
+	}
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
@@ -393,8 +397,11 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
-
 	cStorVolumeReplicaTopology, _, err := r.cStorVolumeReplicaTopology()
+	if err != nil {
+		return result, err
+	}
+	cStorPoolTopology, _, err := r.cStorPoolTopology()
 	if err != nil {
 		return result, err
 	}
@@ -416,6 +423,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.VolumeSnapshotData = result.VolumeSnapshotData.Merge(volumeSnapshotDataTopology)
 	result.CStorVolume = result.CStorVolume.Merge(cStorVolumeTopology)
 	result.CStorVolumeReplica = result.CStorVolumeReplica.Merge(cStorVolumeReplicaTopology)
+	result.CStorPool = result.CStorPool.Merge(cStorPoolTopology)
 	return result, nil
 }
 
@@ -677,6 +685,19 @@ func (r *Reporter) cStorVolumeReplicaTopology() (report.Topology, []CStorVolumeR
 		return nil
 	})
 	return result, cStorVolumeReplicas, err
+}
+
+func (r *Reporter) cStorPoolTopology() (report.Topology, []CStorPool, error) {
+	cStorPool := []CStorPool{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorPoolMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkCStorPools(func(p CStorPool) error {
+		result.AddNode(p.GetNode())
+		cStorPool = append(cStorPool, p)
+		return nil
+	})
+	return result, cStorPool, err
 }
 
 type labelledChild interface {

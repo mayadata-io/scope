@@ -38,6 +38,7 @@ const (
 	VolumeSnapshotData    = "volume_snapshot_data"
 	CStorVolume           = "cstor_volume"
 	CStorVolumeReplica    = "cstor_volume_replica"
+	CStorPool             = "cstor_pool"
 
 	// Shapes used for different nodes
 	Circle         = "circle"
@@ -91,6 +92,7 @@ var topologyNames = []string{
 	VolumeSnapshotData,
 	CStorVolume,
 	CStorVolumeReplica,
+	CStorPool,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -214,6 +216,9 @@ type Report struct {
 
 	// CStorVolumeReplica represent all Kubernetes cStor volume replicas running in cluster
 	CStorVolumeReplica Topology
+
+	// CStorPool represent all Kubernetes cStor pools running in cluster
+	CStorPool Topology
 
 	DNS DNSRecords
 
@@ -349,6 +354,10 @@ func MakeReport() Report {
 			WithShape(Octagon).
 			WithLabel("cStor Volume Replica", "cStor Volume Replica"),
 
+		CStorPool: MakeTopology().
+			WithShape(Triangle).
+			WithLabel("cStor Pool", "cStor Pool"),
+
 		DNS: DNSRecords{},
 
 		Sampling: Sampling{},
@@ -475,6 +484,8 @@ func (r *Report) topology(name string) *Topology {
 		return &r.CStorVolume
 	case CStorVolumeReplica:
 		return &r.CStorVolumeReplica
+	case CStorPool:
+		return &r.CStorPool
 	}
 	return nil
 }
