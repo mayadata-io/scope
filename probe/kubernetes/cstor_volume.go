@@ -24,7 +24,7 @@ func NewCStorVolume(p *mayav1alpha1.CStorVolume) CStorVolume {
 
 // GetNode returns updated node with CStor Volume details
 func (p *cStorVolume) GetNode() report.Node {
-	return p.MetaNode(report.MakeCStorVolumeNodeID(p.UID())).WithLatests(map[string]string{
+	return p.MetaNode(report.MakeCStorVolumeNodeID(p.Name())).WithLatests(map[string]string{
 		NodeType:   "CStor Volume",
 		APIVersion: p.APIVersion,
 	})

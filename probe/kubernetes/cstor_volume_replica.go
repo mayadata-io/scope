@@ -9,6 +9,8 @@ import (
 type CStorVolumeReplica interface {
 	Meta
 	GetNode() report.Node
+	GetCStorVolume() string
+	GetCStorPool() string
 }
 
 // cStorVolume represents cStor Volume Replica CR
@@ -24,8 +26,33 @@ func NewCStorVolumeReplica(p *mayav1alpha1.CStorVolumeReplica) CStorVolumeReplic
 
 // GetNode returns updated node with CStor Volume details
 func (p *cStorVolumeReplica) GetNode() report.Node {
-	return p.MetaNode(report.MakeCStorVolumeNodeID(p.UID())).WithLatests(map[string]string{
+	var cStorPoolNodeID string
+	latests := map[string]string{
 		NodeType:   "CStor Volume Replica",
 		APIVersion: p.APIVersion,
-	})
+	}
+	if p.GetCStorVolume() != "" {
+		latests[CStorVolumeName] = p.GetCStorVolume()
+	}
+	if p.GetCStorPool() != "" {
+		cStorPoolNodeID = report.MakeCStorPoolNodeID(p.GetCStorPool())
+	}
+
+	if p.GetCStorPool() != "" {
+		latests[CStorPoolUID] = p.GetCStorPool()
+	}
+
+	return p.MetaNode(report.MakeCStorVolumeNodeID(p.UID())).
+		WithLatests(latests).
+		WithAdjacent(cStorPoolNodeID)
+}
+
+func (p *cStorVolumeReplica) GetCStorVolume() string {
+	cStorVolumeName := p.Labels()["cstorvolume.openebs.io/name"]
+	return cStorVolumeName
+}
+
+func (p *cStorVolumeReplica) GetCStorPool() string {
+	cStorVolumeUID := p.Labels()["cstorpool.openebs.io/uid"]
+	return cStorVolumeUID
 }

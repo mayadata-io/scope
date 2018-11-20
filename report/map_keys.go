@@ -107,6 +107,7 @@ const (
 	KubernetesCStorVolumeName             = "kubernetes_cstor_volume"
 	KubernetesCStorVolumeReplicaName      = "kubernetes_cstor_volume_replica"
 	KubernetesCStorPoolName               = "kubernetes_cstor_pool"
+	KubernetesCStorPoolUID                = "kubernetes_cstor_pool_uid"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

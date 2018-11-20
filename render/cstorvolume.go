@@ -1,6 +1,7 @@
 package render
 
 import (
+	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/report"
 )
 
@@ -12,39 +13,34 @@ type cStorVolumeRenderer struct{}
 
 //Render renders the CV.
 func (v cStorVolumeRenderer) Render(rpt report.Report) Nodes {
-	nodes := make(report.Nodes)
+	cStorNodes := make(report.Nodes)
+
 	for cvID, cvNode := range rpt.CStorVolume.Nodes {
-		nodes[cvID] = cvNode
+		cStorNodes[cvID] = cvNode
 	}
-	return Nodes{Nodes: nodes}
-}
 
-//CStorVolumeReplicaRenderer is a Renderer which produces a renderable openebs CVR.
-var CStorVolumeReplicaRenderer = cStorVolumeReplicaRenderer{}
-
-//cStorVolumeReplicaRenderer is a Renderer to render CStor Volume Replica.
-type cStorVolumeReplicaRenderer struct{}
-
-//Render renders the CVR.
-func (v cStorVolumeReplicaRenderer) Render(rpt report.Report) Nodes {
-	nodes := make(report.Nodes)
-	for cvrID, cvrNode := range rpt.CStorVolumeReplica.Nodes {
-		nodes[cvrID] = cvrNode
-	}
-	return Nodes{Nodes: nodes}
-}
-
-//CStorPoolRenderer is a Renderer which produces a renderable openebs CStor Pool.
-var CStorPoolRenderer = cStorPoolRenderer{}
-
-//cStorPoolRenderer is a Renderer to render CStor Pool.
-type cStorPoolRenderer struct{}
-
-//Render renders the CVR.
-func (v cStorPoolRenderer) Render(rpt report.Report) Nodes {
-	nodes := make(report.Nodes)
 	for cspID, cspNode := range rpt.CStorPool.Nodes {
-		nodes[cspID] = cspNode
+		cStorNodes[cspID] = cspNode
 	}
-	return Nodes{Nodes: nodes}
+
+	for cvrID, cvrNode := range rpt.CStorVolumeReplica.Nodes {
+		cStorVolume, _ := cvrNode.Latest.Lookup(kubernetes.CStorVolumeName)
+		cStorVolumeNodeID := report.MakeCStorVolumeNodeID(cStorVolume)
+
+		if cvNode, ok := cStorNodes[cStorVolumeNodeID]; ok {
+			cvNode.Adjacency = cvNode.Adjacency.Add(cvrID)
+			cvNode.Children = cvNode.Children.Add(cvrNode)
+			cStorNodes[cStorVolumeNodeID] = cvNode
+		}
+
+		cStorPoolUID, _ := cvrNode.Latest.Lookup(kubernetes.CStorPoolUID)
+		cStorPoolNodeID := report.MakeCStorPoolNodeID(cStorPoolUID)
+		if cStorPoolNode, ok := cStorNodes[cStorPoolNodeID]; ok {
+			cvrNode.Children = cvrNode.Children.Add(cStorPoolNode)
+		}
+
+		cStorNodes[cvrID] = cvrNode
+	}
+
+	return Nodes{Nodes: cStorNodes}
 }

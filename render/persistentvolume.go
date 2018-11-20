@@ -16,8 +16,6 @@ var KubernetesVolumesRenderer = MakeReduce(
 	PVToControllerRenderer,
 	VolumeSnapshotRenderer,
 	CStorVolumeRenderer,
-	CStorVolumeReplicaRenderer,
-	CStorPoolRenderer,
 	MakeFilter(
 		func(n report.Node) bool {
 			value, _ := n.Latest.Lookup(kubernetes.VolumePod)

@@ -56,6 +56,7 @@ const (
 	CStorVolumeName        = report.KubernetesCStorVolumeName
 	CStorVolumeReplicaName = report.KubernetesCStorVolumeReplicaName
 	CStorPoolName          = report.KubernetesCStorPoolName
+	CStorPoolUID           = report.KubernetesCStorPoolUID
 )
 
 // Exposed for testing
