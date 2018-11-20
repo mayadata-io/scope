@@ -9,6 +9,7 @@ import (
 type CStorVolume interface {
 	Meta
 	GetNode() report.Node
+	GetPersistentVolumeName() string
 }
 
 // cStorVolume represents cStor Volume CR
@@ -24,8 +25,18 @@ func NewCStorVolume(p *mayav1alpha1.CStorVolume) CStorVolume {
 
 // GetNode returns updated node with CStor Volume details
 func (p *cStorVolume) GetNode() report.Node {
-	return p.MetaNode(report.MakeCStorVolumeNodeID(p.Name())).WithLatests(map[string]string{
+	latests := map[string]string{
 		NodeType:   "CStor Volume",
 		APIVersion: p.APIVersion,
-	})
+	}
+	if p.GetPersistentVolumeName() != "" {
+		latests[VolumeName] = p.GetPersistentVolumeName()
+	}
+
+	return p.MetaNode(report.MakeCStorVolumeNodeID(p.Name())).WithLatests(latests)
+}
+
+func (p *cStorVolume) GetPersistentVolumeName() string {
+	persistentVolumeName := p.Labels()["openebs.io/persistent-volume"]
+	return persistentVolumeName
 }
