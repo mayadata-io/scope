@@ -25,6 +25,12 @@ var storageComponents = map[string]string{
 	"disk":                    "disk",
 }
 
+var cStorComponents = map[string]string{
+	"cstor_volume":         "cstor_volume",
+	"cstor_volume_replica": "cstor_volume_replica",
+	"cstor_pool":           "cstor_pool",
+}
+
 // CustomRenderer allow for mapping functions that received the entire topology
 // in one call - useful for functions that need to consider the entire graph.
 // We should minimise the use of this renderer type, as it is very inflexible.
@@ -153,6 +159,34 @@ func IsNotSnapshotComponent(node report.Node) bool {
 	if node.Topology == "volume_snapshot" || node.Topology == "volume_snapshot_data" {
 		return false
 	}
+	return true
+}
+
+//IsCStorCustomResource checks whether given node is cStor CR
+func IsCStorCustomResource(node report.Node) bool {
+	if _, ok := cStorComponents[node.Topology]; ok {
+		return ok
+	}
+
+	if _, ok := storageComponents[node.Topology]; ok {
+		return true
+	}
+
+	if node.Topology == report.Pod {
+		_, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
+		if ok {
+			return true
+		}
+	}
+	return false
+}
+
+//IsNotCStorCustomResource ignores cStor Components
+func IsNotCStorCustomResource(node report.Node) bool {
+	if _, ok := cStorComponents[node.Topology]; ok {
+		return false
+	}
+
 	return true
 }
 

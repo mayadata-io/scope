@@ -66,6 +66,14 @@ var (
 			{Value: "hide", Label: "Hide snapshots", filter: render.IsNotSnapshotComponent, filterPseudo: false},
 		},
 	}
+	podsFilter = APITopologyOptionGroup{
+		ID:      "cstor",
+		Default: "hide",
+		Options: []APITopologyOption{
+			{Value: "show", Label: "Show pods", filter: render.IsNotCStorCustomResource, filterPseudo: false},
+			{Value: "hide", Label: "Show custom resources", filter: render.IsCStorCustomResource, filterPseudo: false},
+		},
+	}
 )
 
 // namespaceFilters generates a namespace selector option group based on the given namespaces
@@ -316,7 +324,7 @@ func MakeRegistry() *Registry {
 			parent:      hostsID,
 			renderer:    render.KubernetesVolumesRenderer,
 			Name:        "Volumes",
-			Options:     []APITopologyOptionGroup{snapshotFilter, unmanagedFilter},
+			Options:     []APITopologyOptionGroup{podsFilter, snapshotFilter, unmanagedFilter},
 			HideIfEmpty: true,
 		},
 	)
