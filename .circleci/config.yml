@@ -31,10 +31,17 @@ workflows:
             - lint
             - unit-test
             - build
-      - deploy:
+      - deploy-stag:
           filters:
             branches:
               only: staging
+          requires:
+            - client-test
+            - integration-tests
+      - deploy-prod:
+          filters:
+            branches:
+              only: production
           requires:
             - client-test
             - integration-tests
@@ -150,7 +157,7 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts
 
-  deploy:
+  deploy-stag:
     <<: *defaults
     environment:
       IMAGES: scope cloud-agent
@@ -169,4 +176,25 @@ jobs:
           for IMAGE in $IMAGES; do
               docker tag weaveworks/scope:latest openebs/scope:latest
               docker push openebs/scope:latest
+          done
+
+  deploy-prod:
+    <<: *defaults
+    environment:
+      IMAGES: scope cloud-agent
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - run: |
+          pip install awscli
+          docker load -i scope.tar
+          docker load -i cloud-agent.tar
+      - run: |
+          test -z "${DOCKER_USER}" && exit 0
+          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+          for IMAGE in $IMAGES; do
+              docker tag weaveworks/scope:latest openebs/scope:v1.11.$CIRCLE_BUILD_NUM
+              docker push openebs/scope:v1.11.$CIRCLE_BUILD_NUM
           done
