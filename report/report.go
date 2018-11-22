@@ -34,6 +34,8 @@ const (
 	VolumeSnapshot        = "volume_snapshot"
 	VolumeSnapshotData    = "volume_snapshot_data"
 	Job                   = "job"
+	Disk                  = "disk"
+	StoragePoolClaim      = "storage_pool_claim"
 
 	// Shapes used for different nodes
 	Circle         = "circle"
@@ -49,6 +51,10 @@ const (
 	StorageSheet   = "sheet"
 	Camera         = "camera"
 	DottedTriangle = "dottedtriangle"
+	DottedSquare   = "dottedsquare"
+	Controller     = "controller"
+	Replica        = "replica"
+	Rectangle      = "rectangle"
 
 	// Used when counting the number of containers
 	ContainersKey = "containers"
@@ -79,6 +85,8 @@ var topologyNames = []string{
 	VolumeSnapshot,
 	VolumeSnapshotData,
 	Job,
+	Disk,
+	StoragePoolClaim,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -187,6 +195,14 @@ type Report struct {
 
 	// Job represent all Kubernetes Job on hosts running probes.
 	Job Topology
+
+	// Disk represent all NDM Disks on hosts running probes.
+	// Metadata is limited for now, more to come later.
+	Disk Topology
+
+	// StoragePoolClaim represent all the CRD kubernetes Storage Pool Claims on hosts running probes.
+	// Metadata is limited for now, more to come later.
+	StoragePoolClaim Topology
 
 	DNS DNSRecords
 
@@ -307,6 +323,14 @@ func MakeReport() Report {
 			WithShape(DottedTriangle).
 			WithLabel("job", "jobs"),
 
+		Disk: MakeTopology().
+			WithShape(Rectangle).
+			WithLabel("disk", "disks"),
+
+		StoragePoolClaim: MakeTopology().
+			WithShape(DottedSquare).
+			WithLabel("storage pool claim", "storage pool claims"),
+
 		DNS: DNSRecords{},
 
 		Sampling: Sampling{},
@@ -425,6 +449,10 @@ func (r *Report) topology(name string) *Topology {
 		return &r.VolumeSnapshotData
 	case Job:
 		return &r.Job
+	case Disk:
+		return &r.Disk
+	case StoragePoolClaim:
+		return &r.StoragePoolClaim
 	}
 	return nil
 }
