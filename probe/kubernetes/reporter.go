@@ -15,25 +15,41 @@ import (
 
 // These constants are keys used in node metadata
 const (
-	IP                 = report.KubernetesIP
-	ObservedGeneration = report.KubernetesObservedGeneration
-	Replicas           = report.KubernetesReplicas
-	DesiredReplicas    = report.KubernetesDesiredReplicas
-	NodeType           = report.KubernetesNodeType
-	Type               = report.KubernetesType
-	Ports              = report.KubernetesPorts
-	VolumeClaim        = report.KubernetesVolumeClaim
-	StorageClassName   = report.KubernetesStorageClassName
-	AccessModes        = report.KubernetesAccessModes
-	ReclaimPolicy      = report.KubernetesReclaimPolicy
-	Status             = report.KubernetesStatus
-	Message            = report.KubernetesMessage
-	VolumeName         = report.KubernetesVolumeName
-	Provisioner        = report.KubernetesProvisioner
-	StorageDriver      = report.KubernetesStorageDriver
-	VolumeSnapshotName = report.KubernetesVolumeSnapshotName
-	SnapshotData       = report.KubernetesSnapshotData
-	VolumeCapacity     = report.KubernetesVolumeCapacity
+	IP                   = report.KubernetesIP
+	ObservedGeneration   = report.KubernetesObservedGeneration
+	Replicas             = report.KubernetesReplicas
+	DesiredReplicas      = report.KubernetesDesiredReplicas
+	NodeType             = report.KubernetesNodeType
+	Type                 = report.KubernetesType
+	Ports                = report.KubernetesPorts
+	VolumeClaim          = report.KubernetesVolumeClaim
+	StorageClassName     = report.KubernetesStorageClassName
+	AccessModes          = report.KubernetesAccessModes
+	ReclaimPolicy        = report.KubernetesReclaimPolicy
+	Status               = report.KubernetesStatus
+	Message              = report.KubernetesMessage
+	VolumeName           = report.KubernetesVolumeName
+	Provisioner          = report.KubernetesProvisioner
+	StorageDriver        = report.KubernetesStorageDriver
+	VolumeSnapshotName   = report.KubernetesVolumeSnapshotName
+	SnapshotData         = report.KubernetesSnapshotData
+	VolumeCapacity       = report.KubernetesVolumeCapacity
+	Model                = report.KubernetesModel
+	LogicalSectorSize    = report.KubernetesLogicalSectorSize
+	Storage              = report.KubernetesStorage
+	FirmwareRevision     = report.KubernetesFirmwareRevision
+	Serial               = report.KubernetesSerial
+	Vendor               = report.KubernetesVendor
+	DiskList             = report.KubernetesDiskList
+	MaxPools             = report.KubernetesMaxPools
+	APIVersion           = report.KubernetesAPIVersion
+	Value                = report.KubernetesValue
+	StoragePoolClaimName = report.KubernetesStoragePoolClaimName
+	DiskName             = report.KubernetesDiskName
+	PoolName             = report.KubernetesPoolName
+	PoolClaim            = report.KubernetesPoolClaim
+	HostName             = report.KubernetesHostName
+	VolumePod            = report.KubernetesVolumePod
 )
 
 // Exposed for testing
@@ -153,6 +169,23 @@ var (
 	}
 
 	JobMetricTemplates = PodMetricTemplates
+	
+	DiskMetadataTemplates = report.MetadataTemplates{
+		NodeType:          {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Model:             {ID: Model, Label: "Model", From: report.FromLatest, Priority: 2},
+		Serial:            {ID: Serial, Label: "Serial", From: report.FromLatest, Priority: 3},
+		Vendor:            {ID: Vendor, Label: "Vendor", From: report.FromLatest, Priority: 4},
+		FirmwareRevision:  {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 5},
+		LogicalSectorSize: {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 6},
+		Storage:           {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 7},
+	}
+
+	StoragePoolClaimMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		APIVersion: {ID: APIVersion, Label: "API Version", From: report.FromLatest, Priority: 2},
+		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
+		MaxPools:   {ID: MaxPools, Label: "MaxPools", From: report.FromLatest, Priority: 4},
+	}
 
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
@@ -346,7 +379,14 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
-
+	diskTopology, _, err := r.diskTopology()
+	if err != nil {
+		return result, err
+	}
+	storagePoolClaimTopology, _, err := r.storagePoolClaimTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -360,6 +400,8 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.VolumeSnapshot = result.VolumeSnapshot.Merge(volumeSnapshotTopology)
 	result.VolumeSnapshotData = result.VolumeSnapshotData.Merge(volumeSnapshotDataTopology)
 	result.Job = result.Job.Merge(jobTopology)
+	result.Disk = result.Disk.Merge(diskTopology)
+	result.StoragePoolClaim = result.StoragePoolClaim.Merge(storagePoolClaimTopology)
 	return result, nil
 }
 
@@ -545,6 +587,32 @@ func (r *Reporter) jobTopology() (report.Topology, []Job, error) {
 		return nil
 	})
 	return result, jobs, err
+}
+
+func (r *Reporter) diskTopology() (report.Topology, []Disk, error) {
+	disks := []Disk{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(DiskMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkDisks(func(p Disk) error {
+		result.AddNode(p.GetNode())
+		disks = append(disks, p)
+		return nil
+	})
+	return result, disks, err
+}
+
+func (r *Reporter) storagePoolClaimTopology() (report.Topology, []StoragePoolClaim, error) {
+	storagePoolClaims := []StoragePoolClaim{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(StoragePoolClaimMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkStoragePoolClaims(func(p StoragePoolClaim) error {
+		result.AddNode(p.GetNode())
+		storagePoolClaims = append(storagePoolClaims, p)
+		return nil
+	})
+	return result, storagePoolClaims, err
 }
 
 type labelledChild interface {

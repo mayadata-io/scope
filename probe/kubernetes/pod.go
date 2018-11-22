@@ -16,6 +16,21 @@ const (
 	RestartCount    = report.KubernetesRestartCount
 )
 
+// Pod labels to get pv name, if it is a controller/target or replica pod
+const (
+	PersistentVolumeLabel = "openebs.io/persistent-volume"
+	VSMLabel              = "vsm"
+	PVLabel               = "openebs.io/pv"
+)
+
+// Pod label to distinguish replica pod or cstor pool pod
+const (
+	AppLabel         = "app"
+	AppValue         = "cstor-pool"
+	ReplicaPodLabel  = "openebs.io/replica"
+	JivaReplicaValue = "jiva-replica"
+)
+
 // Pod represents a Kubernetes pod
 type Pod interface {
 	Meta
@@ -25,6 +40,8 @@ type Pod interface {
 	RestartCount() uint
 	ContainerNames() []string
 	VolumeClaimNames() []string
+	GetVolumeName() string
+	IsReplicaOrPoolPod() bool
 }
 
 type pod struct {
@@ -71,6 +88,33 @@ func (p *pod) RestartCount() uint {
 	return count
 }
 
+func (p *pod) IsReplicaOrPoolPod() bool {
+	replicaPod, _ := p.GetLabels()[ReplicaPodLabel]
+	cstorPoolPod, _ := p.GetLabels()[AppLabel]
+	if replicaPod == JivaReplicaValue || cstorPoolPod == AppValue {
+		return true
+	}
+	return false
+}
+
+func (p *pod) GetVolumeName() string {
+	if strings.Contains(p.GetName(), "-rep-") {
+		return ""
+	}
+
+	var volumeName string
+	var ok bool
+
+	if volumeName, ok = p.GetLabels()[VSMLabel]; ok {
+		return volumeName
+	} else if volumeName, ok = p.GetLabels()[PersistentVolumeLabel]; ok {
+		return volumeName
+	} else if volumeName, ok = p.GetLabels()[PVLabel]; ok {
+		return volumeName
+	}
+	return ""
+}
+
 func (p *pod) VolumeClaimNames() []string {
 	var claimNames []string
 	for _, volume := range p.Spec.Volumes {
@@ -93,10 +137,20 @@ func (p *pod) GetNode(probeID string) report.Node {
 		// PVC name consist of lower case alphanumeric characters, "-" or "."
 		// and must start and end with an alphanumeric character.
 		latests[VolumeClaim] = strings.Join(p.VolumeClaimNames(), report.ScopeDelim)
+		latests[VolumePod] = "true"
 	}
 
 	if p.Pod.Spec.HostNetwork {
 		latests[IsInHostNetwork] = "true"
+	}
+
+	if p.GetVolumeName() != "" {
+		latests[VolumeName] = p.GetVolumeName()
+		latests[VolumePod] = "true"
+	}
+
+	if p.IsReplicaOrPoolPod() {
+		latests[VolumePod] = "true"
 	}
 
 	return p.MetaNode(report.MakePodNodeID(p.UID())).WithLatests(latests).

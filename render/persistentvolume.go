@@ -13,8 +13,19 @@ var KubernetesVolumesRenderer = MakeReduce(
 	VolumesRenderer,
 	PodToVolumeRenderer,
 	PVCToStorageClassRenderer,
-	PVToSnapshotRenderer,
+	PVToControllerRenderer,
 	VolumeSnapshotRenderer,
+	SPToDiskRenderer,
+	MakeFilter(
+		func(n report.Node) bool {
+			value, _ := n.Latest.Lookup(kubernetes.VolumePod)
+			if value == "true" {
+				return true
+			}
+			return false
+		},
+		PodRenderer,
+	),
 )
 
 // VolumesRenderer is a Renderer which produces a renderable kubernetes PV & PVC
@@ -70,7 +81,9 @@ func (v podToVolumesRenderer) Render(ctx context.Context, rpt report.Report) Nod
 				}
 			}
 		}
-		nodes[podID] = podNode
+		if found {
+			nodes[podID] = podNode
+		}
 	}
 	return Nodes{Nodes: nodes}
 }
@@ -87,6 +100,7 @@ func (v pvcToStorageClassRenderer) Render(ctx context.Context, rpt report.Report
 	nodes := make(report.Nodes)
 	for scID, scNode := range rpt.StorageClass.Nodes {
 		storageClass, _ := scNode.Latest.Lookup(report.KubernetesName)
+		spcNameFromValue, _ := scNode.Latest.Lookup(kubernetes.Value)
 		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
 			storageClassName, _ := pvcNode.Latest.Lookup(report.KubernetesStorageClassName)
 			if storageClassName == storageClass {
@@ -94,22 +108,44 @@ func (v pvcToStorageClassRenderer) Render(ctx context.Context, rpt report.Report
 				scNode.Children = scNode.Children.Add(pvcNode)
 			}
 		}
+
+		// Expecting spcName from sc instead obtained a string i.e  - name: StoragePoolClaim value: "spcName" .
+		// Hence we are spliting it to get spcName.
+		if strings.Contains(spcNameFromValue, "\"") {
+			storageValue := strings.Split(spcNameFromValue, "\"")
+			spcNameFromValue = storageValue[1]
+			for _, spcNode := range rpt.StoragePoolClaim.Nodes {
+				spcName, _ := spcNode.Latest.Lookup(kubernetes.Name)
+				if spcName == spcNameFromValue {
+					scNode.Adjacency = scNode.Adjacency.Add(spcNode.ID)
+					scNode.Children = scNode.Children.Add(spcNode)
+				}
+			}
+		}
 		nodes[scID] = scNode
 	}
 	return Nodes{Nodes: nodes}
 }
 
-//PVToSnapshotRenderer is a Renderer which produces a renderable kubernetes PV
-var PVToSnapshotRenderer = pvToSnapshotRenderer{}
+//PVToControllerRenderer is a Renderer which produces a renderable kubernetes PVC
+var PVToControllerRenderer = pvToControllerRenderer{}
 
-//pvToSnapshotRenderer is a Renderer to render PV & Snapshot.
-type pvToSnapshotRenderer struct{}
+//pvTocontrollerRenderer is a Renderer to render PV & Controller.
+type pvToControllerRenderer struct{}
 
-//Render renders the PV & Snapshot nodes with adjacency.
-func (v pvToSnapshotRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
+//Render renders the PV & Controller nodes with adjacency.
+func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for pvNodeID, p := range rpt.PersistentVolume.Nodes {
 		volumeName, _ := p.Latest.Lookup(report.KubernetesName)
+		for _, podNode := range rpt.Pod.Nodes {
+			podVolumeName, _ := podNode.Latest.Lookup(kubernetes.VolumeName)
+			if volumeName == podVolumeName {
+				p.Adjacency = p.Adjacency.Add(podNode.ID)
+				p.Children = p.Children.Add(podNode)
+			}
+		}
+
 		for _, volumeSnapshotNode := range rpt.VolumeSnapshot.Nodes {
 			snapshotPVName, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesVolumeName)
 			if volumeName == snapshotPVName {
@@ -117,7 +153,9 @@ func (v pvToSnapshotRenderer) Render(ctx context.Context, rpt report.Report) Nod
 				p.Children = p.Children.Add(volumeSnapshotNode)
 			}
 		}
-		nodes[pvNodeID] = p
+		if p.ID != "" {
+			nodes[pvNodeID] = p
+		}
 	}
 	return Nodes{Nodes: nodes}
 }

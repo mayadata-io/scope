@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/weaveworks/common/test"
 	"github.com/weaveworks/scope/probe/docker"
 	"github.com/weaveworks/scope/probe/kubernetes"
@@ -313,6 +314,7 @@ func TestMakeDetailedPodNode(t *testing.T) {
 	}
 	have := detailed.MakeNode("pods", detailed.RenderContext{Report: fixture.Report}, renderableNodes, renderableNode)
 
+	logrus.Infof("Have %+v", have.Metadata)
 	containerNodeSummary := child(t, render.ContainerWithImageNameRenderer, fixture.ServerContainerNodeID)
 	serverProcessNodeSummary := child(t, render.ProcessRenderer, fixture.ServerProcessNodeID)
 	want := detailed.Node{
@@ -320,7 +322,7 @@ func TestMakeDetailedPodNode(t *testing.T) {
 			BasicNodeSummary: detailed.BasicNodeSummary{
 				ID:         id,
 				Label:      "pong-b",
-				LabelMinor: "1 container",
+				LabelMinor: "Pod of 1 container",
 				Rank:       "ping/pong-b",
 				Shape:      "heptagon",
 				Tag:        "",
@@ -377,7 +379,7 @@ func TestMakeDetailedPodNode(t *testing.T) {
 						ID:         connectionID(fixture.ClientPodNodeID, ""),
 						NodeID:     fixture.ClientPodNodeID,
 						Label:      "pong-a",
-						LabelMinor: "1 container",
+						LabelMinor: "Pod of 1 container",
 						Metadata: []report.MetadataRow{
 							{
 								ID:    "port",
