@@ -35,11 +35,11 @@ class Footer extends React.Component {
 
   render() {
     const {
-      hostname, version, versionUpdate, contrastMode
+      version, versionUpdate, contrastMode
     } = this.props;
 
     const otherContrastModeTitle = contrastMode
-      ? 'Switch to normal contrast' : 'Switch to high contrast';
+      ? 'Switch to high contrast' : 'Switch to normal contrast';
     const forceRelayoutTitle = 'Force re-layout (might reduce edge crossings, '
       + 'but may shift nodes around)';
     const versionUpdateTitle = versionUpdate
@@ -61,8 +61,6 @@ class Footer extends React.Component {
           }
           <span className="footer-label">Version</span>
           {version || '...'}
-          <span className="footer-label">on</span>
-          {hostname}
         </div>
 
         <div className="footer-plugins">
@@ -99,7 +97,6 @@ class Footer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    hostname: state.get('hostname'),
     topologyViewMode: state.get('topologyViewMode'),
     version: state.get('version'),
     versionUpdate: state.get('versionUpdate'),

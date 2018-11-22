@@ -1,6 +1,10 @@
 package render
 
 import (
+	"context"
+	"strings"
+
+	"github.com/weaveworks/scope/probe/kubernetes"
 	"github.com/weaveworks/scope/report"
 )
 
@@ -14,6 +18,7 @@ var HostRenderer = MakeReduce(
 	CustomRenderer{RenderFunc: nodes2Hosts, Renderer: ContainerImageRenderer},
 	CustomRenderer{RenderFunc: nodes2Hosts, Renderer: PodRenderer},
 	MapEndpoints(endpoint2Host, report.Host),
+	DiskRenderer,
 )
 
 // nodes2Hosts maps any Nodes to host Nodes.
@@ -55,4 +60,32 @@ func endpoint2Host(n report.Node) string {
 		return hostNodeID
 	}
 	return ""
+}
+
+// DiskRenderer is a Renderer which produces a renderable NDM Disk
+var DiskRenderer = diskRenderer{}
+
+//diskRenderer is a Renderer to render disk nodes.
+type diskRenderer struct{}
+
+//Render will render the Disk and add Adjacency in host nodes i.e Host->Disk.
+func (v diskRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for hostNodeID, h := range rpt.Host.Nodes {
+		hostName, _ := h.Latest.Lookup(report.HostNodeID)
+		if strings.Contains(hostName, ";") {
+			hostid := strings.Split(hostName, ";")
+			hostName = hostid[0]
+			for diskNode, d := range rpt.Disk.Nodes {
+				Label, _ := d.Latest.Lookup(kubernetes.HostName)
+				if strings.ToLower(hostName) == Label {
+					h.Adjacency = h.Adjacency.Add(d.ID)
+					h.Children = h.Children.Add(d)
+				}
+				nodes[diskNode] = d
+			}
+			nodes[hostNodeID] = h
+		}
+	}
+	return Nodes{Nodes: nodes}
 }

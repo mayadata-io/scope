@@ -170,6 +170,12 @@ func (c *mockClient) WalkVolumeSnapshots(f func(kubernetes.VolumeSnapshot) error
 func (c *mockClient) WalkVolumeSnapshotData(f func(kubernetes.VolumeSnapshotData) error) error {
 	return nil
 }
+func (c *mockClient) WalkDisks(f func(kubernetes.Disk) error) error {
+	return nil
+}
+func (c *mockClient) WalkStoragePoolClaims(f func(kubernetes.StoragePoolClaim) error) error {
+	return nil
+}
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
 func (c *mockClient) GetLogs(namespaceID, podName string, _ []string) (io.ReadCloser, error) {
 	r, ok := c.logs[namespaceID+";"+podName]

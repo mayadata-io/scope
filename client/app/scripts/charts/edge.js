@@ -6,7 +6,7 @@ import { enterEdge, leaveEdge } from '../actions/app-actions';
 import { encodeIdAttribute, decodeIdAttribute } from '../utils/dom-utils';
 
 function isStorageComponent(id) {
-  const storageComponents = ['<persistent_volume>', '<storage_class>', '<persistent_volume_claim>', '<volume_snapshot>', '<volume_snapshot_data>'];
+  const storageComponents = ['<persistent_volume>', '<storage_class>', '<persistent_volume_claim>', '<volume_snapshot>', '<volume_snapshot_data>', '<storage_pool>', '<disk>', '<storage_pool_claim>'];
   return storageComponents.includes(id);
 }
 

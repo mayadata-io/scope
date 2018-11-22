@@ -43,7 +43,7 @@
     "reselect": "3.0.1",
     "reselect-map": "1.0.3",
     "styled-components": "2.2.4",
-    "weaveworks-ui-components": "0.15.2",
+    "weaveworks-ui-components": "https://github.com/openebs/ui-components.git",
     "whatwg-fetch": "2.0.3",
     "xterm": "3.3.0"
   },
@@ -99,7 +99,7 @@
   },
   "scripts": {
     "build": "webpack --config webpack.production.config.js",
-    "build-external": "EXTERNAL=true webpack --config webpack.production.config.js",
+    "build-external": "EXTERNAL=false webpack --config webpack.production.config.js",
     "copy-pkg-files": "cp package.json build-pkg/ && cp -R app/styles build-pkg/",
     "build-pkg": "mkdir -p build-pkg && node node_modules/.bin/babel app/scripts --ignore __tests__ --out-dir build-pkg && yarn run copy-pkg-files",
     "bundle": "mkdir -p bundle && yarn run build-pkg && cd ./build-pkg && yarn pack --filename ../bundle/weave-scope.tgz",
