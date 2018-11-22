@@ -3,7 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import '../styles/main.scss';
+// loading app with contrast theme
+import '../styles/contrast.scss';
 import '../images/favicon.ico';
 import configureStore from './stores/configureStore';
 
