@@ -1,5 +1,4 @@
-import { GRAPH_VIEW_MODE, RESOURCE_VIEW_MODE } from './naming';
-
+import { GRAPH_VIEW_MODE, TABLE_VIEW_MODE, RESOURCE_VIEW_MODE } from './naming';
 
 export const DETAILS_PANEL_WIDTH = 420;
 export const DETAILS_PANEL_OFFSET = 8;
@@ -85,6 +84,9 @@ export const CANVAS_MARGINS = {
   [GRAPH_VIEW_MODE]: {
     top: 220, left: 80, right: 80, bottom: 150
   },
+  [TABLE_VIEW_MODE]: {
+    top: 220, left: 40, right: 40, bottom: 30
+  },
   [RESOURCE_VIEW_MODE]: {
     top: 200, left: 210, right: 40, bottom: 150
   },
@@ -92,41 +94,70 @@ export const CANVAS_MARGINS = {
 
 // Node details table constants
 export const NODE_DETAILS_TABLE_CW = {
-  XS: '32px',
+  XS: '42px',
   // 6 chars wide with our current font choices, (pids can be 6, ports only 5).
   S: '56px',
   M: '70px',
   L: '85px',
-  XL: '120px',
-  XXL: '140px',
-  XXXL: '170px',
+  XL: '100px',
+  XXL: '120px',
+  XXXL: '140px',
+  XXXXL: '170px',
 };
 
 export const NODE_DETAILS_TABLE_COLUMN_WIDTHS = {
+
   count: NODE_DETAILS_TABLE_CW.XS,
   container: NODE_DETAILS_TABLE_CW.XS,
-  docker_container_created: NODE_DETAILS_TABLE_CW.XXXL,
+  docker_container_hostname: NODE_DETAILS_TABLE_CW.M,
+  docker_container_created: NODE_DETAILS_TABLE_CW.XXXXL,
   docker_container_restart_count: NODE_DETAILS_TABLE_CW.M,
-  docker_container_state_human: NODE_DETAILS_TABLE_CW.XXXL,
+  docker_container_state_human: NODE_DETAILS_TABLE_CW.XXXXL,
   docker_container_uptime: NODE_DETAILS_TABLE_CW.L,
   docker_cpu_total_usage: NODE_DETAILS_TABLE_CW.M,
   docker_memory_usage: NODE_DETAILS_TABLE_CW.M,
   open_files_count: NODE_DETAILS_TABLE_CW.M,
   pid: NODE_DETAILS_TABLE_CW.S,
   port: NODE_DETAILS_TABLE_CW.S,
-  ppid: NODE_DETAILS_TABLE_CW.M, // Label "Parent PID" needs more space
+  ppid: NODE_DETAILS_TABLE_CW.S,
   process_cpu_usage_percent: NODE_DETAILS_TABLE_CW.M,
   process_memory_usage_bytes: NODE_DETAILS_TABLE_CW.M,
   threads: NODE_DETAILS_TABLE_CW.M,
+  label: NODE_DETAILS_TABLE_CW.XL,
+  hosts: NODE_DETAILS_TABLE_CW.XL,
+  services: NODE_DETAILS_TABLE_CW.XL,
+  CPU: NODE_DETAILS_TABLE_CW.L,
 
   // e.g. details panel > pods
-  kubernetes_ip: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_name: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_namespace: NODE_DETAILS_TABLE_CW.L,
+  kubernetes_ip: NODE_DETAILS_TABLE_CW.XXL,
   kubernetes_state: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_created: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_volume_claim: NODE_DETAILS_TABLE_CW.XXL,
+  kubernetes_volume_name: NODE_DETAILS_TABLE_CW.XXL,
+  kubernetes_volumesnapshotdata: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_message: NODE_DETAILS_TABLE_CW.M,
+  kubernetes_access_modes: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_provisioner: NODE_DETAILS_TABLE_CW.L,
+  kubernetes_reclaim_policy: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_restart_count: NODE_DETAILS_TABLE_CW.L,
+  kubernetes_storage_class_name: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_storage_driver: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_node_type: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_status: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_throughput_r: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_throughput_w: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_throughputr: NODE_DETAILS_TABLE_CW.XL,
+  kubernetes_labels_: NODE_DETAILS_TABLE_CW.XL,
+  'kube-containers': NODE_DETAILS_TABLE_CW.M,
+  r: NODE_DETAILS_TABLE_CW.M,
+  lops: NODE_DETAILS_TABLE_CW.M,
 
   // weave connections
-  weave_connection_connection: NODE_DETAILS_TABLE_CW.XXL,
+  weave_connection_connection: NODE_DETAILS_TABLE_CW.XXXL,
   weave_connection_state: NODE_DETAILS_TABLE_CW.L,
-  weave_connection_info: NODE_DETAILS_TABLE_CW.XL,
+  weave_connection_info: NODE_DETAILS_TABLE_CW.XXL,
 };
 
 export const NODE_DETAILS_TABLE_XS_LABEL = {
