@@ -72,10 +72,10 @@ jobs:
     steps:
       - checkout
       # Convoluted set of steps here to mimic Makefile actions of bind-mounting different dirs into container
-      - run: mv client/app /home/weave/
-      - run: cd /home/weave; mkdir build         ; yarn run build         ; mv build          scope/client
-      - run: cd /home/weave; mkdir build-external; yarn run build-external; mv build-external scope/client
-      - run: cd /home/weave; mkdir tmp           ; yarn run bundle        ; mv tmp            scope
+      - run: mv client/* /home/weave/
+      - run: cd /home/weave; mkdir build         ; yarn install; yarn run build         ; mv build          scope/client
+      - run: cd /home/weave; mkdir build-external; yarn install; yarn run build-external; mv build-external scope/client
+      - run: cd /home/weave; mkdir tmp           ; yarn install; yarn run bundle        ; mv tmp            scope
       - persist_to_workspace:
           root: /home/weave/scope
           paths:
