@@ -15,6 +15,7 @@ var KubernetesVolumesRenderer = MakeReduce(
 	PVCToStorageClassRenderer,
 	PVToSnapshotRenderer,
 	VolumeSnapshotRenderer,
+	KubernetesStorageRenderer,
 )
 
 // VolumesRenderer is a Renderer which produces a renderable kubernetes PV & PVC
