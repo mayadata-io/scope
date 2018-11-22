@@ -1,5 +1,3 @@
-import { NODE_DETAILS_TABLE_COLUMN_WIDTHS } from '../constants/styles';
-
 export function isGenericTable(table) {
   return (table.type || (table.get && table.get('type'))) === 'multicolumn-table';
 }
@@ -36,6 +34,6 @@ export function getTableColumnsStyles(headers) {
     textAlign: isNumber(header) ? 'right' : 'left',
     // More beauty hacking, ports and counts can only get
     // so big, free up WS for other longer fields like IPs!
-    width: NODE_DETAILS_TABLE_COLUMN_WIDTHS[header.id]
+    width: isNumber(header.id) ? '85px' : '120px'
   }));
 }
