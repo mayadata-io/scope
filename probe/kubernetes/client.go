@@ -14,6 +14,10 @@ import (
 
 	snapshotv1 "github.com/openebs/k8s-snapshot-client/snapshot/pkg/apis/volumesnapshot/v1"
 	snapshot "github.com/openebs/k8s-snapshot-client/snapshot/pkg/client/clientset/versioned"
+
+	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	mayaclient "github.com/openebs/maya/pkg/client/clientset/versioned"
+
 	"github.com/pborman/uuid"
 	log "github.com/sirupsen/logrus"
 	apiappsv1 "k8s.io/api/apps/v1"
@@ -56,6 +60,8 @@ type Client interface {
 	WalkVolumeSnapshots(f func(VolumeSnapshot) error) error
 	WalkVolumeSnapshotData(f func(VolumeSnapshotData) error) error
 	WalkJobs(f func(Job) error) error
+	WalkDisks(f func(Disk) error) error
+	WalkStoragePoolClaims(f func(StoragePoolClaim) error) error
 
 	WatchPods(f func(Event, Pod))
 
@@ -88,6 +94,7 @@ type client struct {
 	quit                       chan struct{}
 	client                     *kubernetes.Clientset
 	snapshotClient             *snapshot.Clientset
+	mayaClient                 *mayaclient.Clientset
 	podStore                   cache.Store
 	serviceStore               cache.Store
 	deploymentStore            cache.Store
@@ -102,6 +109,8 @@ type client struct {
 	storageClassStore          cache.Store
 	volumeSnapshotStore        cache.Store
 	volumeSnapshotDataStore    cache.Store
+	diskStore                  cache.Store
+	storagePoolClaimStore      cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -175,10 +184,16 @@ func NewClient(config ClientConfig) (Client, error) {
 		return nil, err
 	}
 
+	mc, err := mayaclient.NewForConfig(restConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	result := &client{
 		quit:           make(chan struct{}),
 		client:         c,
 		snapshotClient: sc,
+		mayaClient:     mc,
 	}
 
 	result.podStore = NewEventStore(result.triggerPodWatches, cache.MetaNamespaceKeyFunc)
@@ -197,6 +212,8 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.storageClassStore = result.setupStore("storageclasses")
 	result.volumeSnapshotStore = result.setupStore("volumesnapshots")
 	result.volumeSnapshotDataStore = result.setupStore("volumesnapshotdatas")
+	result.diskStore = result.setupStore("disks")
+	result.storagePoolClaimStore = result.setupStore("storagepoolclaims")
 
 	return result, nil
 }
@@ -253,6 +270,10 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshot{}, nil
 	case "volumesnapshotdatas":
 		return c.snapshotClient.VolumesnapshotV1().RESTClient(), &snapshotv1.VolumeSnapshotData{}, nil
+	case "disks":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.Disk{}, nil
+	case "storagepoolclaims":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePoolClaim{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -461,6 +482,26 @@ func (c *client) WalkJobs(f func(Job) error) error {
 	for _, m := range c.jobStore.List() {
 		job := m.(*apibatchv1.Job)
 		if err := f(NewJob(job)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkDisks(f func(Disk) error) error {
+	for _, m := range c.diskStore.List() {
+		disk := m.(*mayav1alpha1.Disk)
+		if err := f(NewDisk(disk)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkStoragePoolClaims(f func(StoragePoolClaim) error) error {
+	for _, m := range c.storagePoolClaimStore.List() {
+		spc := m.(*mayav1alpha1.StoragePoolClaim)
+		if err := f(NewStoragePoolClaim(spc)); err != nil {
 			return err
 		}
 	}
