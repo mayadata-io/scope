@@ -169,7 +169,6 @@ a {
   left: 0;
   line-height: 150%;
   margin: 0;
-  overflow: auto;
   position: fixed;
   right: 0;
   top: 0;
@@ -388,7 +387,6 @@ a {
     color: $text-secondary-color;
     width: 33%;
     height: 550px;
-
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1648,6 +1646,12 @@ a {
     }
   }
 
+  .node-details-table{
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 100%;
+  }
+
   .node-details-table-wrapper-wrapper {
 
     flex: 1;
@@ -1658,6 +1662,8 @@ a {
     .node-details-table-wrapper {
       margin: 0;
       flex: 1;
+      overflow-x: auto;
+      overflow-y: auto;
     }
 
     .nodes-grid-graph {
@@ -1720,7 +1726,6 @@ a {
 
     tbody {
       display: block;
-      overflow-y: scroll;
     }
   }
 }
