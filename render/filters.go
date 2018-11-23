@@ -143,15 +143,6 @@ func IsConnected(node report.Node) bool {
 	return ok
 }
 
-// // IsPodComponent check whether given node is everything but PV, PVC, SC
-// func IsPodComponent(node report.Node) bool {
-// 	var ok bool
-// 	if _, ok := storageComponents[node.Topology]; ok {
-// 		return !ok
-// 	}
-// 	return !ok
-// }
-
 // IsNonSnapshotComponent checks whether given node is everything but Volume Snapshot, Volume Snapshot Data
 func IsNonSnapshotComponent(node report.Node) bool {
 	if node.Topology == "volume_snapshot" || node.Topology == "volume_snapshot_data" {
