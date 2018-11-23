@@ -338,15 +338,15 @@ func MakeReport() Report {
 
 		//FIXME: Change shape to actual CV shape
 		CStorVolume: MakeTopology().
-			WithShape(Circle).
+			WithShape(Controller).
 			WithLabel("cStor Volume", "cStor Volumes"),
 
 		CStorVolumeReplica: MakeTopology().
-			WithShape(Octagon).
+			WithShape(Replica).
 			WithLabel("cStor Volume Replica", "cStor Volume Replica"),
 
 		CStorPool: MakeTopology().
-			WithShape(Triangle).
+			WithShape(Square).
 			WithLabel("cStor Pool", "cStor Pool"),
 
 		DNS: DNSRecords{},

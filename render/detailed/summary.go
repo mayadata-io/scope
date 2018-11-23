@@ -454,6 +454,7 @@ func cStorVolumeReplicaNodeSummary(base BasicNodeSummary, n report.Node) BasicNo
 func cStorPoolNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
 	base.LabelMinor = "cStor Pool"
+	base.Stack = true
 	return base
 }
 
