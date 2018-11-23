@@ -27,6 +27,7 @@ var cStorComponents = map[string]string{
 	"cstor_volume":         "cstor_volume",
 	"cstor_volume_replica": "cstor_volume_replica",
 	"cstor_pool":           "cstor_pool",
+	"disk":                 "disk",
 }
 
 // CustomRenderer allow for mapping functions that received the entire topology
