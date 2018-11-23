@@ -65,6 +65,7 @@ type NodeSummary struct {
 	Metrics   []report.MetricRow   `json:"metrics,omitempty"`
 	Tables    []report.Table       `json:"tables,omitempty"`
 	Adjacency report.IDList        `json:"adjacency,omitempty"`
+	NodeTag   string               `json:"nodeTag,omitempty"`
 }
 
 var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
@@ -172,6 +173,7 @@ func MakeNodeSummary(rc RenderContext, n report.Node) (NodeSummary, bool) {
 		BasicNodeSummary: base,
 		Parents:          Parents(rc.Report, n),
 		Adjacency:        n.Adjacency,
+		NodeTag:          n.NodeTag,
 	}
 	// Only include metadata, metrics, tables when it's not a group node
 	if _, ok := n.Counters.Lookup(n.Topology); !ok {
