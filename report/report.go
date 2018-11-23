@@ -36,6 +36,9 @@ const (
 	Job                   = "job"
 	Disk                  = "disk"
 	StoragePoolClaim      = "storage_pool_claim"
+	CStorVolume           = "cstor_volume"
+	CStorVolumeReplica    = "cstor_volume_replica"
+	CStorPool             = "cstor_pool"
 
 	// Shapes used for different nodes
 	Circle         = "circle"
@@ -87,6 +90,9 @@ var topologyNames = []string{
 	Job,
 	Disk,
 	StoragePoolClaim,
+	CStorVolume,
+	CStorVolumeReplica,
+	CStorPool,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -195,6 +201,15 @@ type Report struct {
 
 	// Job represent all Kubernetes Job on hosts running probes.
 	Job Topology
+
+	// CStorVolume represent all Kubernetes cStor volumes running in cluster
+	CStorVolume Topology
+
+	// CStorVolumeReplica represent all Kubernetes cStor volume replicas running in cluster
+	CStorVolumeReplica Topology
+
+	// CStorPool represent all Kubernetes cStor pools running in cluster
+	CStorPool Topology
 
 	// Disk represent all NDM Disks on hosts running probes.
 	// Metadata is limited for now, more to come later.
@@ -331,6 +346,19 @@ func MakeReport() Report {
 			WithShape(DottedSquare).
 			WithLabel("storage pool claim", "storage pool claims"),
 
+		//FIXME: Change shape to actual CV shape
+		CStorVolume: MakeTopology().
+			WithShape(Controller).
+			WithLabel("cStor Volume", "cStor Volumes"),
+
+		CStorVolumeReplica: MakeTopology().
+			WithShape(Replica).
+			WithLabel("cStor Volume Replica", "cStor Volume Replica"),
+
+		CStorPool: MakeTopology().
+			WithShape(Square).
+			WithLabel("cStor Pool", "cStor Pool"),
+
 		DNS: DNSRecords{},
 
 		Sampling: Sampling{},
@@ -463,6 +491,12 @@ func (r *Report) topology(name string) *Topology {
 		return &r.Disk
 	case StoragePoolClaim:
 		return &r.StoragePoolClaim
+	case CStorVolume:
+		return &r.CStorVolume
+	case CStorVolumeReplica:
+		return &r.CStorVolumeReplica
+	case CStorPool:
+		return &r.CStorPool
 	}
 	return nil
 }
