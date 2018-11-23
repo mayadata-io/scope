@@ -153,6 +153,12 @@ class NodesChartElements extends React.Component {
     // old versions of scope reports have a node shape of `storagesheet`
     // if so, normalise to `sheet`
     const shape = node.get('shape') === 'storagesheet' ? 'sheet' : node.get('shape');
+    let nodeTag;
+    if (node.get('nodeTag') === undefined) {
+      nodeTag = node.get('tag');
+    } else {
+      nodeTag = node.get('nodeTag');
+    }
 
     return (
       <NodeContainer
@@ -162,7 +168,7 @@ class NodesChartElements extends React.Component {
         focused={node.get('focused')}
         highlighted={node.get('highlighted')}
         shape={shape}
-        tag={node.get('tag')}
+        tag={nodeTag}
         stacked={node.get('stack')}
         key={node.get('id')}
         id={node.get('id')}
