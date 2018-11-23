@@ -91,6 +91,9 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.VolumeSnapshotData:    volumeSnapshotDataNodeSummary,
 	report.Disk:                  diskNodeSummary,
 	report.StoragePoolClaim:      storagePoolClaimNodeSummary,
+	report.CStorVolume:           cStorVolumeNodeSummary,
+	report.CStorVolumeReplica:    cStorVolumeReplicaNodeSummary,
+	report.CStorPool:             cStorPoolNodeSummary,
 }
 
 // For each report.Topology, map to a 'primary' API topology. This can then be used in a variety of places.
@@ -115,6 +118,9 @@ var primaryAPITopology = map[string]string{
 	report.VolumeSnapshotData:    "volumes",
 	report.Disk:                  "hosts",
 	report.StoragePoolClaim:      "pools",
+	report.CStorVolume:           "volumes",
+	report.CStorVolumeReplica:    "volumes",
+	report.CStorPool:             "volumes",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -430,6 +436,24 @@ func storagePoolClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNode
 	base = addKubernetesLabelAndRank(base, n)
 	base.LabelMinor = "Storage pool claim"
 	base.Stack = true
+	return base
+}
+
+func cStorVolumeNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "cStor Volume"
+	return base
+}
+
+func cStorVolumeReplicaNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "cStor Volume Replica"
+	return base
+}
+
+func cStorPoolNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "cStor Pool"
 	return base
 }
 

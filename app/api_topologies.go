@@ -55,7 +55,7 @@ var (
 		Default: "hide",
 		Options: []APITopologyOption{
 			{Value: "show", Label: "Show storage", filter: nil, filterPseudo: false},
-			{Value: "hide", Label: "Hide storage", filter: render.IsPodComponent, filterPseudo: false},
+			{Value: "hide", Label: "Hide storage", filter: nil, filterPseudo: false},
 		},
 	}
 	snapshotFilter = APITopologyOptionGroup{
@@ -64,6 +64,14 @@ var (
 		Options: []APITopologyOption{
 			{Value: "show", Label: "Show snapshots", filter: nil, filterPseudo: false},
 			{Value: "hide", Label: "Hide snapshots", filter: render.IsNonSnapshotComponent, filterPseudo: false},
+		},
+	}
+	podsFilter = APITopologyOptionGroup{
+		ID:      "cstor",
+		Default: "hide",
+		Options: []APITopologyOption{
+			{Value: "show", Label: "Show pods", filter: render.IsNotCStorCustomResource, filterPseudo: false},
+			{Value: "hide", Label: "Show custom resources", filter: render.IsCStorCustomResource, filterPseudo: false},
 		},
 	}
 )
@@ -316,7 +324,7 @@ func MakeRegistry() *Registry {
 			parent:      hostsID,
 			renderer:    render.KubernetesVolumesRenderer,
 			Name:        "Volumes",
-			Options:     []APITopologyOptionGroup{snapshotFilter, unmanagedFilter},
+			Options:     []APITopologyOptionGroup{podsFilter, snapshotFilter, unmanagedFilter},
 			HideIfEmpty: true,
 		},
 	)
