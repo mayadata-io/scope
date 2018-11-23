@@ -11,6 +11,7 @@ import (
 // KubernetesVolumesRenderer is a Renderer which combines all Kubernetes
 // volumes components such as stateful Pods, Persistent Volume, Persistent Volume Claim, Storage Class.
 var KubernetesVolumesRenderer = MakeReduce(
+	CStorVolumeRenderer,
 	VolumesRenderer,
 	PodToVolumeRenderer,
 	PVCToStorageClassRenderer,
@@ -154,6 +155,16 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 				p.Children = p.Children.Add(volumeSnapshotNode)
 			}
 		}
+
+		for cvID, cvNode := range rpt.CStorVolume.Nodes {
+			pvName, _ := cvNode.Latest.Lookup(kubernetes.VolumeName)
+			if pvName == volumeName {
+				p.Adjacency = p.Adjacency.Add(cvID)
+				p.Children = p.Children.Add(cvNode)
+			}
+			nodes[pvNodeID] = p
+		}
+
 		if p.ID != "" {
 			nodes[pvNodeID] = p
 		}
