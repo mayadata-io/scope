@@ -11,6 +11,7 @@ type CStorVolumeReplica interface {
 	GetNode() report.Node
 	GetCStorVolume() string
 	GetCStorPool() string
+	GetStatus() string
 }
 
 // cStorVolume represents cStor Volume Replica CR
@@ -42,6 +43,10 @@ func (p *cStorVolumeReplica) GetNode() report.Node {
 		latests[CStorPoolUID] = p.GetCStorPool()
 	}
 
+	if p.GetStatus() != "" {
+		latests[CStorVolumeReplicaStatus] = p.GetStatus()
+	}
+
 	return p.MetaNode(report.MakeCStorVolumeNodeID(p.UID())).
 		WithLatests(latests).
 		WithAdjacent(cStorPoolNodeID)
@@ -55,4 +60,9 @@ func (p *cStorVolumeReplica) GetCStorVolume() string {
 func (p *cStorVolumeReplica) GetCStorPool() string {
 	cStorVolumeUID := p.Labels()["cstorpool.openebs.io/uid"]
 	return cStorVolumeUID
+}
+
+func (p *cStorVolumeReplica) GetStatus() string {
+	status := p.Status.Phase
+	return string(status)
 }

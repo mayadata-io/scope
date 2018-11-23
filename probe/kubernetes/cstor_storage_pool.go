@@ -9,6 +9,7 @@ import (
 type CStorPool interface {
 	Meta
 	GetNode() report.Node
+	GetStatus() string
 }
 
 // cStorPool represents cStor Volume CSP
@@ -24,8 +25,18 @@ func NewCStorPool(p *mayav1alpha1.CStorPool) CStorPool {
 
 // GetNode returns updated node with CStor Volume details
 func (p *cStorPool) GetNode() report.Node {
-	return p.MetaNode(report.MakeCStorPoolNodeID(p.UID())).WithLatests(map[string]string{
+	latests := map[string]string{
 		NodeType:   "CStor Pool",
 		APIVersion: p.APIVersion,
-	})
+	}
+
+	if p.GetStatus() != "" {
+		latests[CStorPoolStatus] = p.GetStatus()
+	}
+	return p.MetaNode(report.MakeCStorPoolNodeID(p.UID())).WithLatests(latests)
+}
+
+func (p *cStorPool) GetStatus() string {
+	status := p.Status.Phase
+	return string(status)
 }
