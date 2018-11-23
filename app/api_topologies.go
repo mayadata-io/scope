@@ -50,14 +50,6 @@ var (
 			{Value: "hide", Label: "Hide unmanaged", filter: render.IsNotPseudo, filterPseudo: true},
 		},
 	}
-	storageFilter = APITopologyOptionGroup{
-		ID:      "storage",
-		Default: "hide",
-		Options: []APITopologyOption{
-			{Value: "show", Label: "Show storage", filter: nil, filterPseudo: false},
-			{Value: "hide", Label: "Hide storage", filter: nil, filterPseudo: false},
-		},
-	}
 	snapshotFilter = APITopologyOptionGroup{
 		ID:      "snapshot",
 		Default: "hide",
@@ -68,10 +60,10 @@ var (
 	}
 	podsFilter = APITopologyOptionGroup{
 		ID:      "cstor",
-		Default: "hide",
+		Default: "showCRs",
 		Options: []APITopologyOption{
-			{Value: "show", Label: "Show pods", filter: render.IsNotCStorCustomResource, filterPseudo: false},
-			{Value: "hide", Label: "Show custom resources", filter: render.IsCStorCustomResource, filterPseudo: false},
+			{Value: "showPods", Label: "Show pods", filter: render.IsNotCStorCustomResource, filterPseudo: false},
+			{Value: "showCRs", Label: "Show custom resources", filter: render.IsCStorCustomResource, filterPseudo: false},
 		},
 	}
 )
