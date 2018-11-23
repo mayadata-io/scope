@@ -19,6 +19,8 @@ var storageComponents = map[string]string{
 	"storage_class":           "storage_class",
 	"storage_pool_claim":      "storage_pool_claim",
 	"disk":                    "disk",
+	"volume_snapshot":         "volume_snapshot",
+	"volume_snapshot_data":    "volume_snapshot_data",
 }
 
 var cStorComponents = map[string]string{
