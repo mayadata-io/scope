@@ -59,6 +59,20 @@ const (
 	CStorPoolStatus          = report.KubernetesCStorPoolStatus
 )
 
+var (
+	// CStorVolumeStatusMap is map of status and node tag
+	CStorVolumeStatusMap = map[string]string{
+		"degraded":   "degraded",
+		"error":      "failed",
+		"healthy":    "",
+		"init":       "",
+		"invalid":    "notpermitted",
+		"offline":    "offline",
+		"online":     "",
+		"rebuilding": "reload",
+	}
+)
+
 // Exposed for testing
 var (
 	PodMetadataTemplates = report.MetadataTemplates{
