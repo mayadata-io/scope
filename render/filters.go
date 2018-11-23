@@ -15,6 +15,21 @@ const (
 	swarmNamespaceLabel = "com.docker.stack.namespace"
 )
 
+var storageComponents = map[string]string{
+	"persistent_volume":       "persistent_volume",
+	"persistent_volume_claim": "persistent_volume_claim",
+	"storage_class":           "storage_class",
+	"storage_pool_claim":      "storage_pool_claim",
+	"disk":                    "disk",
+}
+
+var cStorComponents = map[string]string{
+	"cstor_volume":         "cstor_volume",
+	"cstor_volume_replica": "cstor_volume_replica",
+	"cstor_pool":           "cstor_pool",
+	"disk":                 "disk",
+}
+
 // CustomRenderer allow for mapping functions that received the entire topology
 // in one call - useful for functions that need to consider the entire graph.
 // We should minimise the use of this renderer type, as it is very inflexible.
@@ -129,19 +144,36 @@ func IsConnected(node report.Node) bool {
 	return ok
 }
 
-// IsPodComponent check whether given node is everything but PV, PVC, SC
-func IsPodComponent(node report.Node) bool {
-	var ok bool
-	ok = true
-	if node.Topology == "persistent_volume" || node.Topology == "persistent_volume_claim" || node.Topology == "storage_class" {
-		ok = false
-	}
-	return ok
-}
-
 // IsNonSnapshotComponent checks whether given node is everything but Volume Snapshot, Volume Snapshot Data
 func IsNonSnapshotComponent(node report.Node) bool {
 	if node.Topology == "volume_snapshot" || node.Topology == "volume_snapshot_data" {
+		return false
+	}
+	return true
+}
+
+//IsCStorCustomResource checks whether given node is cStor CR
+func IsCStorCustomResource(node report.Node) bool {
+	if _, ok := cStorComponents[node.Topology]; ok {
+		return ok
+	}
+
+	if _, ok := storageComponents[node.Topology]; ok {
+		return true
+	}
+
+	if node.Topology == report.Pod {
+		_, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
+		if ok {
+			return true
+		}
+	}
+	return false
+}
+
+//IsNotCStorCustomResource ignores cStor Components
+func IsNotCStorCustomResource(node report.Node) bool {
+	if _, ok := cStorComponents[node.Topology]; ok {
 		return false
 	}
 	return true
