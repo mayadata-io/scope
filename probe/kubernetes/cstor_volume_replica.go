@@ -1,6 +1,8 @@
 package kubernetes
 
 import (
+	"strings"
+
 	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 	"github.com/weaveworks/scope/report"
 )
@@ -12,6 +14,7 @@ type CStorVolumeReplica interface {
 	GetCStorVolume() string
 	GetCStorPool() string
 	GetStatus() string
+	GetNodeTagOnStatus(status string) string
 }
 
 // cStorVolume represents cStor Volume Replica CR
@@ -47,9 +50,10 @@ func (p *cStorVolumeReplica) GetNode() report.Node {
 		latests[CStorVolumeReplicaStatus] = p.GetStatus()
 	}
 
-	return p.MetaNode(report.MakeCStorVolumeNodeID(p.UID())).
+	return p.MetaNode(report.MakeCStorVolumeReplicaNodeID(p.UID())).
 		WithLatests(latests).
-		WithAdjacent(cStorPoolNodeID)
+		WithAdjacent(cStorPoolNodeID).
+		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(p.GetStatus())))
 }
 
 func (p *cStorVolumeReplica) GetCStorVolume() string {
@@ -65,4 +69,11 @@ func (p *cStorVolumeReplica) GetCStorPool() string {
 func (p *cStorVolumeReplica) GetStatus() string {
 	status := p.Status.Phase
 	return string(status)
+}
+
+func (p *cStorVolumeReplica) GetNodeTagOnStatus(status string) string {
+	if status != "" {
+		return CStorVolumeStatusMap[status]
+	}
+	return ""
 }
