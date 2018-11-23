@@ -12,6 +12,7 @@ import (
 type Node struct {
 	ID             string                   `json:"id,omitempty"`
 	Topology       string                   `json:"topology,omitempty"`
+	NodeTag        string                   `json:"nodeTag,omitempty"`
 	Counters       Counters                 `json:"counters,omitempty"`
 	Sets           Sets                     `json:"sets,omitempty"`
 	Adjacency      IDList                   `json:"adjacency,omitempty"`
@@ -26,6 +27,7 @@ type Node struct {
 func MakeNode(id string) Node {
 	return Node{
 		ID:             id,
+		NodeTag:        "",
 		Counters:       MakeCounters(),
 		Sets:           MakeSets(),
 		Adjacency:      MakeIDList(),
@@ -172,6 +174,12 @@ func (n Node) WithChild(child Node) Node {
 	return n
 }
 
+// WithNodeTag retrun a fresh copy of n, with node shape.
+func (n Node) WithNodeTag(nodeTag string) Node {
+	n.NodeTag = nodeTag
+	return n
+}
+
 // Merge mergses the individual components of a node and returns a
 // fresh node.
 func (n Node) Merge(other Node) Node {
@@ -185,8 +193,13 @@ func (n Node) Merge(other Node) Node {
 	} else if other.Topology != "" && topology != other.Topology {
 		panic("Cannot merge nodes with different topology types: " + topology + " != " + other.Topology)
 	}
+	nodeTag := n.NodeTag
+	if nodeTag == "" {
+		nodeTag = other.NodeTag
+	}
 	return Node{
 		ID:             id,
+		NodeTag:        nodeTag,
 		Topology:       topology,
 		Counters:       n.Counters.Merge(other.Counters),
 		Sets:           n.Sets.Merge(other.Sets),
