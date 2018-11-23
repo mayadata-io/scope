@@ -16,41 +16,48 @@ import (
 
 // These constants are keys used in node metadata
 const (
-	IP                   = report.KubernetesIP
-	ObservedGeneration   = report.KubernetesObservedGeneration
-	Replicas             = report.KubernetesReplicas
-	DesiredReplicas      = report.KubernetesDesiredReplicas
-	NodeType             = report.KubernetesNodeType
-	Type                 = report.KubernetesType
-	Ports                = report.KubernetesPorts
-	VolumeClaim          = report.KubernetesVolumeClaim
-	StorageClassName     = report.KubernetesStorageClassName
-	AccessModes          = report.KubernetesAccessModes
-	ReclaimPolicy        = report.KubernetesReclaimPolicy
-	Status               = report.KubernetesStatus
-	Message              = report.KubernetesMessage
-	VolumeName           = report.KubernetesVolumeName
-	Provisioner          = report.KubernetesProvisioner
-	StorageDriver        = report.KubernetesStorageDriver
-	VolumeSnapshotName   = report.KubernetesVolumeSnapshotName
-	SnapshotData         = report.KubernetesSnapshotData
-	VolumeCapacity       = report.KubernetesVolumeCapacity
-	Model                = report.KubernetesModel
-	LogicalSectorSize    = report.KubernetesLogicalSectorSize
-	Storage              = report.KubernetesStorage
-	FirmwareRevision     = report.KubernetesFirmwareRevision
-	Serial               = report.KubernetesSerial
-	Vendor               = report.KubernetesVendor
-	DiskList             = report.KubernetesDiskList
-	MaxPools             = report.KubernetesMaxPools
-	APIVersion           = report.KubernetesAPIVersion
-	Value                = report.KubernetesValue
-	StoragePoolClaimName = report.KubernetesStoragePoolClaimName
-	DiskName             = report.KubernetesDiskName
-	PoolName             = report.KubernetesPoolName
-	PoolClaim            = report.KubernetesPoolClaim
-	HostName             = report.KubernetesHostName
-	VolumePod            = report.KubernetesVolumePod
+	IP                       = report.KubernetesIP
+	ObservedGeneration       = report.KubernetesObservedGeneration
+	Replicas                 = report.KubernetesReplicas
+	DesiredReplicas          = report.KubernetesDesiredReplicas
+	NodeType                 = report.KubernetesNodeType
+	Type                     = report.KubernetesType
+	Ports                    = report.KubernetesPorts
+	VolumeClaim              = report.KubernetesVolumeClaim
+	StorageClassName         = report.KubernetesStorageClassName
+	AccessModes              = report.KubernetesAccessModes
+	ReclaimPolicy            = report.KubernetesReclaimPolicy
+	Status                   = report.KubernetesStatus
+	Message                  = report.KubernetesMessage
+	VolumeName               = report.KubernetesVolumeName
+	Provisioner              = report.KubernetesProvisioner
+	StorageDriver            = report.KubernetesStorageDriver
+	VolumeSnapshotName       = report.KubernetesVolumeSnapshotName
+	SnapshotData             = report.KubernetesSnapshotData
+	VolumeCapacity           = report.KubernetesVolumeCapacity
+	Model                    = report.KubernetesModel
+	LogicalSectorSize        = report.KubernetesLogicalSectorSize
+	Storage                  = report.KubernetesStorage
+	FirmwareRevision         = report.KubernetesFirmwareRevision
+	Serial                   = report.KubernetesSerial
+	Vendor                   = report.KubernetesVendor
+	DiskList                 = report.KubernetesDiskList
+	MaxPools                 = report.KubernetesMaxPools
+	APIVersion               = report.KubernetesAPIVersion
+	Value                    = report.KubernetesValue
+	StoragePoolClaimName     = report.KubernetesStoragePoolClaimName
+	DiskName                 = report.KubernetesDiskName
+	PoolName                 = report.KubernetesPoolName
+	PoolClaim                = report.KubernetesPoolClaim
+	HostName                 = report.KubernetesHostName
+	VolumePod                = report.KubernetesVolumePod
+	CStorVolumeName          = report.KubernetesCStorVolumeName
+	CStorVolumeReplicaName   = report.KubernetesCStorVolumeReplicaName
+	CStorPoolName            = report.KubernetesCStorPoolName
+	CStorPoolUID             = report.KubernetesCStorPoolUID
+	CStorVolumeStatus        = report.KubernetesCStorVolumeStatus
+	CStorVolumeReplicaStatus = report.KubernetesCStorVolumeReplicaStatus
+	CStorPoolStatus          = report.KubernetesCStorPoolStatus
 )
 
 // Exposed for testing
@@ -178,6 +185,20 @@ var (
 		MaxPools:   {ID: MaxPools, Label: "MaxPools", From: report.FromLatest, Priority: 4},
 	}
 
+	CStorVolumeMetadataTemplates = report.MetadataTemplates{
+		NodeType:          {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName:        {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
+		CStorVolumeStatus: {ID: CStorVolumeStatus, Label: "Status", From: report.FromLatest, Priority: 3},
+	}
+	CStorVolumeReplicaMetadataTemplates = report.MetadataTemplates{
+		NodeType:                 {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName:               {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
+		CStorVolumeReplicaStatus: {ID: CStorVolumeReplicaStatus, Label: "Status", From: report.FromLatest, Priority: 3},
+	}
+	CStorPoolMetadataTemplates = report.MetadataTemplates{
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
+	}
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
@@ -372,7 +393,21 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+
 	storagePoolClaimTopology, _, err := r.storagePoolClaimTopology()
+	if err != nil {
+		return result, err
+	}
+
+	cStorVolumeTopology, _, err := r.cStorVolumeTopology()
+	if err != nil {
+		return result, err
+	}
+	cStorVolumeReplicaTopology, _, err := r.cStorVolumeReplicaTopology()
+	if err != nil {
+		return result, err
+	}
+	cStorPoolTopology, _, err := r.cStorPoolTopology()
 	if err != nil {
 		return result, err
 	}
@@ -390,6 +425,9 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.VolumeSnapshotData = result.VolumeSnapshotData.Merge(volumeSnapshotDataTopology)
 	result.Disk = result.Disk.Merge(diskTopology)
 	result.StoragePoolClaim = result.StoragePoolClaim.Merge(storagePoolClaimTopology)
+	result.CStorVolume = result.CStorVolume.Merge(cStorVolumeTopology)
+	result.CStorVolumeReplica = result.CStorVolumeReplica.Merge(cStorVolumeReplicaTopology)
+	result.CStorPool = result.CStorPool.Merge(cStorPoolTopology)
 	return result, nil
 }
 
@@ -576,6 +614,45 @@ func (r *Reporter) storagePoolClaimTopology() (report.Topology, []StoragePoolCla
 		return nil
 	})
 	return result, storagePoolClaims, err
+}
+
+func (r *Reporter) cStorVolumeTopology() (report.Topology, []CStorVolume, error) {
+	cStorVolumes := []CStorVolume{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorVolumeMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkCStorVolumes(func(p CStorVolume) error {
+		result.AddNode(p.GetNode())
+		cStorVolumes = append(cStorVolumes, p)
+		return nil
+	})
+	return result, cStorVolumes, err
+}
+
+func (r *Reporter) cStorVolumeReplicaTopology() (report.Topology, []CStorVolumeReplica, error) {
+	cStorVolumeReplicas := []CStorVolumeReplica{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorVolumeReplicaMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkCStorVolumeReplicas(func(p CStorVolumeReplica) error {
+		result.AddNode(p.GetNode())
+		cStorVolumeReplicas = append(cStorVolumeReplicas, p)
+		return nil
+	})
+	return result, cStorVolumeReplicas, err
+}
+
+func (r *Reporter) cStorPoolTopology() (report.Topology, []CStorPool, error) {
+	cStorPool := []CStorPool{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorPoolMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	err := r.client.WalkCStorPools(func(p CStorPool) error {
+		result.AddNode(p.GetNode())
+		cStorPool = append(cStorPool, p)
+		return nil
+	})
+	return result, cStorPool, err
 }
 
 type labelledChild interface {
