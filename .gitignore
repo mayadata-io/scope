@@ -64,6 +64,7 @@ prog/staticui/*
 prog/externalui/*
 client/build-pkg
 client/bundle
+client/yarn.lock
 
 # Website
 site-build
