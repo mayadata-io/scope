@@ -51,5 +51,5 @@ func (p *cStorPool) GetNodeTagOnStatus(status string) string {
 	if status != "" {
 		return CStorVolumeStatusMap[status]
 	}
-	return ""
+	return "unknown"
 }

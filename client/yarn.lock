@@ -8484,7 +8484,7 @@ wd@^0.4.0:
 
 "weaveworks-ui-components@https://github.com/openebs/ui-components.git":
   version "0.15.2"
-  resolved "https://github.com/openebs/ui-components.git#40296339ba9d8f5dd96ab2fde883903ef380a7cc"
+  resolved "https://github.com/openebs/ui-components.git#28f339a75a781f7c2b0c08968e425394698890c5"
   dependencies:
     classnames "2.2.5"
     d3-drag "1.2.1"
