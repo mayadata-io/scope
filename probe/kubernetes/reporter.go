@@ -66,7 +66,7 @@ var (
 		"degraded":   "degraded",
 		"error":      "failed",
 		"healthy":    "",
-		"init":       "",
+		"init":       "pending",
 		"invalid":    "notpermitted",
 		"offline":    "offline",
 		"online":     "",
