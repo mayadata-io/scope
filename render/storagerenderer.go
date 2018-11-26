@@ -9,7 +9,7 @@ import (
 )
 
 // KubernetesStorageRenderer is a Renderer which combines all Kubernetes
-// storage components such as storage pools, storage pool claims and disks.
+// storage components such as CstorPools, storage pool claims and disks.
 var KubernetesStorageRenderer = MakeReduce(
 	SPCToCSPRenderer,
 	CSPToDiskRenderer,
@@ -21,7 +21,7 @@ var SPCToCSPRenderer = spcToCSPRenderer{}
 // spcToCSPRenderer is a Renderer to render SPC & CSP nodes.
 type spcToCSPRenderer struct{}
 
-// Render renders the SPC & SP nodes with adjacency.
+// Render renders the SPC & CSP nodes with adjacency.
 // Here we are obtaining the spc name from csp and adjacency is created by matching it with spc name.
 func (v spcToCSPRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
@@ -46,7 +46,7 @@ var CSPToDiskRenderer = cspToDiskRenderer{}
 // cspToDiskRenderer is a Renderer to render CSP & Disk .
 type cspToDiskRenderer struct{}
 
-// Render renders the SP & Disk nodes with adjacency.
+// Render renders the CSP & Disk nodes with adjacency.
 func (v cspToDiskRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	// var disks []string
 
