@@ -44,5 +44,8 @@ func (v cStorVolumeRenderer) Render(ctx context.Context, rpt report.Report) Node
 		cStorNodes[cvrID] = cvrNode
 	}
 
+	for diskID, diskNode := range rpt.Disk.Nodes {
+		cStorNodes[diskID] = diskNode
+	}
 	return Nodes{Nodes: cStorNodes}
 }

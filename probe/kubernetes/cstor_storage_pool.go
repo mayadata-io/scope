@@ -13,6 +13,8 @@ type CStorPool interface {
 	GetNode() report.Node
 	GetStatus() string
 	GetNodeTagOnStatus(status string) string
+	GetHost() string
+	GetStoragePoolClaim() string
 }
 
 // cStorPool represents cStor Volume CSP
@@ -29,8 +31,11 @@ func NewCStorPool(p *mayav1alpha1.CStorPool) CStorPool {
 // GetNode returns updated node with CStor Volume details
 func (p *cStorPool) GetNode() report.Node {
 	latests := map[string]string{
-		NodeType:   "CStor Pool",
-		APIVersion: p.APIVersion,
+		NodeType:             "CStor Pool",
+		APIVersion:           p.APIVersion,
+		DiskList:             strings.Join(p.Spec.Disks.DiskList, "~p$"),
+		HostName:             p.GetHost(),
+		StoragePoolClaimName: p.GetStoragePoolClaim(),
 	}
 
 	if p.GetStatus() != "" {
@@ -52,4 +57,14 @@ func (p *cStorPool) GetNodeTagOnStatus(status string) string {
 		return CStorVolumeStatusMap[status]
 	}
 	return "unknown"
+}
+
+func (p *cStorPool) GetHost() string {
+	host := p.Labels()["kubernetes.io/hostname"]
+	return string(host)
+}
+
+func (p *cStorPool) GetStoragePoolClaim() string {
+	host := p.Labels()["openebs.io/storage-pool-claim"]
+	return string(host)
 }
