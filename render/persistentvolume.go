@@ -66,7 +66,10 @@ type podToVolumesRenderer struct{}
 func (v podToVolumesRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for podID, podNode := range rpt.Pod.Nodes {
-		ClaimName, _ := podNode.Latest.Lookup(kubernetes.VolumeClaim)
+		ClaimName, found := podNode.Latest.Lookup(kubernetes.VolumeClaim)
+		if !found {
+			continue
+		}
 		_, ok := podNode.Latest.Lookup(kubernetes.VolumePod)
 		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
 			pvcName, _ := pvcNode.Latest.Lookup(kubernetes.Name)
