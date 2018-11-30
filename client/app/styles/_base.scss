@@ -241,7 +241,8 @@ a {
 
 .footer {
   @extend .overlay-wrapper;
-  right: 43px;
+  right: -380px;
+  bottom: -3px;
 
   &-status {
     margin-right: 1em;
@@ -305,6 +306,14 @@ a {
     }
   }
 }
+
+.footer:hover {
+  right: 0px;
+  bottom: -3px;
+  transition: ease-in;
+  transition-duration: 0.5s;
+}
+
 
 .zoomable-canvas svg {
   @extend .fully-pannable;
@@ -873,6 +882,7 @@ a {
     tbody {
       position: relative;
 
+
       .min-height-constraint {
         position: absolute;
         width: 0 !important;
@@ -1322,7 +1332,23 @@ a {
 
 .topology-option {
   font-size: $font-size-small;
-
+  &-wrapper {
+    display: inline-flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    max-height: 27px;
+    transition: max-height 0.5s 0s $base-ease;
+    &:hover {
+      height: auto;
+      max-height: calc((13px * 1.5 + 3px + 3px) * 8); // expand to display 8 rows
+      overflow: auto;
+      transition: max-height 0.5s 0s $base-ease;
+    }
+    .topology-option-action {
+      flex: 1 1 auto;
+      text-align: center;
+    }
+  }
   &-action {
     &-selected {
       cursor: default;
@@ -1388,6 +1414,7 @@ a {
   border-radius: $border-radius-soft;
   border: 1px solid transparent;
   pointer-events: none;
+  max-width: 50%;
 }
 
 .sidebar-gridmode {
@@ -1647,7 +1674,7 @@ a {
   }
 
   .node-details-table{
-    overflow-x: auto;
+    display: grid;
     overflow-y: auto;
     width: 100%;
   }
@@ -1660,10 +1687,12 @@ a {
     width: 100%;
 
     .node-details-table-wrapper {
+      display: block;
       margin: 0;
       flex: 1;
-      overflow-x: auto;
-      overflow-y: auto;
+      overflow-x: visible;
+      overflow-y: hidden;
+      width: 100%;
     }
 
     .nodes-grid-graph {
@@ -1726,6 +1755,8 @@ a {
 
     tbody {
       display: block;
+      overflow-x: hidden;
+      width: -moz-fit-content;
     }
   }
 }
