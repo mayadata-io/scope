@@ -11,6 +11,8 @@ import (
 const (
 	// BetaStorageClassAnnotation is the annotation for default storage class
 	BetaStorageClassAnnotation = "volume.beta.kubernetes.io/storage-class"
+	// VolumeSnapshotAnnotation is the annotation for volume snapshot
+	VolumeSnapshotAnnotation = "snapshot.alpha.kubernetes.io/snapshot"
 )
 
 // PersistentVolumeClaim represents kubernetes PVC interface
@@ -20,6 +22,7 @@ type PersistentVolumeClaim interface {
 	GetNode(string) report.Node
 	GetStorageClass() string
 	GetCapacity() string
+	GetVolumeSnapshot() string
 }
 
 // persistentVolumeClaim represents kubernetes Persistent Volume Claims
@@ -57,6 +60,14 @@ func (p *persistentVolumeClaim) GetCapacity() string {
 	return ""
 }
 
+func (p *persistentVolumeClaim) GetVolumeSnapshot() string {
+	volumeSnapshotName := p.GetAnnotations()[VolumeSnapshotAnnotation]
+	if volumeSnapshotName != "" {
+		return volumeSnapshotName
+	}
+	return ""
+}
+
 // GetNode returns Persistent Volume Claim as Node
 func (p *persistentVolumeClaim) GetNode(probeID string) report.Node {
 	latests := map[string]string{
@@ -69,6 +80,10 @@ func (p *persistentVolumeClaim) GetNode(probeID string) report.Node {
 
 	if p.GetCapacity() != "" {
 		latests[VolumeCapacity] = p.GetCapacity()
+	}
+
+	if p.GetVolumeSnapshot() != "" {
+		latests[VolumeSnapshotName] = p.GetVolumeSnapshot()
 	}
 
 	return p.MetaNode(report.MakePersistentVolumeClaimNodeID(p.UID())).
