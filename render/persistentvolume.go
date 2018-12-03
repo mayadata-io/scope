@@ -19,7 +19,7 @@ var KubernetesVolumesRenderer = MakeReduce(
 	CSPToDiskRenderer,
 	MakeFilter(
 		func(n report.Node) bool {
-			value, _ := n.Latest.Lookup(kubernetes.VolumePod)
+			value, _ := n.Latest.Lookup(report.KubernetesVolumePod)
 			if value == "true" {
 				return true
 			}
@@ -101,7 +101,7 @@ func (v pvcToStorageClassRenderer) Render(ctx context.Context, rpt report.Report
 	nodes := make(report.Nodes)
 	for scID, scNode := range rpt.StorageClass.Nodes {
 		storageClass, _ := scNode.Latest.Lookup(report.KubernetesName)
-		spcNameFromValue, _ := scNode.Latest.Lookup(kubernetes.Value)
+		spcNameFromValue, _ := scNode.Latest.Lookup(report.KubernetesValue)
 		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
 			storageClassName, _ := pvcNode.Latest.Lookup(report.KubernetesStorageClassName)
 			if storageClassName == storageClass {
@@ -116,7 +116,7 @@ func (v pvcToStorageClassRenderer) Render(ctx context.Context, rpt report.Report
 			storageValue := strings.Split(spcNameFromValue, "\"")
 			spcNameFromValue = storageValue[1]
 			for _, spcNode := range rpt.StoragePoolClaim.Nodes {
-				spcName, _ := spcNode.Latest.Lookup(kubernetes.Name)
+				spcName, _ := spcNode.Latest.Lookup(report.KubernetesName)
 				if spcName == spcNameFromValue {
 					scNode.Adjacency = scNode.Adjacency.Add(spcNode.ID)
 					scNode.Children = scNode.Children.Add(spcNode)
@@ -140,7 +140,7 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 	for pvNodeID, p := range rpt.PersistentVolume.Nodes {
 		volumeName, _ := p.Latest.Lookup(report.KubernetesName)
 		for _, podNode := range rpt.Pod.Nodes {
-			podVolumeName, _ := podNode.Latest.Lookup(kubernetes.VolumeName)
+			podVolumeName, _ := podNode.Latest.Lookup(report.KubernetesVolumeName)
 			if volumeName == podVolumeName {
 				p.Adjacency = p.Adjacency.Add(podNode.ID)
 				p.Children = p.Children.Add(podNode)
@@ -156,7 +156,7 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 		}
 
 		for cvID, cvNode := range rpt.CStorVolume.Nodes {
-			pvName, _ := cvNode.Latest.Lookup(kubernetes.VolumeName)
+			pvName, _ := cvNode.Latest.Lookup(report.KubernetesVolumeName)
 			if pvName == volumeName {
 				p.Adjacency = p.Adjacency.Add(cvID)
 				p.Children = p.Children.Add(cvNode)
@@ -182,6 +182,7 @@ type volumeSnapshotRenderer struct{}
 func (v volumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for volumeSnapshotID, volumeSnapshotNode := range rpt.VolumeSnapshot.Nodes {
+		volumeSnapshotName, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesName)
 		snapshotData, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesSnapshotData)
 		for volumeSnapshotDataID, volumeSnapshotDataNode := range rpt.VolumeSnapshotData.Nodes {
 			snapshotDataName, _ := volumeSnapshotDataNode.Latest.Lookup(report.KubernetesName)
@@ -190,6 +191,17 @@ func (v volumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report) N
 				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(volumeSnapshotDataNode)
 			}
 			nodes[volumeSnapshotDataID] = volumeSnapshotDataNode
+		}
+
+		for persistentVolumeClaimID, persistentVolumeClaimNode := range rpt.PersistentVolumeClaim.Nodes {
+			vsName, ok := persistentVolumeClaimNode.Latest.Lookup(report.KubernetesVolumeSnapshotName)
+			if !ok {
+				continue
+			}
+			if vsName == volumeSnapshotName {
+				volumeSnapshotNode.Adjacency = volumeSnapshotNode.Adjacency.Add(persistentVolumeClaimID)
+				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(persistentVolumeClaimNode)
+			}
 		}
 		nodes[volumeSnapshotID] = volumeSnapshotNode
 	}
