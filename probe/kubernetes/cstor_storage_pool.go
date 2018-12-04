@@ -30,6 +30,7 @@ func NewCStorPool(p *mayav1alpha1.CStorPool) CStorPool {
 
 // GetNode returns updated node with CStor Volume details
 func (p *cStorPool) GetNode() report.Node {
+	status := p.GetStatus()
 	latests := map[string]string{
 		NodeType:             "CStor Pool",
 		APIVersion:           p.APIVersion,
@@ -38,12 +39,12 @@ func (p *cStorPool) GetNode() report.Node {
 		StoragePoolClaimName: p.GetStoragePoolClaim(),
 	}
 
-	if p.GetStatus() != "" {
-		latests[CStorPoolStatus] = p.GetStatus()
+	if status != "" {
+		latests[CStorPoolStatus] = status
 	}
 	return p.MetaNode(report.MakeCStorPoolNodeID(p.UID())).
 		WithLatests(latests).
-		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(p.GetStatus())))
+		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status)))
 
 }
 
