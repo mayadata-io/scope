@@ -31,6 +31,7 @@ func NewCStorVolumeReplica(p *mayav1alpha1.CStorVolumeReplica) CStorVolumeReplic
 // GetNode returns updated node with CStor Volume details
 func (p *cStorVolumeReplica) GetNode() report.Node {
 	var cStorPoolNodeID string
+	status := p.GetStatus()
 	latests := map[string]string{
 		NodeType:   "CStor Volume Replica",
 		APIVersion: p.APIVersion,
@@ -46,14 +47,14 @@ func (p *cStorVolumeReplica) GetNode() report.Node {
 		latests[CStorPoolUID] = p.GetCStorPool()
 	}
 
-	if p.GetStatus() != "" {
-		latests[CStorVolumeReplicaStatus] = p.GetStatus()
+	if status != "" {
+		latests[CStorVolumeReplicaStatus] = status
 	}
 
 	return p.MetaNode(report.MakeCStorVolumeReplicaNodeID(p.UID())).
 		WithLatests(latests).
 		WithAdjacent(cStorPoolNodeID).
-		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(p.GetStatus())))
+		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status)))
 }
 
 func (p *cStorVolumeReplica) GetCStorVolume() string {
