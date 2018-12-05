@@ -242,7 +242,6 @@ a {
 .footer {
   @extend .overlay-wrapper;
   right: -380px;
-  bottom: -3px;
 
   &-status {
     margin-right: 1em;
@@ -309,12 +308,9 @@ a {
 
 .footer:hover {
   right: 0px;
-  bottom: -3px;
   transition: ease-in;
   transition-duration: 0.5s;
 }
-
-
 .zoomable-canvas svg {
   @extend .fully-pannable;
 }
@@ -1756,7 +1752,6 @@ a {
     tbody {
       display: block;
       overflow-x: hidden;
-      width: -moz-fit-content;
     }
   }
 }
