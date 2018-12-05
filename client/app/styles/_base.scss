@@ -247,7 +247,7 @@ a {
 
 .footer {
   @extend .overlay-wrapper;
-  right: -380px;
+  right: 3px;
 
   &-status {
     margin-right: 1em;
@@ -312,11 +312,6 @@ a {
   }
 }
 
-.footer:hover {
-  right: 0px;
-  transition: ease-in;
-  transition-duration: 0.5s;
-}
 .zoomable-canvas svg {
   @extend .fully-pannable;
 }
@@ -1415,7 +1410,7 @@ a {
   border-radius: $border-radius-soft;
   border: 1px solid transparent;
   pointer-events: none;
-  max-width: 50%;
+  max-width: 70%;
 }
 
 .sidebar-gridmode {
