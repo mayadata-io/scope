@@ -161,7 +161,6 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 				p.Adjacency = p.Adjacency.Add(cvID)
 				p.Children = p.Children.Add(cvNode)
 			}
-			nodes[pvNodeID] = p
 		}
 
 		if p.ID != "" {
