@@ -49,7 +49,6 @@ class Footer extends React.Component {
     return (
       <div className="footer">
         <div className="footer-status">
-          <i className="fa fa-arrow-left" />
           {versionUpdate &&
             <a
               className="footer-versionupdate"
