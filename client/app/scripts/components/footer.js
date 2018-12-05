@@ -49,6 +49,7 @@ class Footer extends React.Component {
     return (
       <div className="footer">
         <div className="footer-status">
+          <i className="fa fa-arrow-left" />
           {versionUpdate &&
             <a
               className="footer-versionupdate"
@@ -59,7 +60,7 @@ class Footer extends React.Component {
               Update available: {versionUpdate.get('version')}
             </a>
           }
-          <span className="footer-label">Version</span>
+          <span className="footer-label"> Version</span>
           {version || '...'}
         </div>
 
