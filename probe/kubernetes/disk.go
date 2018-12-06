@@ -13,6 +13,7 @@ type Disk interface {
 	Meta
 	GetNode() report.Node
 	GetPath() []string
+	GetNodeTagStatus(string) string
 }
 
 // disk represents NDM Disks
@@ -28,6 +29,9 @@ func NewDisk(p *maya1alpha1.Disk) Disk {
 
 // GetNode returns Disk as Node
 func (p *disk) GetNode() report.Node {
+	var diskStatus string
+	diskStatus = p.Status.State
+
 	return p.MetaNode(report.MakeDiskNodeID(p.UID())).WithLatests(map[string]string{
 		NodeType:          "Disk",
 		LogicalSectorSize: strconv.Itoa(int(p.Spec.Capacity.LogicalSectorSize)),
@@ -38,7 +42,9 @@ func (p *disk) GetNode() report.Node {
 		Vendor:            p.Spec.Details.Vendor,
 		HostName:          p.GetLabels()["kubernetes.io/hostname"],
 		DiskList:          strings.Join(p.GetPath(), "~p$"),
-	})
+		Status:            diskStatus,
+		CreationTimeStamp: p.ObjectMeta.CreationTimestamp.String(),
+	}).WithNodeTag(p.GetNodeTagStatus(diskStatus))
 }
 
 func (p *disk) GetPath() []string {
@@ -47,4 +53,11 @@ func (p *disk) GetPath() []string {
 	}
 	diskList := []string{p.Spec.Path}
 	return diskList
+}
+
+func (p *disk) GetNodeTagStatus(status string) string {
+	if len(status) > 0 {
+		return CStorVolumeStatusMap[strings.ToLower(status)]
+	}
+	return ""
 }
