@@ -58,6 +58,7 @@ const (
 	CStorVolumeStatus        = report.KubernetesCStorVolumeStatus
 	CStorVolumeReplicaStatus = report.KubernetesCStorVolumeReplicaStatus
 	CStorPoolStatus          = report.KubernetesCStorPoolStatus
+	CreationTimeStamp        = report.KubernetesCreationTimeStamp
 )
 
 var (
@@ -71,6 +72,8 @@ var (
 		"offline":    "offline",
 		"online":     "",
 		"rebuilding": "reload",
+		"inactive":   "offline",
+		"active":     "",
 	}
 )
 
@@ -200,6 +203,8 @@ var (
 		FirmwareRevision:  {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 5},
 		LogicalSectorSize: {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 6},
 		Storage:           {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 7},
+		Status:            {ID: Status, Label: "Status", From: report.FromLatest, Priority: 8},
+		CreationTimeStamp: {ID: CreationTimeStamp, Label: "Created On", From: report.FromLatest, Priority: 9},
 	}
 
 	StoragePoolClaimMetadataTemplates = report.MetadataTemplates{
