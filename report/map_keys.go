@@ -113,6 +113,7 @@ const (
 	KubernetesCStorVolumeStatus        = "kubernetes_cstor_volume_status"
 	KubernetesCStorVolumeReplicaStatus = "kubernetes_cstor_volume_replica_status"
 	KubernetesCStorPoolStatus          = "kubernetes_cstor_pool_status"
+	KubernetesCreationTimeStamp        = "kubernetes_creation_time"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"
