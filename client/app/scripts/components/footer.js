@@ -59,7 +59,7 @@ class Footer extends React.Component {
               Update available: {versionUpdate.get('version')}
             </a>
           }
-          <span className="footer-label">Version</span>
+          <span className="footer-label"> Version</span>
           {version || '...'}
         </div>
 

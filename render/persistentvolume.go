@@ -66,7 +66,10 @@ type podToVolumesRenderer struct{}
 func (v podToVolumesRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for podID, podNode := range rpt.Pod.Nodes {
-		ClaimName, _ := podNode.Latest.Lookup(kubernetes.VolumeClaim)
+		ClaimName, found := podNode.Latest.Lookup(kubernetes.VolumeClaim)
+		if !found {
+			continue
+		}
 		_, ok := podNode.Latest.Lookup(kubernetes.VolumePod)
 		for _, pvcNode := range rpt.PersistentVolumeClaim.Nodes {
 			pvcName, _ := pvcNode.Latest.Lookup(kubernetes.Name)
@@ -154,7 +157,6 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 				p.Adjacency = p.Adjacency.Add(cvID)
 				p.Children = p.Children.Add(cvNode)
 			}
-			nodes[pvNodeID] = p
 		}
 
 		if p.ID != "" {
@@ -175,6 +177,7 @@ type volumeSnapshotRenderer struct{}
 func (v volumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
 	nodes := make(report.Nodes)
 	for volumeSnapshotID, volumeSnapshotNode := range rpt.VolumeSnapshot.Nodes {
+		volumeSnapshotName, _ := volumeSnapshotNode.Latest.Lookup(kubernetes.Name)
 		snapshotData, _ := volumeSnapshotNode.Latest.Lookup(kubernetes.SnapshotData)
 		for volumeSnapshotDataID, volumeSnapshotDataNode := range rpt.VolumeSnapshotData.Nodes {
 			snapshotDataName, _ := volumeSnapshotDataNode.Latest.Lookup(kubernetes.Name)
@@ -183,6 +186,17 @@ func (v volumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report) N
 				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(volumeSnapshotDataNode)
 			}
 			nodes[volumeSnapshotDataID] = volumeSnapshotDataNode
+		}
+
+		for persistentVolumeClaimID, persistentVolumeClaimNode := range rpt.PersistentVolumeClaim.Nodes {
+			vsName, ok := persistentVolumeClaimNode.Latest.Lookup(kubernetes.VolumeSnapshotName)
+			if !ok {
+				continue
+			}
+			if vsName == volumeSnapshotName {
+				volumeSnapshotNode.Adjacency = volumeSnapshotNode.Adjacency.Add(persistentVolumeClaimID)
+				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(persistentVolumeClaimNode)
+			}
 		}
 		nodes[volumeSnapshotID] = volumeSnapshotNode
 	}
