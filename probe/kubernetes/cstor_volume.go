@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"strconv"
 	"strings"
 
 	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
@@ -14,6 +15,9 @@ type CStorVolume interface {
 	GetPersistentVolumeName() string
 	GetStatus() string
 	GetNodeTagOnStatus(status string) string
+	GetConsistencyFactor() string
+	GetReplicationFactor() string
+	GetIQNInfo() string
 }
 
 // cStorVolume represents cStor Volume CR
@@ -42,6 +46,19 @@ func (p *cStorVolume) GetNode() report.Node {
 	if status != "" {
 		latests[CStorVolumeStatus] = status
 	}
+
+	if p.GetConsistencyFactor() != "" {
+		latests[CStorVolumeConsistencyFactor] = p.GetConsistencyFactor()
+	}
+
+	if p.GetReplicationFactor() != "" {
+		latests[CStorVolumeReplicationFactor] = p.GetReplicationFactor()
+	}
+
+	if p.GetIQNInfo() != "" {
+		latests[CStorVolumeIQN] = p.GetIQNInfo()
+	}
+
 	return p.MetaNode(report.MakeCStorVolumeNodeID(p.Name())).
 		WithLatests(latests).
 		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status)))
@@ -62,4 +79,16 @@ func (p *cStorVolume) GetNodeTagOnStatus(status string) string {
 		return CStorVolumeStatusMap[status]
 	}
 	return "unknown"
+}
+
+func (p *cStorVolume) GetConsistencyFactor() string {
+	return strconv.Itoa(p.Spec.ConsistencyFactor)
+}
+
+func (p *cStorVolume) GetReplicationFactor() string {
+	return strconv.Itoa(p.Spec.ReplicationFactor)
+}
+
+func (p *cStorVolume) GetIQNInfo() string {
+	return p.Spec.Iqn
 }
