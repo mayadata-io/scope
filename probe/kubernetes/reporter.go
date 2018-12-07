@@ -62,6 +62,15 @@ const (
 	CStorVolumeReplicationFactor = report.KubernetesCStorVolumeReplicationFactor
 	CStorVolumeIQN               = report.KubernetesCStorVolumeIQN
 	CreationTimeStamp            = report.KubernetesCreationTimeStamp
+	PhysicalSectorSize           = report.KubernetesPhysicalSectorSize
+	RotationRate                 = report.KubernetesRotationRate
+	CurrentTemperature           = report.KubernetesCurrentTemperature
+	HighestTemperature           = report.KubernetesHighestTemperature
+	LowestTemperature            = report.KubernetesLowestTemperature
+	TotalBytesRead               = report.KubernetesTotalBytesRead
+	TotalBytesWritten            = report.KubernetesTotalBytesWritten
+	DeviceUtilizationRate        = report.KubernetesDeviceUtilizationRate
+	PercentEnduranceUsed         = report.KubernetesPercentEnduranceUsed
 )
 
 var (
@@ -189,15 +198,24 @@ var (
 	}
 
 	DiskMetadataTemplates = report.MetadataTemplates{
-		NodeType:          {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Model:             {ID: Model, Label: "Model", From: report.FromLatest, Priority: 2},
-		Serial:            {ID: Serial, Label: "Serial", From: report.FromLatest, Priority: 3},
-		Vendor:            {ID: Vendor, Label: "Vendor", From: report.FromLatest, Priority: 4},
-		FirmwareRevision:  {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 5},
-		LogicalSectorSize: {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 6},
-		Storage:           {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 7},
-		Status:            {ID: Status, Label: "Status", From: report.FromLatest, Priority: 8},
-		CreationTimeStamp: {ID: CreationTimeStamp, Label: "Created On", From: report.FromLatest, Priority: 9},
+		NodeType:              {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Model:                 {ID: Model, Label: "Model", From: report.FromLatest, Priority: 2},
+		Serial:                {ID: Serial, Label: "Serial", From: report.FromLatest, Priority: 3},
+		Vendor:                {ID: Vendor, Label: "Vendor", From: report.FromLatest, Priority: 4},
+		FirmwareRevision:      {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 5},
+		LogicalSectorSize:     {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 6},
+		PhysicalSectorSize:    {ID: PhysicalSectorSize, Label: "Physical Sector Size", From: report.FromLatest, Priority: 7},
+		Storage:               {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 8},
+		Status:                {ID: Status, Label: "Status", From: report.FromLatest, Priority: 9},
+		CreationTimeStamp:     {ID: CreationTimeStamp, Label: "Created On", From: report.FromLatest, Priority: 10},
+		RotationRate:          {ID: RotationRate, Label: "Rotation Rate", From: report.FromLatest, Priority: 11},
+		CurrentTemperature:    {ID: CurrentTemperature, Label: "Current Temperature", From: report.FromLatest, Priority: 12},
+		HighestTemperature:    {ID: HighestTemperature, Label: "Highest Temperature", From: report.FromLatest, Priority: 13},
+		LowestTemperature:     {ID: LowestTemperature, Label: "Lowest Temperature", From: report.FromLatest, Priority: 14},
+		TotalBytesRead:        {ID: TotalBytesRead, Label: "Total Bytes Read", From: report.FromLatest, Priority: 15},
+		TotalBytesWritten:     {ID: TotalBytesWritten, Label: "Total Bytes Written", From: report.FromLatest, Priority: 16},
+		DeviceUtilizationRate: {ID: DeviceUtilizationRate, Label: "Device Utilization Rate", From: report.FromLatest, Priority: 17},
+		PercentEnduranceUsed:  {ID: PercentEnduranceUsed, Label: "Percent Endurance Used", From: report.FromLatest, Priority: 18},
 	}
 
 	StoragePoolClaimMetadataTemplates = report.MetadataTemplates{
