@@ -239,8 +239,9 @@ var (
 		CStorVolumeReplicaStatus: {ID: CStorVolumeReplicaStatus, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
 	CStorPoolMetadataTemplates = report.MetadataTemplates{
-		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		VolumeName: {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
+		NodeType:        {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName:      {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
+		CStorPoolStatus: {ID: CStorPoolStatus, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
