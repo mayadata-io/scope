@@ -1214,10 +1214,21 @@ a {
   }
 }
 
+.topology-option {
+  &:last-child :hover {
+    height: auto;
+    max-height: calc((13px * 1.5 + 3px + 3px) * 8); // expand to display 8 rows
+    overflow: hidden;
+    transition: max-height 0.5s 0s $base-ease;
+  }
+}
+
 .topology-option, .metric-selector, .network-selector, .view-mode-selector, .time-control {
   font-size: $font-size-normal;
   color: $text-secondary-color;
   margin-bottom: 6px;
+
+ 
 
   &:last-child {
     margin-bottom: 0;
@@ -1334,12 +1345,7 @@ a {
     overflow: hidden;
     max-height: 27px;
     transition: max-height 0.5s 0s $base-ease;
-    &:hover {
-      height: auto;
-      max-height: calc((13px * 1.5 + 3px + 3px) * 8); // expand to display 8 rows
-      overflow: auto;
-      transition: max-height 0.5s 0s $base-ease;
-    }
+   
     .topology-option-action {
       flex: 1 1 auto;
       text-align: center;
@@ -1410,7 +1416,7 @@ a {
   border-radius: $border-radius-soft;
   border: 1px solid transparent;
   pointer-events: none;
-  max-width: 70%;
+  max-width: 60%;
 }
 
 .sidebar-gridmode {
