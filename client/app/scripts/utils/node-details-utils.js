@@ -34,6 +34,6 @@ export function getTableColumnsStyles(headers) {
     textAlign: isNumber(header) ? 'right' : 'left',
     // More beauty hacking, ports and counts can only get
     // so big, free up WS for other longer fields like IPs!
-    width: isNumber(header.id) ? '85px' : '120px'
+    width: isNumber(header.id) > '120px' ? '100px' : '160px'
   }));
 }
