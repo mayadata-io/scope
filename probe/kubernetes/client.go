@@ -646,14 +646,13 @@ func (c *client) ScaleDown(resource, namespaceID, id string) error {
 	})
 }
 
-func (c *client) modifyScale(resource, namespace, id string, f func(*apiextensionsv1beta1.Scale)) error {
-	scaler := c.client.Extensions().Scales(namespace)
-	scale, err := scaler.Get(resource, id)
+func (c *client) modifyScale(_, namespace, id string, f func(*apiextensionsv1beta1.Scale)) error {
+	scale, err := c.client.ExtensionsV1beta1().Deployments(namespace).GetScale(id, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
 	f(scale)
-	_, err = scaler.Update(resource, scale)
+	_, err = c.client.ExtensionsV1beta1().Deployments(namespace).UpdateScale(id, scale)
 	return err
 }
 
