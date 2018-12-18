@@ -37,7 +37,7 @@ func (p *disk) GetNode() report.Node {
 		NodeType:              "Disk",
 		PhysicalSectorSize:    strconv.Itoa(int(p.Spec.Capacity.PhysicalSectorSize)),
 		LogicalSectorSize:     strconv.Itoa(int(p.Spec.Capacity.LogicalSectorSize)),
-		Storage:               strconv.Itoa(int(p.Spec.Capacity.Storage/(1024*1024*1024))) + " GB",
+		VolumeCapacity:        strconv.Itoa(int(p.Spec.Capacity.Storage/(1024*1024*1024))) + " GB",
 		FirmwareRevision:      p.Spec.Details.FirmwareRevision,
 		Model:                 p.Spec.Details.Model,
 		RotationRate:          strconv.Itoa(int(p.Spec.Details.RotationRate)),
@@ -53,7 +53,7 @@ func (p *disk) GetNode() report.Node {
 		TotalBytesWritten:     strconv.Itoa(int(p.Stats.TotalBytesWritten)),
 		DeviceUtilizationRate: fmt.Sprintf("%.2f", p.Stats.DeviceUtilizationRate),
 		PercentEnduranceUsed:  fmt.Sprintf("%.2f", p.Stats.PercentEnduranceUsed),
-		CreationTimeStamp:     p.ObjectMeta.CreationTimestamp.String(),
+		Created:               p.ObjectMeta.CreationTimestamp.String(),
 	}
 
 	return p.MetaNode(report.MakeDiskNodeID(p.UID())).

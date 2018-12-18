@@ -44,7 +44,7 @@ func (p *cStorVolume) GetNode() report.Node {
 	}
 
 	if status != "" {
-		latests[CStorVolumeStatus] = status
+		latests[Status] = status
 	}
 
 	if p.GetConsistencyFactor() != "" {
