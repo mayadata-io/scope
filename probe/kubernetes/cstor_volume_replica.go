@@ -48,7 +48,7 @@ func (p *cStorVolumeReplica) GetNode() report.Node {
 	}
 
 	if status != "" {
-		latests[CStorVolumeReplicaStatus] = status
+		latests[Status] = status
 	}
 
 	return p.MetaNode(report.MakeCStorVolumeReplicaNodeID(p.UID())).

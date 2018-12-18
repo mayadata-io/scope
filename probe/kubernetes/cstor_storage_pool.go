@@ -40,7 +40,7 @@ func (p *cStorPool) GetNode() report.Node {
 	}
 
 	if status != "" {
-		latests[CStorPoolStatus] = status
+		latests[Status] = status
 	}
 	return p.MetaNode(report.MakeCStorPoolNodeID(p.UID())).
 		WithLatests(latests).
