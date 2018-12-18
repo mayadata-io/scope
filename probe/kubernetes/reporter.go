@@ -37,7 +37,6 @@ const (
 	VolumeCapacity               = report.KubernetesVolumeCapacity
 	Model                        = report.KubernetesModel
 	LogicalSectorSize            = report.KubernetesLogicalSectorSize
-	Storage                      = report.KubernetesStorage
 	FirmwareRevision             = report.KubernetesFirmwareRevision
 	Serial                       = report.KubernetesSerial
 	Vendor                       = report.KubernetesVendor
@@ -55,13 +54,9 @@ const (
 	CStorVolumeReplicaName       = report.KubernetesCStorVolumeReplicaName
 	CStorPoolName                = report.KubernetesCStorPoolName
 	CStorPoolUID                 = report.KubernetesCStorPoolUID
-	CStorVolumeStatus            = report.KubernetesCStorVolumeStatus
-	CStorVolumeReplicaStatus     = report.KubernetesCStorVolumeReplicaStatus
-	CStorPoolStatus              = report.KubernetesCStorPoolStatus
 	CStorVolumeConsistencyFactor = report.KubernetesCStorVolumeConsistencyFactor
 	CStorVolumeReplicationFactor = report.KubernetesCStorVolumeReplicationFactor
 	CStorVolumeIQN               = report.KubernetesCStorVolumeIQN
-	CreationTimeStamp            = report.KubernetesCreationTimeStamp
 	PhysicalSectorSize           = report.KubernetesPhysicalSectorSize
 	RotationRate                 = report.KubernetesRotationRate
 	CurrentTemperature           = report.KubernetesCurrentTemperature
@@ -180,8 +175,7 @@ var (
 
 	StorageClassMetadataTemplates = report.MetadataTemplates{
 		NodeType:    {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Name:        {ID: Name, Label: "Name", From: report.FromLatest, Priority: 2},
-		Provisioner: {ID: Provisioner, Label: "Provisioner", From: report.FromLatest, Priority: 3},
+		Provisioner: {ID: Provisioner, Label: "Provisioner", From: report.FromLatest, Priority: 2},
 	}
 
 	VolumeSnapshotMetadataTemplates = report.MetadataTemplates{
@@ -205,9 +199,9 @@ var (
 		FirmwareRevision:      {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 5},
 		LogicalSectorSize:     {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 6},
 		PhysicalSectorSize:    {ID: PhysicalSectorSize, Label: "Physical Sector Size", From: report.FromLatest, Priority: 7},
-		Storage:               {ID: Storage, Label: "Capacity", From: report.FromLatest, Priority: 8},
+		VolumeCapacity:        {ID: VolumeCapacity, Label: "Capacity", From: report.FromLatest, Priority: 8},
 		Status:                {ID: Status, Label: "Status", From: report.FromLatest, Priority: 9},
-		CreationTimeStamp:     {ID: CreationTimeStamp, Label: "Created On", From: report.FromLatest, Priority: 10},
+		Created:               {ID: Created, Label: "Created", From: report.FromLatest, Datatype: report.DateTime, Priority: 10},
 		RotationRate:          {ID: RotationRate, Label: "Rotation Rate", From: report.FromLatest, Priority: 11},
 		CurrentTemperature:    {ID: CurrentTemperature, Label: "Current Temperature", From: report.FromLatest, Priority: 12},
 		HighestTemperature:    {ID: HighestTemperature, Label: "Highest Temperature", From: report.FromLatest, Priority: 13},
@@ -226,22 +220,22 @@ var (
 	}
 
 	CStorVolumeMetadataTemplates = report.MetadataTemplates{
-		NodeType:                     {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		VolumeName:                   {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
-		CStorVolumeStatus:            {ID: CStorVolumeStatus, Label: "Status", From: report.FromLatest, Priority: 3},
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
+		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 		CStorVolumeConsistencyFactor: {ID: CStorVolumeConsistencyFactor, Label: "Conistency Factor", From: report.FromLatest, Priority: 4},
 		CStorVolumeReplicationFactor: {ID: CStorVolumeReplicationFactor, Label: "Replication Factor", From: report.FromLatest, Priority: 5},
 		CStorVolumeIQN:               {ID: CStorVolumeIQN, Label: "Iqn", From: report.FromLatest, Priority: 6},
 	}
 	CStorVolumeReplicaMetadataTemplates = report.MetadataTemplates{
-		NodeType:                 {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		VolumeName:               {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
-		CStorVolumeReplicaStatus: {ID: CStorVolumeReplicaStatus, Label: "Status", From: report.FromLatest, Priority: 3},
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
+		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
 	CStorPoolMetadataTemplates = report.MetadataTemplates{
-		NodeType:        {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		VolumeName:      {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
-		CStorPoolStatus: {ID: CStorPoolStatus, Label: "Status", From: report.FromLatest, Priority: 3},
+		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName: {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
+		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
