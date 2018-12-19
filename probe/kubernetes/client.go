@@ -1,9 +1,11 @@
 package kubernetes
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 	"sync"
 	"time"
@@ -18,6 +20,7 @@ import (
 
 	"github.com/pborman/uuid"
 	log "github.com/sirupsen/logrus"
+	apiappsv1 "k8s.io/api/apps/v1"
 	apiappsv1beta1 "k8s.io/api/apps/v1beta1"
 	apibatchv1 "k8s.io/api/batch/v1"
 	apibatchv1beta1 "k8s.io/api/batch/v1beta1"
@@ -26,6 +29,7 @@ import (
 	apiextensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 	storagev1 "k8s.io/api/storage/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	k8smeta "k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -36,6 +40,8 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
+	kubectlsetting "k8s.io/kubernetes/pkg/kubectl/describe"
+	kubectl "k8s.io/kubernetes/pkg/kubectl/describe/versioned"
 )
 
 // Client keeps track of running kubernetes pods and services
@@ -63,10 +69,26 @@ type Client interface {
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
 	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string) error
 	GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
+	Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping k8smeta.RESTMapping) (io.ReadCloser, error)
 	DeletePod(namespaceID, podID string) error
 	DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error
 	ScaleUp(resource, namespaceID, id string) error
 	ScaleDown(resource, namespaceID, id string) error
+}
+
+// ResourceMap is the mapping of resource and their GroupKind
+var ResourceMap = map[string]schema.GroupKind{
+	"Pod":                   {Group: apiv1.GroupName, Kind: "Pod"},
+	"Service":               {Group: apiv1.GroupName, Kind: "Service"},
+	"Deployment":            {Group: apiappsv1.GroupName, Kind: "Deployment"},
+	"DaemonSet":             {Group: apiappsv1.GroupName, Kind: "DaemonSet"},
+	"StatefulSet":           {Group: apiappsv1.GroupName, Kind: "StatefulSet"},
+	"Job":                   {Group: apibatchv1.GroupName, Kind: "Job"},
+	"CronJob":               {Group: apibatchv1.GroupName, Kind: "CronJob"},
+	"Node":                  {Group: apiv1.GroupName, Kind: "Node"},
+	"PersistentVolume":      {Group: apiv1.GroupName, Kind: "PersistentVolume"},
+	"PersistentVolumeClaim": {Group: apiv1.GroupName, Kind: "PersistentVolumeClaim"},
+	"StorageClass":          {Group: storagev1.GroupName, Kind: "StorageClass"},
 }
 
 type client struct {
@@ -622,6 +644,32 @@ func (c *client) GetLogs(namespaceID, podID string, containerNames []string) (io
 		}
 		readClosersWithLabel[readCloser] = container
 	}
+
+	return NewLogReadCloser(readClosersWithLabel), nil
+}
+
+func (c *client) Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping k8smeta.RESTMapping) (io.ReadCloser, error) {
+	readClosersWithLabel := map[io.ReadCloser]string{}
+	restConfig, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
+	describer, ok := kubectl.DescriberFor(groupKind, restConfig)
+	if !ok {
+		describer, ok = kubectl.GenericDescriberFor(&restMapping, restConfig)
+		if !ok {
+			return nil, errors.New("Resource not found")
+		}
+	}
+	describerSetting := kubectlsetting.DescriberSettings{
+		ShowEvents: true,
+	}
+	obj, err := describer.Describe(namespaceID, resourceID, describerSetting)
+	if err != nil {
+		return nil, err
+	}
+	formattedObj := ioutil.NopCloser(bytes.NewReader([]byte(obj)))
+	readClosersWithLabel[formattedObj] = "describe"
 
 	return NewLogReadCloser(readClosersWithLabel), nil
 }
