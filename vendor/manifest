@@ -723,6 +723,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/fatih/camelcase",
+			"repository": "https://github.com/fatih/camelcase",
+			"vcs": "git",
+			"revision": "9db1b65eb38bb28986b93b521af1b7891ee1b04d",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/fluent/fluent-logger-golang/fluent",
 			"repository": "https://github.com/fluent/fluent-logger-golang",
 			"vcs": "git",
@@ -1121,8 +1129,8 @@
 			"importpath": "github.com/imdario/mergo",
 			"repository": "https://github.com/imdario/mergo",
 			"vcs": "git",
-			"revision": "6633656539c1639d9d78127b7d47c622b5d7b6dc",
-			"branch": "HEAD",
+			"revision": "ca3dcc1022bae9b5510f3c83705b72db1b1a96f9",
+			"branch": "master",
 			"notests": true
 		},
 		{
@@ -2812,7 +2820,7 @@
 			"importpath": "k8s.io/api",
 			"repository": "https://github.com/kubernetes/api",
 			"vcs": "git",
-			"revision": "072894a440bdee3a891dea811fe42902311cd2a3",
+			"revision": "89a74a8d264df0e993299876a8cde88379b940ee",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -2820,16 +2828,33 @@
 			"importpath": "k8s.io/apimachinery",
 			"repository": "https://github.com/kubernetes/apimachinery",
 			"vcs": "git",
-			"revision": "103fd098999dc9c0c88536f5c9ad2e5da39373ae",
+			"revision": "2b1284ed4c93a43499e781493253e2ac5959c4fd",
 			"branch": "HEAD",
+			"notests": true
+		},
+		{
+			"importpath": "k8s.io/cli-runtime/pkg/genericclioptions",
+			"repository": "https://github.com/kubernetes/cli-runtime",
+			"vcs": "git",
+			"revision": "2f0d1d0a58f22eae7a0ec3d6cf01f4a122a57dae",
+			"branch": "master",
+			"path": "/pkg/genericclioptions",
 			"notests": true
 		},
 		{
 			"importpath": "k8s.io/client-go",
 			"repository": "https://github.com/kubernetes/client-go",
 			"vcs": "git",
-			"revision": "7d04d0e2a0a1a4d4a1cd6baa432a2301492e4e65",
+			"revision": "e64494209f554a6723674bd494d69445fb76a1d4",
 			"branch": "HEAD",
+			"notests": true
+		},
+		{
+			"importpath": "k8s.io/klog",
+			"repository": "https://github.com/kubernetes/klog",
+			"vcs": "git",
+			"revision": "4767aaa894b9d76b3511781272db07d4ef45175e",
+			"branch": "master",
 			"notests": true
 		},
 		{
@@ -2848,6 +2873,23 @@
 			"revision": "a07b7bbb58e7fdc5144f8d7046331d29fc9ad3b3",
 			"branch": "master",
 			"path": "pkg/util/proto",
+			"notests": true
+		},
+		{
+			"importpath": "k8s.io/kubernetes/pkg/kubectl",
+			"repository": "https://github.com/kubernetes/kubernetes",
+			"vcs": "git",
+			"revision": "ddf47ac13c1a9483ea035a79cd7c10005ff21a6d",
+			"branch": "HEAD",
+			"path": "/pkg/kubectl",
+			"notests": true
+		},
+		{
+			"importpath": "sigs.k8s.io/yaml",
+			"repository": "https://github.com/kubernetes-sigs/yaml",
+			"vcs": "git",
+			"revision": "5fa4c7f5e38dda46711e0c2efd62370cfae67205",
+			"branch": "master",
 			"notests": true
 		},
 		{

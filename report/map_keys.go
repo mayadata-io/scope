@@ -118,6 +118,7 @@ const (
 	KubernetesTotalBytesWritten            = "kubernetes_total_bytes_written"
 	KubernetesDeviceUtilizationRate        = "kubernetes_device_utilization_rate"
 	KubernetesPercentEnduranceUsed         = "kubernetes_percent_endurance_used"
+	KubernetesDescribe                     = "kubernetes_describe"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

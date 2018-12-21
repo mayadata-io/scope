@@ -260,6 +260,13 @@ var (
 			Rank:  1,
 		},
 	}
+
+	DescribeControl = report.Control{
+		ID:    Describe,
+		Human: "Describe",
+		Icon:  "fa fa-file-text",
+		Rank:  2,
+	}
 )
 
 // Reporter generate Reports containing Container and ContainerImage topologies
@@ -477,6 +484,7 @@ func (r *Reporter) serviceTopology() (report.Topology, []Service, error) {
 			WithTableTemplates(TableTemplates)
 		services = []Service{}
 	)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkServices(func(s Service) error {
 		result.AddNode(s.GetNode(r.probeID))
 		services = append(services, s)
@@ -494,6 +502,7 @@ func (r *Reporter) deploymentTopology() (report.Topology, []Deployment, error) {
 		deployments = []Deployment{}
 	)
 	result.Controls.AddControls(ScalingControls)
+	result.Controls.AddControl(DescribeControl)
 
 	err := r.client.WalkDeployments(func(d Deployment) error {
 		result.AddNode(d.GetNode(r.probeID))
@@ -509,6 +518,7 @@ func (r *Reporter) daemonSetTopology() (report.Topology, []DaemonSet, error) {
 		WithMetadataTemplates(DaemonSetMetadataTemplates).
 		WithMetricTemplates(DaemonSetMetricTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkDaemonSets(func(d DaemonSet) error {
 		result.AddNode(d.GetNode(r.probeID))
 		daemonSets = append(daemonSets, d)
@@ -523,6 +533,7 @@ func (r *Reporter) statefulSetTopology() (report.Topology, []StatefulSet, error)
 		WithMetadataTemplates(StatefulSetMetadataTemplates).
 		WithMetricTemplates(StatefulSetMetricTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkStatefulSets(func(s StatefulSet) error {
 		result.AddNode(s.GetNode(r.probeID))
 		statefulSets = append(statefulSets, s)
@@ -537,6 +548,7 @@ func (r *Reporter) cronJobTopology() (report.Topology, []CronJob, error) {
 		WithMetadataTemplates(CronJobMetadataTemplates).
 		WithMetricTemplates(CronJobMetricTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCronJobs(func(c CronJob) error {
 		result.AddNode(c.GetNode(r.probeID))
 		cronJobs = append(cronJobs, c)
@@ -550,8 +562,9 @@ func (r *Reporter) persistentVolumeTopology() (report.Topology, []PersistentVolu
 	result := report.MakeTopology().
 		WithMetadataTemplates(PersistentVolumeMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkPersistentVolumes(func(p PersistentVolume) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		persistentVolumes = append(persistentVolumes, p)
 		return nil
 	})
@@ -569,6 +582,7 @@ func (r *Reporter) persistentVolumeClaimTopology() (report.Topology, []Persisten
 		Icon:  "fa fa-camera",
 		Rank:  0,
 	})
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
 		result.AddNode(p.GetNode(r.probeID))
 		persistentVolumeClaims = append(persistentVolumeClaims, p)
@@ -582,8 +596,9 @@ func (r *Reporter) storageClassTopology() (report.Topology, []StorageClass, erro
 	result := report.MakeTopology().
 		WithMetadataTemplates(StorageClassMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkStorageClasses(func(p StorageClass) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		storageClasses = append(storageClasses, p)
 		return nil
 	})
@@ -607,6 +622,7 @@ func (r *Reporter) volumeSnapshotTopology() (report.Topology, []VolumeSnapshot, 
 		Icon:  "far fa-trash-alt",
 		Rank:  1,
 	})
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkVolumeSnapshots(func(p VolumeSnapshot) error {
 		result.AddNode(p.GetNode(r.probeID))
 		volumeSnapshots = append(volumeSnapshots, p)
@@ -620,6 +636,7 @@ func (r *Reporter) volumeSnapshotDataTopology() (report.Topology, []VolumeSnapsh
 	result := report.MakeTopology().
 		WithMetadataTemplates(VolumeSnapshotDataMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkVolumeSnapshotData(func(p VolumeSnapshotData) error {
 		result.AddNode(p.GetNode(r.probeID))
 		volumeSnapshotData = append(volumeSnapshotData, p)
@@ -633,8 +650,9 @@ func (r *Reporter) diskTopology() (report.Topology, []Disk, error) {
 	result := report.MakeTopology().
 		WithMetadataTemplates(DiskMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkDisks(func(p Disk) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		disks = append(disks, p)
 		return nil
 	})
@@ -646,8 +664,9 @@ func (r *Reporter) storagePoolClaimTopology() (report.Topology, []StoragePoolCla
 	result := report.MakeTopology().
 		WithMetadataTemplates(StoragePoolClaimMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkStoragePoolClaims(func(p StoragePoolClaim) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		storagePoolClaims = append(storagePoolClaims, p)
 		return nil
 	})
@@ -659,8 +678,9 @@ func (r *Reporter) cStorVolumeTopology() (report.Topology, []CStorVolume, error)
 	result := report.MakeTopology().
 		WithMetadataTemplates(CStorVolumeMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCStorVolumes(func(p CStorVolume) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		cStorVolumes = append(cStorVolumes, p)
 		return nil
 	})
@@ -672,8 +692,9 @@ func (r *Reporter) cStorVolumeReplicaTopology() (report.Topology, []CStorVolumeR
 	result := report.MakeTopology().
 		WithMetadataTemplates(CStorVolumeReplicaMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCStorVolumeReplicas(func(p CStorVolumeReplica) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		cStorVolumeReplicas = append(cStorVolumeReplicas, p)
 		return nil
 	})
@@ -685,8 +706,9 @@ func (r *Reporter) cStorPoolTopology() (report.Topology, []CStorPool, error) {
 	result := report.MakeTopology().
 		WithMetadataTemplates(CStorPoolMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCStorPools(func(p CStorPool) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		cStorPool = append(cStorPool, p)
 		return nil
 	})
@@ -728,6 +750,7 @@ func (r *Reporter) podTopology(services []Service, deployments []Deployment, dae
 		Icon:  "far fa-trash-alt",
 		Rank:  1,
 	})
+	pods.Controls.AddControl(DescribeControl)
 	for _, service := range services {
 		selectors = append(selectors, match(
 			service.Namespace(),
