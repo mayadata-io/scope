@@ -844,7 +844,7 @@ func (r *Reporter) podTopology(services []Service, deployments []Deployment, dae
 		var err error
 		localPodUIDs, err = GetLocalPodUIDs(fmt.Sprintf("127.0.0.1:%d", r.kubeletPort))
 		if err != nil {
-			log.Warnf("No node name and cannot obtain local pods, reporting all (which may impact performance): %v", err)
+			log.Debugf("No node name and cannot obtain local pods, reporting all (which may impact performance): %v", err)
 		}
 	}
 	err := r.client.WalkPods(func(p Pod) error {
