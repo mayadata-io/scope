@@ -10,7 +10,7 @@ import (
 // CStorPool interface
 type CStorPool interface {
 	Meta
-	GetNode() report.Node
+	GetNode(probeID string) report.Node
 	GetStatus() string
 	GetNodeTagOnStatus(status string) string
 	GetHost() string
@@ -29,14 +29,15 @@ func NewCStorPool(p *mayav1alpha1.CStorPool) CStorPool {
 }
 
 // GetNode returns updated node with CStor Volume details
-func (p *cStorPool) GetNode() report.Node {
+func (p *cStorPool) GetNode(probeID string) report.Node {
 	status := p.GetStatus()
 	latests := map[string]string{
-		NodeType:             "CStor Pool",
-		APIVersion:           p.APIVersion,
-		DiskList:             strings.Join(p.Spec.Disks.DiskList, "~p$"),
-		HostName:             p.GetHost(),
-		StoragePoolClaimName: p.GetStoragePoolClaim(),
+		NodeType:              "CStor Pool",
+		APIVersion:            p.APIVersion,
+		DiskList:              strings.Join(p.Spec.Disks.DiskList, "~p$"),
+		HostName:              p.GetHost(),
+		StoragePoolClaimName:  p.GetStoragePoolClaim(),
+		report.ControlProbeID: probeID,
 	}
 
 	if status != "" {
@@ -44,7 +45,8 @@ func (p *cStorPool) GetNode() report.Node {
 	}
 	return p.MetaNode(report.MakeCStorPoolNodeID(p.UID())).
 		WithLatests(latests).
-		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status)))
+		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status))).
+		WithLatestActiveControls(Describe)
 
 }
 

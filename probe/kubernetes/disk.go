@@ -12,7 +12,7 @@ import (
 // Disk represent NDM Disk interface
 type Disk interface {
 	Meta
-	GetNode() report.Node
+	GetNode(probeID string) report.Node
 	GetPath() []string
 	GetNodeTagStatus(string) string
 }
@@ -29,7 +29,7 @@ func NewDisk(p *maya1alpha1.Disk) Disk {
 }
 
 // GetNode returns Disk as Node
-func (p *disk) GetNode() report.Node {
+func (p *disk) GetNode(probeID string) report.Node {
 	var diskStatus string
 	diskStatus = p.Status.State
 
@@ -54,11 +54,13 @@ func (p *disk) GetNode() report.Node {
 		DeviceUtilizationRate: fmt.Sprintf("%.2f", p.Stats.DeviceUtilizationRate),
 		PercentEnduranceUsed:  fmt.Sprintf("%.2f", p.Stats.PercentEnduranceUsed),
 		Created:               p.ObjectMeta.CreationTimestamp.String(),
+		report.ControlProbeID: probeID,
 	}
 
 	return p.MetaNode(report.MakeDiskNodeID(p.UID())).
 		WithLatests(latests).
-		WithNodeTag(p.GetNodeTagStatus(diskStatus))
+		WithNodeTag(p.GetNodeTagStatus(diskStatus)).
+		WithLatestActiveControls(Describe)
 }
 
 func (p *disk) GetPath() []string {
