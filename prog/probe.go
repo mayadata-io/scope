@@ -22,7 +22,6 @@ import (
 	"github.com/weaveworks/common/sanitize"
 	"github.com/weaveworks/common/signals"
 	"github.com/weaveworks/common/tracing"
-	"github.com/weaveworks/go-checkpoint"
 	"github.com/weaveworks/scope/common/hostname"
 	"github.com/weaveworks/scope/common/weave"
 	"github.com/weaveworks/scope/common/xfer"
@@ -42,7 +41,6 @@ import (
 )
 
 const (
-	versionCheckPeriod = 6 * time.Hour
 	defaultServiceHost = "https://cloud.weave.works.:443"
 
 	kubernetesRoleHost    = "host"
@@ -52,37 +50,6 @@ const (
 var (
 	pluginAPIVersion = "1"
 )
-
-func checkNewScopeVersion(flags probeFlags) {
-	checkpointFlags := makeBaseCheckpointFlags()
-	if flags.kubernetesEnabled {
-		checkpointFlags["kubernetes_enabled"] = "true"
-	}
-	if flags.ecsEnabled {
-		checkpointFlags["ecs_enabled"] = "true"
-	}
-
-	go func() {
-		handleResponse := func(r *checkpoint.CheckResponse, err error) {
-			if err != nil {
-				log.Errorf("Error checking version: %v", err)
-			} else if r.Outdated {
-				log.Infof("Scope version %s is available; please update at %s",
-					r.CurrentVersion, r.CurrentDownloadURL)
-			}
-		}
-
-		// Start background version checking
-		params := checkpoint.CheckParams{
-			Product: "scope-probe",
-			Version: version,
-			Flags:   checkpointFlags,
-		}
-		resp, err := checkpoint.Check(&params)
-		handleResponse(resp, err)
-		checkpoint.CheckInterval(&params, versionCheckPeriod, handleResponse)
-	}()
-}
 
 func maybeExportProfileData(flags probeFlags) {
 	if flags.httpListen != "" {
@@ -156,7 +123,6 @@ func probeMain(flags probeFlags, targets []appclient.Target) {
 		hostID   = hostName // TODO(pb): we should sanitize the hostname
 	)
 	log.Infof("probe starting, version %s, ID %s", version, probeID)
-	checkNewScopeVersion(flags)
 
 	handlerRegistry := controls.NewDefaultHandlerRegistry()
 	clientFactory := func(hostname string, url url.URL) (appclient.AppClient, error) {
