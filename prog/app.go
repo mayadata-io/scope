@@ -25,7 +25,6 @@ import (
 	"github.com/weaveworks/common/network"
 	"github.com/weaveworks/common/signals"
 	"github.com/weaveworks/common/tracing"
-	"github.com/weaveworks/go-checkpoint"
 	"github.com/weaveworks/scope/app"
 	"github.com/weaveworks/scope/app/multitenant"
 	"github.com/weaveworks/scope/common/weave"
@@ -261,21 +260,6 @@ func appMain(flags appFlags) {
 		log.Fatalf("Error creating pipe router: %v", err)
 		return
 	}
-
-	// Start background version checking
-	checkpoint.CheckInterval(&checkpoint.CheckParams{
-		Product: "scope-app",
-		Version: app.Version,
-		Flags:   makeBaseCheckpointFlags(),
-	}, versionCheckPeriod, func(r *checkpoint.CheckResponse, err error) {
-		if err != nil {
-			log.Errorf("Error checking version: %v", err)
-		} else if r.Outdated {
-			log.Infof("Scope version %s is available; please update at %s",
-				r.CurrentVersion, r.CurrentDownloadURL)
-			app.NewVersion(r.CurrentVersion, r.CurrentDownloadURL)
-		}
-	})
 
 	// Periodically try and register our IP address in WeaveDNS.
 	if flags.weaveEnabled && flags.weaveHostname != "" {
