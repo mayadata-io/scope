@@ -2003,13 +2003,6 @@
 			"notests": true
 		},
 		{
-			"importpath": "github.com/weaveworks/go-checkpoint",
-			"repository": "https://github.com/weaveworks/go-checkpoint",
-			"vcs": "",
-			"revision": "62324982ab514860761ec81e618664580513ffad",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/weaveworks/go-odp/odp",
 			"repository": "https://github.com/weaveworks/go-odp",
 			"vcs": "",
