@@ -47,7 +47,7 @@ type Pod interface {
 	ContainerNames() []string
 	GetVolumeName() string
 	IsReplicaOrPoolPod() bool
-	VolumeClaimName() string
+	VolumeClaimName() []string
 }
 
 type pod struct {
@@ -121,15 +121,14 @@ func (p *pod) GetVolumeName() string {
 	return ""
 }
 
-func (p *pod) VolumeClaimName() string {
-	var claimName string
+func (p *pod) VolumeClaimName() []string {
+	var claimNames []string
 	for _, volume := range p.Spec.Volumes {
 		if volume.VolumeSource.PersistentVolumeClaim != nil {
-			claimName = volume.VolumeSource.PersistentVolumeClaim.ClaimName
-			break
+			claimNames = append(claimNames, volume.VolumeSource.PersistentVolumeClaim.ClaimName)
 		}
 	}
-	return claimName
+	return claimNames
 }
 
 func (p *pod) GetNode(probeID string) report.Node {
@@ -140,17 +139,13 @@ func (p *pod) GetNode(probeID string) report.Node {
 		RestartCount:          strconv.FormatUint(uint64(p.RestartCount()), 10),
 	}
 
-	if p.VolumeClaimName() != "" {
-		latests[VolumeClaim] = p.VolumeClaimName()
+	if len(p.VolumeClaimName()) > 0 {
+		latests[VolumeClaim] = strings.Join(p.VolumeClaimName(), "~p$")
+		latests[VolumePod] = "true"
 	}
 
 	if p.Pod.Spec.HostNetwork {
 		latests[IsInHostNetwork] = "true"
-	}
-
-	if p.VolumeClaimName() != "" {
-		latests[VolumeClaim] = p.VolumeClaimName()
-		latests[VolumePod] = "true"
 	}
 
 	if p.GetVolumeName() != "" {
