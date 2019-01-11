@@ -134,6 +134,12 @@ const (
 	ECSScaleDown           = "ecs_scale_down"
 )
 
+// User kind keys
+const (
+	UserKindHeader = "x-api-user-kind"
+	ReadAdminUSer  = "readAdmin"
+)
+
 /* Lookup table to allow msgpack/json decoder to avoid heap allocation
    for common ps.Map keys. The map is static so we don't have to lock
    access from multiple threads and don't have to worry about it
