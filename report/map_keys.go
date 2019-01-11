@@ -12,6 +12,11 @@ const (
 	PPID    = "ppid"
 	Cmdline = "cmdline"
 	Threads = "threads"
+
+	// Controls
+	AdminControl    = "admin_control"
+	ReadOnlyControl = "read_only_control"
+
 	// probe/docker
 	DockerContainerID            = "docker_container_id"
 	DockerImageID                = "docker_image_id"
