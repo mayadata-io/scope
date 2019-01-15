@@ -75,8 +75,13 @@ func handleNode(ctx context.Context, renderer render.Renderer, transformer rende
 		nodes.Nodes[nodeID] = node
 		nodes.Filtered--
 	}
-	rawNode := detailed.MakeNode(topologyID, rc, nodes.Nodes, node)
-	respondWith(w, http.StatusOK, APINode{Node: detailed.CensorNode(rawNode, censorCfg)})
+	if r.Header.Get(report.UserKindHeader) == report.ReadAdminUSer {
+		rawNode := detailed.MakeNodeWithReadOnlyControls(topologyID, r.Header.Get(report.UserKindHeader), rc, nodes.Nodes, node)
+		respondWith(w, http.StatusOK, APINode{Node: detailed.CensorNode(rawNode, censorCfg)})
+	} else {
+		rawNode := detailed.MakeNode(topologyID, rc, nodes.Nodes, node)
+		respondWith(w, http.StatusOK, APINode{Node: detailed.CensorNode(rawNode, censorCfg)})
+	}
 }
 
 // Websocket for the full topology.
