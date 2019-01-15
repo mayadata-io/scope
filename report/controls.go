@@ -14,6 +14,7 @@ type Controls map[string]Control
 type Control struct {
 	ID           string `json:"id"`
 	Human        string `json:"human"`
+	Category     string `json:"category"`
 	Icon         string `json:"icon"` // from https://fortawesome.github.io/Font-Awesome/cheatsheet/ please
 	Confirmation string `json:"confirmation,omitempty"`
 	Rank         int    `json:"rank"`
@@ -56,6 +57,17 @@ func (cs Controls) AddControls(controls []Control) {
 	for _, c := range controls {
 		cs[c.ID] = c
 	}
+}
+
+// DisableAdminControls will remove all the admin controls
+func (cs Controls) DisableAdminControls() Controls {
+	result := Controls{}
+	for k, v := range cs {
+		if v.Category != AdminControl {
+			result[k] = v
+		}
+	}
+	return result
 }
 
 // NodeControls represent the individual controls that are valid for a given
