@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/armon/go-metrics"
+	metrics "github.com/armon/go-metrics"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 
@@ -192,7 +192,7 @@ func probeMain(flags probeFlags, targets []appclient.Target) {
 		clients = multiClients
 	}
 
-	p := probe.New(flags.spyInterval, flags.publishInterval, clients, flags.noControls)
+	p := probe.New(flags.spyInterval, flags.publishInterval, clients, flags.noControls, flags.disableAdminControls)
 	p.AddTagger(probe.NewTopologyTagger())
 	var processCache *process.CachingWalker
 
