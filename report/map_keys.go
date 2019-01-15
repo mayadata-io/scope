@@ -12,6 +12,11 @@ const (
 	PPID    = "ppid"
 	Cmdline = "cmdline"
 	Threads = "threads"
+
+	// Controls
+	AdminControl    = "admin_control"
+	ReadOnlyControl = "read_only_control"
+
 	// probe/docker
 	DockerContainerID            = "docker_container_id"
 	DockerImageID                = "docker_image_id"
@@ -143,6 +148,12 @@ const (
 	// probe/overlay/weave
 	WeavePeerName     = "weave_peer_name"
 	WeavePeerNickName = "weave_peer_nick_name"
+)
+
+// User kind keys
+const (
+	UserKindHeader = "x-api-user-kind"
+	ReadAdminUSer  = "readAdmin"
 )
 
 /* Lookup table to allow msgpack/json decoder to avoid heap allocation

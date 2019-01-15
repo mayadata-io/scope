@@ -211,16 +211,18 @@ func (Reporter) Report() (report.Report, error) {
 	serviceTopology := report.MakeTopology().WithMetadataTemplates(serviceMetadata)
 	serviceTopology.Controls.AddControls([]report.Control{
 		{
-			ID:    ScaleDown,
-			Human: "Scale down",
-			Icon:  "fa fa-minus",
-			Rank:  0,
+			ID:       ScaleDown,
+			Human:    "Scale down",
+			Category: report.AdminControl,
+			Icon:     "fa fa-minus",
+			Rank:     0,
 		},
 		{
-			ID:    ScaleUp,
-			Human: "Scale up",
-			Icon:  "fa fa-plus",
-			Rank:  1,
+			ID:       ScaleUp,
+			Human:    "Scale up",
+			Category: report.AdminControl,
+			Icon:     "fa fa-plus",
+			Rank:     1,
 		},
 	})
 	result.ECSService = result.ECSService.Merge(serviceTopology)

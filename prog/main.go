@@ -107,6 +107,7 @@ type probeFlags struct {
 	resolver               string
 	noApp                  bool
 	noControls             bool
+	disableAdminControls   bool
 	noCommandLineArguments bool
 	noEnvironmentVariables bool
 
@@ -287,6 +288,7 @@ func setupFlags(flags *flags) {
 	flag.IntVar(&flags.probe.ticksPerFullReport, "probe.full-report-every", 3, "publish full report every N times, deltas in between. Make sure N < (app.window / probe.publish.interval)")
 	flag.StringVar(&flags.probe.pluginsRoot, "probe.plugins.root", "/var/run/scope/plugins", "Root directory to search for plugins (disable plugins if blank)")
 	flag.BoolVar(&flags.probe.noControls, "probe.no-controls", false, "Disable controls (e.g. start/stop containers, terminals, logs ...)")
+	flag.BoolVar(&flags.probe.disableAdminControls, "probe.disable-admin-controls", false, "Disable controls (e.g. start/stop containers, terminals)")
 	flag.BoolVar(&flags.probe.noCommandLineArguments, "probe.omit.cmd-args", false, "Disable collection of command-line arguments")
 	flag.BoolVar(&flags.probe.noEnvironmentVariables, "probe.omit.env-vars", true, "Disable collection of environment variables")
 
