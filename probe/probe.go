@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/armon/go-metrics"
+	metrics "github.com/armon/go-metrics"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/time/rate"
 
@@ -28,6 +28,7 @@ type Probe struct {
 	publisher                    ReportPublisher
 	rateLimiter                  *rate.Limiter
 	noControls                   bool
+	disableAdminControls         bool
 
 	tickers   []Ticker
 	reporters []Reporter
@@ -78,16 +79,18 @@ func New(
 	spyInterval, publishInterval time.Duration,
 	publisher ReportPublisher,
 	noControls bool,
+	disableAdminControls bool,
 ) *Probe {
 	result := &Probe{
-		spyInterval:     spyInterval,
-		publishInterval: publishInterval,
-		publisher:       publisher,
-		rateLimiter:     rate.NewLimiter(rate.Every(publishInterval/100), 1),
-		noControls:      noControls,
-		quit:            make(chan struct{}),
-		spiedReports:    make(chan report.Report, spiedReportBufferSize),
-		shortcutReports: make(chan report.Report, shortcutReportBufferSize),
+		spyInterval:          spyInterval,
+		publishInterval:      publishInterval,
+		publisher:            publisher,
+		rateLimiter:          rate.NewLimiter(rate.Every(publishInterval/100), 1),
+		noControls:           noControls,
+		disableAdminControls: disableAdminControls,
+		quit:                 make(chan struct{}),
+		spiedReports:         make(chan report.Report, spiedReportBufferSize),
+		shortcutReports:      make(chan report.Report, shortcutReportBufferSize),
 	}
 	return result
 }
@@ -216,6 +219,11 @@ ForLoop:
 	if p.noControls {
 		rpt.WalkTopologies(func(t *report.Topology) {
 			t.Controls = report.Controls{}
+		})
+	}
+	if p.disableAdminControls {
+		rpt.WalkTopologies(func(t *report.Topology) {
+			t.Controls = t.Controls.DisableAdminControls()
 		})
 	}
 	if err := p.publisher.Publish(rpt); err != nil {
