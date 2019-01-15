@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"context"
+
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
@@ -71,7 +72,11 @@ func handleNode(ctx context.Context, renderer render.Renderer, transformer rende
 		nodes.Nodes[nodeID] = node
 		nodes.Filtered--
 	}
-	respondWith(w, http.StatusOK, APINode{Node: detailed.MakeNode(topologyID, rc, nodes.Nodes, node)})
+	if r.Header.Get(report.UserKindHeader) == report.ReadAdminUSer {
+		respondWith(w, http.StatusOK, APINode{Node: detailed.MakeNodeWithReadOnlyControls(topologyID, r.Header.Get(report.UserKindHeader), rc, nodes.Nodes, node)})
+	} else {
+		respondWith(w, http.StatusOK, APINode{Node: detailed.MakeNode(topologyID, rc, nodes.Nodes, node)})
+	}
 }
 
 // Websocket for the full topology.

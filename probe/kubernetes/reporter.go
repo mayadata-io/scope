@@ -248,24 +248,27 @@ var (
 
 	ScalingControls = []report.Control{
 		{
-			ID:    ScaleDown,
-			Human: "Scale down",
-			Icon:  "fa fa-minus",
-			Rank:  0,
+			ID:       ScaleDown,
+			Human:    "Scale down",
+			Category: report.AdminControl,
+			Icon:     "fa fa-minus",
+			Rank:     0,
 		},
 		{
-			ID:    ScaleUp,
-			Human: "Scale up",
-			Icon:  "fa fa-plus",
-			Rank:  1,
+			ID:       ScaleUp,
+			Human:    "Scale up",
+			Category: report.AdminControl,
+			Icon:     "fa fa-plus",
+			Rank:     1,
 		},
 	}
 
 	DescribeControl = report.Control{
-		ID:    Describe,
-		Human: "Describe",
-		Icon:  "fa fa-file-text",
-		Rank:  2,
+		ID:       Describe,
+		Human:    "Describe",
+		Category: report.ReadOnlyControl,
+		Icon:     "fa fa-file-text",
+		Rank:     2,
 	}
 )
 
@@ -577,10 +580,11 @@ func (r *Reporter) persistentVolumeClaimTopology() (report.Topology, []Persisten
 		WithMetadataTemplates(PersistentVolumeClaimMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	result.Controls.AddControl(report.Control{
-		ID:    CreateVolumeSnapshot,
-		Human: "Create snapshot",
-		Icon:  "fa fa-camera",
-		Rank:  0,
+		ID:       CreateVolumeSnapshot,
+		Human:    "Create snapshot",
+		Category: report.AdminControl,
+		Icon:     "fa fa-camera",
+		Rank:     0,
 	})
 	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkPersistentVolumeClaims(func(p PersistentVolumeClaim) error {
@@ -611,16 +615,18 @@ func (r *Reporter) volumeSnapshotTopology() (report.Topology, []VolumeSnapshot, 
 		WithMetadataTemplates(VolumeSnapshotMetadataTemplates).
 		WithTableTemplates(TableTemplates)
 	result.Controls.AddControl(report.Control{
-		ID:    CloneVolumeSnapshot,
-		Human: "Clone snapshot",
-		Icon:  "far fa-clone",
-		Rank:  0,
+		ID:       CloneVolumeSnapshot,
+		Human:    "Clone snapshot",
+		Category: report.AdminControl,
+		Icon:     "far fa-clone",
+		Rank:     0,
 	})
 	result.Controls.AddControl(report.Control{
-		ID:    DeleteVolumeSnapshot,
-		Human: "Delete",
-		Icon:  "far fa-trash-alt",
-		Rank:  1,
+		ID:       DeleteVolumeSnapshot,
+		Human:    "Delete",
+		Category: report.AdminControl,
+		Icon:     "far fa-trash-alt",
+		Rank:     1,
 	})
 	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkVolumeSnapshots(func(p VolumeSnapshot) error {
@@ -739,16 +745,18 @@ func (r *Reporter) podTopology(services []Service, deployments []Deployment, dae
 		selectors = []func(labelledChild){}
 	)
 	pods.Controls.AddControl(report.Control{
-		ID:    GetLogs,
-		Human: "Get logs",
-		Icon:  "fa fa-desktop",
-		Rank:  0,
+		ID:       GetLogs,
+		Human:    "Get logs",
+		Category: report.ReadOnlyControl,
+		Icon:     "fa fa-desktop",
+		Rank:     0,
 	})
 	pods.Controls.AddControl(report.Control{
-		ID:    DeletePod,
-		Human: "Delete",
-		Icon:  "far fa-trash-alt",
-		Rank:  1,
+		ID:       DeletePod,
+		Human:    "Delete",
+		Category: report.AdminControl,
+		Icon:     "far fa-trash-alt",
+		Rank:     1,
 	})
 	pods.Controls.AddControl(DescribeControl)
 	for _, service := range services {

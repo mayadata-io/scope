@@ -77,6 +77,7 @@ func (v podToVolumesRenderer) Render(ctx context.Context, rpt report.Report) Nod
 				if (pvcName == ClaimName) && (podNamespace == pvcNamespace) {
 					podNode.Adjacency = podNode.Adjacency.Add(pvcNode.ID)
 					podNode.Children = podNode.Children.Add(pvcNode)
+					break
 				}
 			}
 		}

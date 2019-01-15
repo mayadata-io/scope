@@ -12,6 +12,11 @@ const (
 	PPID    = "ppid"
 	Cmdline = "cmdline"
 	Threads = "threads"
+
+	// Controls
+	AdminControl    = "admin_control"
+	ReadOnlyControl = "read_only_control"
+
 	// probe/docker
 	DockerContainerID            = "docker_container_id"
 	DockerImageID                = "docker_image_id"
@@ -127,6 +132,12 @@ const (
 	ECSServiceRunningCount = "ecs_service_running_count"
 	ECSScaleUp             = "ecs_scale_up"
 	ECSScaleDown           = "ecs_scale_down"
+)
+
+// User kind keys
+const (
+	UserKindHeader = "x-api-user-kind"
+	ReadAdminUSer  = "readAdmin"
 )
 
 /* Lookup table to allow msgpack/json decoder to avoid heap allocation

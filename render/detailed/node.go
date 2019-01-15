@@ -90,7 +90,7 @@ func MakeNode(topologyID string, rc RenderContext, ns report.Nodes, n report.Nod
 	summary, _ := MakeNodeSummary(rc, n)
 	return Node{
 		NodeSummary: summary,
-		Controls:    controls(rc.Report, n),
+		Controls:    controls(rc.Report, n, ""),
 		Children:    children(rc, n),
 		Connections: []ConnectionsSummary{
 			incomingConnectionsSummary(topologyID, rc.Report, n, ns),
@@ -99,7 +99,22 @@ func MakeNode(topologyID string, rc RenderContext, ns report.Nodes, n report.Nod
 	}
 }
 
-func controlsFor(topology report.Topology, nodeID string) []ControlInstance {
+// MakeNodeWithReadOnlyControls transforms a renderable node to a detailed node. It uses
+// aggregate metadata, plus the set of origin node IDs, to produce tables.
+func MakeNodeWithReadOnlyControls(topologyID, userKind string, rc RenderContext, ns report.Nodes, n report.Node) Node {
+	summary, _ := MakeNodeSummary(rc, n)
+	return Node{
+		NodeSummary: summary,
+		Controls:    controls(rc.Report, n, userKind),
+		Children:    children(rc, n),
+		Connections: []ConnectionsSummary{
+			incomingConnectionsSummary(topologyID, rc.Report, n, ns),
+			outgoingConnectionsSummary(topologyID, rc.Report, n, ns),
+		},
+	}
+}
+
+func controlsFor(topology report.Topology, nodeID, userKind string) []ControlInstance {
 	result := []ControlInstance{}
 	node, ok := topology.Nodes[nodeID]
 	if !ok {
@@ -113,20 +128,32 @@ func controlsFor(topology report.Topology, nodeID string) []ControlInstance {
 		if data.Dead {
 			return
 		}
-		if control, ok := topology.Controls[controlID]; ok {
-			result = append(result, ControlInstance{
-				ProbeID: probeID,
-				NodeID:  nodeID,
-				Control: control,
-			})
+		if userKind == report.ReadAdminUSer {
+			if control, ok := topology.Controls[controlID]; ok {
+				if control.Category == report.ReadOnlyControl {
+					result = append(result, ControlInstance{
+						ProbeID: probeID,
+						NodeID:  nodeID,
+						Control: control,
+					})
+				}
+			}
+		} else {
+			if control, ok := topology.Controls[controlID]; ok {
+				result = append(result, ControlInstance{
+					ProbeID: probeID,
+					NodeID:  nodeID,
+					Control: control,
+				})
+			}
 		}
 	})
 	return result
 }
 
-func controls(r report.Report, n report.Node) []ControlInstance {
+func controls(r report.Report, n report.Node, userKind string) []ControlInstance {
 	if t, ok := r.Topology(n.Topology); ok {
-		return controlsFor(t, n.ID)
+		return controlsFor(t, n.ID, userKind)
 	}
 	return []ControlInstance{}
 }
