@@ -8,7 +8,6 @@ import { debounce, isEqual } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import theme from 'weaveworks-ui-components/lib/theme';
 
-import MayaOnline from './mayaonline-logo';
 
 import Footer from './footer';
 import Sidebar from './sidebar';
@@ -197,7 +196,6 @@ class App extends React.Component {
     } = this.props;
 
     const className = classNames('scope-app', { 'time-travel-open': timeTravelSupported });
-    const isIframe = window !== window.top;
 
     return (
       <ThemeProvider theme={theme}>
@@ -216,13 +214,6 @@ class App extends React.Component {
             {timeTravelSupported && this.props.renderTimeTravel()}
 
             <div className="selectors">
-              <div className="mayaonline-logo">
-                {!isIframe &&
-                  <svg width="100%" height="100%">
-                    <MayaOnline />
-                  </svg>
-                }
-              </div>
               <Search />
               <Topologies />
               <ViewModeSelector />
