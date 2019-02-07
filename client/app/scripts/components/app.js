@@ -8,11 +8,13 @@ import { debounce, isEqual } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import theme from 'weaveworks-ui-components/lib/theme';
 
+import MayaOnline from './mayaonline-logo';
 
 import Footer from './footer';
 import Sidebar from './sidebar';
 import HelpPanel from './help-panel';
 import TroubleshootingMenu from './troubleshooting-menu';
+import FilterTable from './filter-table';
 import Search from './search';
 import Status from './status';
 import Topologies from './topologies';
@@ -191,11 +193,12 @@ class App extends React.Component {
   render() {
     const {
       isTableViewMode, isGraphViewMode, isResourceViewMode, showingDetails,
-      showingHelp, showingNetworkSelector, showingTroubleshootingMenu,
+      showingHelp, showingNetworkSelector, showingTroubleshootingMenu, showingFilterTable,
       timeTravelTransitioning, timeTravelSupported
     } = this.props;
 
     const className = classNames('scope-app', { 'time-travel-open': timeTravelSupported });
+    const isIframe = window !== window.top;
 
     return (
       <ThemeProvider theme={theme}>
@@ -206,6 +209,8 @@ class App extends React.Component {
 
           {showingTroubleshootingMenu && <TroubleshootingMenu />}
 
+          {showingFilterTable && <FilterTable />}
+
           {showingDetails && <Details
             renderNodeDetailsExtras={this.props.renderNodeDetailsExtras}
           />}
@@ -214,6 +219,13 @@ class App extends React.Component {
             {timeTravelSupported && this.props.renderTimeTravel()}
 
             <div className="selectors">
+              <div className="mayaonline-logo">
+                {!isIframe &&
+                  <svg width="100%" height="100%">
+                    <MayaOnline />
+                  </svg>
+                }
+              </div>
               <Search />
               <Topologies />
               <ViewModeSelector />
@@ -251,6 +263,7 @@ function mapStateToProps(state) {
     showingDetails: state.get('nodeDetails').size > 0,
     showingHelp: state.get('showingHelp'),
     showingTroubleshootingMenu: state.get('showingTroubleshootingMenu'),
+    showingFilterTable: state.get('showingFilterTable'),
     showingNetworkSelector: availableNetworksSelector(state).count() > 0,
     showingTerminal: state.get('controlPipes').size > 0,
     topologyViewMode: state.get('topologyViewMode'),

@@ -760,6 +760,25 @@ export function toggleTroubleshootingMenu(ev) {
   };
 }
 
+export function showFilter() {
+  return { type: ActionTypes.SHOW_FILTER };
+}
+
+
+export function hideFilter() {
+  return { type: ActionTypes.HIDE_FILTER };
+}
+
+export function toggleFilterTable() {
+  return (dispatch, getState) => {
+    if (getState().get('showingFilterTable')) {
+      dispatch(hideFilter());
+    } else {
+      dispatch(showFilter());
+    }
+  };
+}
+
 export function changeInstance() {
   return (dispatch, getState) => {
     dispatch({

@@ -6,7 +6,7 @@ const HttpProxyRules = require('http-proxy-rules');
 
 const app = express();
 
-const BACKEND_HOST = process.env.BACKEND_HOST || 'localhost';
+const BACKEND_HOST = '35.193.149.131' || 'localhost';
 
 /*
 *
@@ -17,7 +17,7 @@ const BACKEND_HOST = process.env.BACKEND_HOST || 'localhost';
 
 const backendProxy = httpProxy.createProxy({
   ws: true,
-  target: `http://${BACKEND_HOST}:4040`,
+  target: `http://${BACKEND_HOST}:32163`,
 });
 backendProxy.on('error', err => console.error('Proxy error', err));
 app.all('/api*', backendProxy.web.bind(backendProxy));

@@ -33,7 +33,7 @@ export function getTableColumnsStyles(headers) {
   return headers.map(header => ({
     // More beauty hacking, ports and counts can only get
     // so big, free up WS for other longer fields like IPs!
-    width: isNumber(header.id) > '120px' ? '100px' : '160px',
+    width: isNumber(header.id) ? '100px' : '160px',
     textAlign: isNumber(header) ? 'right' : 'left'
   }));
 }

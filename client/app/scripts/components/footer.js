@@ -8,6 +8,7 @@ import {
   clickForceRelayout,
   toggleHelp,
   toggleTroubleshootingMenu,
+  toggleFilterTable,
   setContrastMode
 } from '../actions/app-actions';
 
@@ -66,7 +67,6 @@ class Footer extends React.Component {
         <div className="footer-plugins">
           <Plugins />
         </div>
-
         <div className="footer-tools">
           <button
             className="footer-icon"
@@ -84,6 +84,14 @@ class Footer extends React.Component {
             href=""
           >
             <i className="fa fa-bug" />
+          </button>
+          <button
+            onClick={this.props.toggleFilterTable}
+            className="footer-icon"
+            title="Filter Table"
+            href=""
+          >
+            <i className="fa fa-filter" />
           </button>
           <button className="footer-icon" onClick={this.props.toggleHelp} title="Show help">
             <i className="fa fa-question" />
@@ -111,6 +119,7 @@ export default connect(
     clickForceRelayout,
     toggleHelp,
     toggleTroubleshootingMenu,
+    toggleFilterTable,
     setContrastMode
   }
 )(Footer);
