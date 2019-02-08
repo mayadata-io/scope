@@ -76,6 +76,7 @@ export const initialState = makeMap({
   selectedNodeId: null,
   showingHelp: false,
   showingTroubleshootingMenu: false,
+  showingFilterTable: false,
   showingNetworks: false,
   storeViewState: true,
   timeTravelTransitioning: false,
@@ -278,6 +279,10 @@ export function rootReducer(state = initialState, action) {
       if (state.get('showingTroubleshootingMenu')) {
         state = state.set('showingTroubleshootingMenu', false);
       }
+      if (state.get('showingFilterTable')) {
+        state = state.set('showingFilterTable', false);
+      }
+
       return closeAllNodeDetails(state);
     }
 
@@ -291,6 +296,10 @@ export function rootReducer(state = initialState, action) {
 
     case ActionTypes.CLICK_FORCE_RELAYOUT: {
       return state.set('forceRelayout', action.forceRelayout);
+    }
+
+    case ActionTypes.CLICK_FORCE_DELAYOUT: {
+      return state.set('forceDelayout', action.forceDelayout);
     }
 
     case ActionTypes.CLICK_NODE: {
@@ -457,6 +466,14 @@ export function rootReducer(state = initialState, action) {
 
     case ActionTypes.HIDE_HELP: {
       return state.set('showingHelp', false);
+    }
+
+    case ActionTypes.SHOW_FILTER: {
+      return state.set('showingFilterTable', true);
+    }
+
+    case ActionTypes.HIDE_FILTER: {
+      return state.set('showingFilterTable', false);
     }
 
     case ActionTypes.DESELECT_NODE: {
@@ -723,6 +740,10 @@ export function rootReducer(state = initialState, action) {
 
     case ActionTypes.TOGGLE_TROUBLESHOOTING_MENU: {
       return state.set('showingTroubleshootingMenu', !state.get('showingTroubleshootingMenu'));
+    }
+
+    case ActionTypes.FILTER_TABLE: {
+      return state.set('showingFilterTable', !state.get('showingFilterTable'));
     }
 
     case ActionTypes.CHANGE_INSTANCE: {
