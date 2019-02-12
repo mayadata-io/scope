@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { List as makeList, Map as makeMap } from 'immutable';
 import capitalize from 'lodash/capitalize';
+import {tmp} from '../components/filter-table';
 
 import NodeDetailsTable from '../components/node-details/node-details-table';
 import { clickNode, sortOrderChanged } from '../actions/app-actions';
@@ -15,10 +16,6 @@ import { TABLE_VIEW_MODE } from '../constants/naming';
 import { windowHeightSelector } from '../selectors/canvas';
 import { searchNodeMatchesSelector } from '../selectors/search';
 import { getNodeColor } from '../utils/color-utils';
-
-
-const IGNORED_COLUMNS = ['docker_container_ports', 'docker_container_id', 'docker_image_id',
-  'docker_container_command', 'docker_container_networks'];
 
 
 const Icon = styled.span`
@@ -47,6 +44,7 @@ function getColumns(nodes, topologies) {
         .map(m => makeMap({ id: m.get('id'), label: m.get('label'), dataType: 'number' }));
       return metrics;
     })
+    .filter(n => tmp.includes(n.get('label')))
     .toSet()
     .toList()
     .sortBy(m => m.get('label'));
@@ -58,8 +56,8 @@ function getColumns(nodes, topologies) {
         .map(m => makeMap({ id: m.get('id'), label: m.get('label'), dataType: m.get('dataType') }));
       return metadata;
     })
+    .filter(n => tmp.includes(n.get('label' || 'id')))
     .toSet()
-    .filter(n => !IGNORED_COLUMNS.includes(n.get('id')))
     .toList()
     .sortBy(m => m.get('label'));
 
@@ -166,7 +164,9 @@ class NodesGrid extends React.Component {
           limit={1000}
           {...detailsData}
           />}
+        { console.log('checkbox', tmp)}
       </div>
+
     );
   }
 }

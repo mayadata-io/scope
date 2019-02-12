@@ -8,11 +8,11 @@ import { debounce, isEqual } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import theme from 'weaveworks-ui-components/lib/theme';
 
-
 import Footer from './footer';
 import Sidebar from './sidebar';
 import HelpPanel from './help-panel';
 import TroubleshootingMenu from './troubleshooting-menu';
+import FilterTable from './filter-table';
 import Search from './search';
 import Status from './status';
 import Topologies from './topologies';
@@ -191,7 +191,7 @@ class App extends React.Component {
   render() {
     const {
       isTableViewMode, isGraphViewMode, isResourceViewMode, showingDetails,
-      showingHelp, showingNetworkSelector, showingTroubleshootingMenu,
+      showingHelp, showingNetworkSelector, showingTroubleshootingMenu, showingFilterTable,
       timeTravelTransitioning, timeTravelSupported
     } = this.props;
 
@@ -205,6 +205,8 @@ class App extends React.Component {
           {showingHelp && <HelpPanel />}
 
           {showingTroubleshootingMenu && <TroubleshootingMenu />}
+
+          {showingFilterTable && <FilterTable />}
 
           {showingDetails && <Details
             renderNodeDetailsExtras={this.props.renderNodeDetailsExtras}
@@ -251,6 +253,7 @@ function mapStateToProps(state) {
     showingDetails: state.get('nodeDetails').size > 0,
     showingHelp: state.get('showingHelp'),
     showingTroubleshootingMenu: state.get('showingTroubleshootingMenu'),
+    showingFilterTable: state.get('showingFilterTable'),
     showingNetworkSelector: availableNetworksSelector(state).count() > 0,
     showingTerminal: state.get('controlPipes').size > 0,
     topologyViewMode: state.get('topologyViewMode'),
