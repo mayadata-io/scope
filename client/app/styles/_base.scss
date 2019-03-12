@@ -1743,6 +1743,10 @@ a {
     thead {
       box-shadow: 0 4px 2px -2px transparentize($color-black, 0.84);
       border-bottom: 1px solid $color-gray-600;
+      top: 0px;
+      position: sticky;
+      z-index: $layer-modal;
+      background: $color-white;
     }
 
     tbody {
