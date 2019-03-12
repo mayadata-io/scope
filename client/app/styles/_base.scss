@@ -1749,7 +1749,7 @@ a {
       border-bottom: 1px solid $color-gray-600;
       top: 0px;
       position: sticky;
-      z-index: $layer-modal;
+      z-index: $z-index-table;
       background: $color-white;
     }
 
