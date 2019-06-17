@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The OpenEBS Authors
+Copyright The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ limitations under the License.
 package openebs
 
 import (
-	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io/v1alpha1"
+	internalinterfaces "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io/v1alpha1"
 )
 
 // Interface provides access to each of this group's versions.

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The OpenEBS Authors
+Copyright The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ package v1alpha1
 
 import (
 	v1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
-	"github.com/openebs/maya/pkg/client/clientset/versioned/scheme"
+	"github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned/scheme"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )
 
 type OpenebsV1alpha1Interface interface {
 	RESTClient() rest.Interface
+	BlockDevicesGetter
 	CASTemplatesGetter
 	CStorPoolsGetter
 	CStorVolumesGetter
@@ -40,6 +41,10 @@ type OpenebsV1alpha1Interface interface {
 // OpenebsV1alpha1Client is used to interact with features provided by the openebs.io group.
 type OpenebsV1alpha1Client struct {
 	restClient rest.Interface
+}
+
+func (c *OpenebsV1alpha1Client) BlockDevices() BlockDeviceInterface {
+	return newBlockDevices(c)
 }
 
 func (c *OpenebsV1alpha1Client) CASTemplates() CASTemplateInterface {

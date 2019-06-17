@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The OpenEBS Authors
+Copyright The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/openebs/maya/pkg/client/clientset/versioned"
-	openebsv1alpha1 "github.com/openebs/maya/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
-	fakeopenebsv1alpha1 "github.com/openebs/maya/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1/fake"
+	clientset "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned"
+	openebsv1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1"
+	fakeopenebsv1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned/typed/openebs.io/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
