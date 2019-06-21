@@ -65,6 +65,7 @@ type Client interface {
 	WalkCStorVolumes(f func(CStorVolume) error) error
 	WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error
 	WalkCStorPools(f func(CStorPool) error) error
+	WalkBlockDevices(f func(BlockDevice) error) error
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
@@ -116,6 +117,7 @@ type client struct {
 	cStorvolumeStore           cache.Store
 	cStorvolumeReplicaStore    cache.Store
 	cStorPoolStore             cache.Store
+	blockDeviceStore           cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -222,6 +224,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.cStorvolumeStore = result.setupStore("cstorvolumes")
 	result.cStorvolumeReplicaStore = result.setupStore("cstorvolumereplicas")
 	result.cStorPoolStore = result.setupStore("cstorpools")
+	result.blockDeviceStore = result.setupStore("blockdevices")
 
 	return result, nil
 }
@@ -288,6 +291,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolumeReplica{}, nil
 	case "cstorpools":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPool{}, nil
+	case "blockdevices":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDevice{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -506,6 +511,16 @@ func (c *client) WalkDisks(f func(Disk) error) error {
 	for _, m := range c.diskStore.List() {
 		disk := m.(*mayav1alpha1.Disk)
 		if err := f(NewDisk(disk)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkBlockDevices(f func(BlockDevice) error) error {
+	for _, m := range c.blockDeviceStore.List() {
+		blockDevice := m.(*mayav1alpha1.BlockDevice)
+		if err := f(NewBlockDevice(blockDevice)); err != nil {
 			return err
 		}
 	}
