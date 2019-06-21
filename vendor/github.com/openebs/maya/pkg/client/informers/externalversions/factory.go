@@ -23,9 +23,9 @@ import (
 	sync "sync"
 	time "time"
 
-	versioned "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned"
-	internalinterfaces "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
-	openebsio "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io"
+	versioned "github.com/openebs/maya/pkg/client/clientset/versioned"
+	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
+	openebsio "github.com/openebs/maya/pkg/client/informers/externalversions/openebs.io"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

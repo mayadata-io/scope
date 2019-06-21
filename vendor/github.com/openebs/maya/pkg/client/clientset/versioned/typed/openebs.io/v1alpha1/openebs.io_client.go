@@ -20,7 +20,7 @@ package v1alpha1
 
 import (
 	v1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
-	"github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned/scheme"
+	"github.com/openebs/maya/pkg/client/clientset/versioned/scheme"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )

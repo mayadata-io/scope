@@ -22,9 +22,9 @@ import (
 	time "time"
 
 	openebsiov1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
-	versioned "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/clientset/versioned"
-	internalinterfaces "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/weaveworks/scope/vendor/github.com/openebs/maya/pkg/client/listers/openebs.io/v1alpha1"
+	versioned "github.com/openebs/maya/pkg/client/clientset/versioned"
+	internalinterfaces "github.com/openebs/maya/pkg/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/openebs/maya/pkg/client/listers/openebs.io/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
