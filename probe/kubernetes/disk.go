@@ -44,7 +44,7 @@ func (p *disk) GetNode(probeID string) report.Node {
 		Serial:                p.Spec.Details.Serial,
 		Vendor:                p.Spec.Details.Vendor,
 		HostName:              p.GetLabels()["kubernetes.io/hostname"],
-		DiskList:              strings.Join(p.GetPath(), "~p$"),
+		DiskList:              strings.Join(p.GetPath(), report.ScopeDelim),
 		Status:                diskStatus,
 		CurrentTemperature:    strconv.Itoa(int(p.Stats.TempInfo.CurrentTemperature)),
 		HighestTemperature:    strconv.Itoa(int(p.Stats.TempInfo.HighestTemperature)),
@@ -54,6 +54,7 @@ func (p *disk) GetNode(probeID string) report.Node {
 		DeviceUtilizationRate: fmt.Sprintf("%.2f", p.Stats.DeviceUtilizationRate),
 		PercentEnduranceUsed:  fmt.Sprintf("%.2f", p.Stats.PercentEnduranceUsed),
 		Created:               p.ObjectMeta.CreationTimestamp.String(),
+		Path:                  p.Spec.Path,
 		report.ControlProbeID: probeID,
 	}
 

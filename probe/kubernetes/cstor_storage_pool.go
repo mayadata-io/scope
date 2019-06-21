@@ -15,6 +15,8 @@ type CStorPool interface {
 	GetNodeTagOnStatus(status string) string
 	GetHost() string
 	GetStoragePoolClaim() string
+	GetDiskList() string
+	GetBlockDeviceList() string
 }
 
 // cStorPool represents cStor Volume CSP
@@ -34,7 +36,8 @@ func (p *cStorPool) GetNode(probeID string) report.Node {
 	latests := map[string]string{
 		NodeType:              "CStor Pool",
 		APIVersion:            p.APIVersion,
-		DiskList:              strings.Join(p.Spec.Disks.DiskList, "~p$"),
+		DiskList:              p.GetDiskList(),
+		BlockDeviceList:       p.GetBlockDeviceList(),
 		HostName:              p.GetHost(),
 		StoragePoolClaimName:  p.GetStoragePoolClaim(),
 		report.ControlProbeID: probeID,
@@ -47,7 +50,26 @@ func (p *cStorPool) GetNode(probeID string) report.Node {
 		WithLatests(latests).
 		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status))).
 		WithLatestActiveControls(Describe)
+}
 
+func (p *cStorPool) GetDiskList() string {
+	if p.Spec.Disks.DiskList == nil {
+		return ""
+	}
+	return strings.Join(p.Spec.Disks.DiskList, report.ScopeDelim)
+}
+
+func (p *cStorPool) GetBlockDeviceList() string {
+	if p.Spec.Group == nil {
+		return ""
+	}
+	blockDeviceList := []string{}
+	for _, group := range p.Spec.Group {
+		for _, blockDevice := range group.Item {
+			blockDeviceList = append(blockDeviceList, blockDevice.Name)
+		}
+	}
+	return strings.Join(blockDeviceList, report.ScopeDelim)
 }
 
 func (p *cStorPool) GetStatus() string {

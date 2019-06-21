@@ -37,13 +37,37 @@ type CStorPool struct {
 
 // CStorPoolSpec is the spec listing fields for a CStorPool resource.
 type CStorPoolSpec struct {
-	Disks    DiskAttr      `json:"disks"`
-	PoolSpec CStorPoolAttr `json:"poolSpec"`
+	Disks    DiskAttr           `json:"disks"`
+	Group    []BlockDeviceGroup `json:"group"`
+	PoolSpec CStorPoolAttr      `json:"poolSpec"`
 }
 
 // DiskAttr stores the disk related attributes.
 type DiskAttr struct {
 	DiskList []string `json:"diskList"`
+}
+
+// BlockDeviceGroup contains a collection of block device for a given pool topology in CSP.
+type BlockDeviceGroup struct {
+	// Item contains a list of CspBlockDevice.
+	Item []CspBlockDevice `json:"blockDevice"`
+}
+
+// CspBlockDevice contains the details of block device present on CSP.
+type CspBlockDevice struct {
+	// Name is the name of the block device resource.
+	Name string `json:"name"`
+	// DeviceID is the device id of the block device resource. In case of sparse
+	// block device, it contains the device path.
+	DeviceID string `json:"deviceID"`
+	// InUseByPool tells whether the block device is present on spc. If block
+	// device is present on SPC, it is true else false.
+	InUseByPool bool `json:"inUseByPool"`
+}
+
+// BlockDeviceAttr stores the block device related attributes.
+type BlockDeviceAttr struct {
+	BlockDeviceList []string `json:"blockDeviceList"`
 }
 
 // CStorPoolAttr is to describe zpool related attributes.
@@ -57,11 +81,13 @@ type CStorPoolAttr struct {
 type CStorPoolPhase string
 
 // Status written onto CStorPool and CStorVolumeReplica objects.
+// Resetting state to either Empty or Pending need to be done with care,
+// as, label clear and pool creation depends on this state.
 const (
 	// CStorPoolStatusEmpty ensures the create operation is to be done, if import fails.
 	CStorPoolStatusEmpty CStorPoolPhase = ""
 	// CStorPoolStatusOnline signifies that the pool is online.
-	CStorPoolStatusOnline CStorPoolPhase = "Online"
+	CStorPoolStatusOnline CStorPoolPhase = "Healthy"
 	// CStorPoolStatusOffline signifies that the pool is offline.
 	CStorPoolStatusOffline CStorPoolPhase = "Offline"
 	// CStorPoolStatusDegraded signifies that the pool is degraded.
@@ -73,7 +99,7 @@ const (
 	// CStorPoolStatusUnavail signifies that the pool is not available.
 	CStorPoolStatusUnavail CStorPoolPhase = "Unavail"
 	// CStorPoolStatusDeletionFailed signifies that the pool status could not be fetched.
-	CStorPoolStatusUnknown CStorPoolPhase = "Unknown"
+	CStorPoolStatusError CStorPoolPhase = "Error"
 	// CStorPoolStatusDeletionFailed ensures the resource deletion has failed.
 	CStorPoolStatusDeletionFailed CStorPoolPhase = "DeletionFailed"
 	// CStorPoolStatusInvalid ensures invalid resource.
@@ -86,7 +112,14 @@ const (
 
 // CStorPoolStatus is for handling status of pool.
 type CStorPoolStatus struct {
-	Phase CStorPoolPhase `json:"phase"`
+	Phase    CStorPoolPhase        `json:"phase"`
+	Capacity CStorPoolCapacityAttr `json:"capacity"`
+}
+
+type CStorPoolCapacityAttr struct {
+	Total string `json:"total"`
+	Free  string `json:"free"`
+	Used  string `json:"used"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
