@@ -41,5 +41,6 @@ var (
 	SelectVolumeSnapshot        = TopologySelector(report.VolumeSnapshot)
 	SelectVolumeSnapshotData    = TopologySelector(report.VolumeSnapshotData)
 	SelectDisk                  = TopologySelector(report.Disk)
+	SelectBlockDevice           = TopologySelector(report.BlockDevice)
 	SelectStoragePoolClaim      = TopologySelector(report.StoragePoolClaim)
 )
