@@ -92,6 +92,7 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.VolumeSnapshot:        volumeSnapshotNodeSummary,
 	report.VolumeSnapshotData:    volumeSnapshotDataNodeSummary,
 	report.Disk:                  diskNodeSummary,
+	report.BlockDevice:           blockDeviceNodeSummary,
 	report.StoragePoolClaim:      storagePoolClaimNodeSummary,
 	report.CStorVolume:           cStorVolumeNodeSummary,
 	report.CStorVolumeReplica:    cStorVolumeReplicaNodeSummary,
@@ -124,6 +125,7 @@ var primaryAPITopology = map[string]string{
 	report.CStorVolume:           "volumes",
 	report.CStorVolumeReplica:    "volumes",
 	report.CStorPool:             "volumes",
+	report.BlockDevice:           "pools",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -434,6 +436,12 @@ func volumeSnapshotDataNodeSummary(base BasicNodeSummary, n report.Node) BasicNo
 func diskNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
 	base.LabelMinor = "Disk"
+	return base
+}
+
+func blockDeviceNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "Block Device"
 	return base
 }
 
