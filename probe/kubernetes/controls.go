@@ -27,6 +27,8 @@ const (
 const (
 	SnapshotGroupName = "volumesnapshot.external-storage.k8s.io"
 	SnapshotVersion   = "v1"
+	OpenEBSGroupName  = "openebs.io"
+	OpenEBSVersion    = "v1alpha1"
 )
 
 // GetLogs is the control to get the logs for a kubernetes pod
@@ -115,6 +117,72 @@ func (r *Reporter) describeVolumeSnapshotData(req xfer.Request, volumeSnapshotID
 		},
 	}
 	return r.describe(req, "", volumeSnapshotID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeCV(req xfer.Request, namespaceID, CVID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "cstorvolumes",
+		},
+	}
+	return r.describe(req, namespaceID, CVID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeCVR(req xfer.Request, namespaceID, CVRID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "cstorvolumereplicas",
+		},
+	}
+	return r.describe(req, namespaceID, CVRID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeCSP(req xfer.Request, CSPID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "cstorpools",
+		},
+	}
+	return r.describe(req, "", CSPID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeSPC(req xfer.Request, SPCID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "storagepoolclaims",
+		},
+	}
+	return r.describe(req, "", SPCID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeDisk(req xfer.Request, diskID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "disks",
+		},
+	}
+	return r.describe(req, "", diskID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeBlockDevice(req xfer.Request, namespaceID, blockDeviceID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "blockdevices",
+		},
+	}
+	return r.describe(req, namespaceID, blockDeviceID, schema.GroupKind{}, restMapping)
 }
 
 // GetLogs is the control to get the logs for a kubernetes pod
@@ -210,6 +278,18 @@ func (r *Reporter) Describe() func(xfer.Request) xfer.Response {
 			f = r.CaptureVolumeSnapshotData(r.describeVolumeSnapshotData)
 		case "<job>":
 			f = r.CaptureJob(r.describeJob)
+		case "<cstor_volume>":
+			f = r.CaptureCStorVolume(r.describeCV)
+		case "<cstor_volume_replica>":
+			f = r.CaptureCStorVolumeReplica(r.describeCVR)
+		case "<cstor_pool>":
+			f = r.CaptureCStorPool(r.describeCSP)
+		case "<storage_pool_claim>":
+			f = r.CaptureStoragePoolClaim(r.describeSPC)
+		case "<disk>":
+			f = r.CaptureDisk(r.describeDisk)
+		case "<block_device>":
+			f = r.CaptureBlockDevice(r.describeBlockDevice)
 		default:
 			return xfer.ResponseErrorf("Node not found: %s", req.NodeID)
 		}
@@ -471,6 +551,138 @@ func (r *Reporter) CaptureJob(f func(xfer.Request, string, string) xfer.Response
 			return xfer.ResponseErrorf("Job not found: %s", uid)
 		}
 		return f(req, job.Namespace(), job.Name())
+	}
+}
+
+// CaptureCStorVolume will return name and namespace of cstor volume
+func (r *Reporter) CaptureCStorVolume(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseCStorVolumeNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find cv by UID
+		var cstorVolume CStorVolume
+		r.client.WalkCStorVolumes(func(c CStorVolume) error {
+			if c.Name() == uid {
+				cstorVolume = c
+			}
+			return nil
+		})
+		if cstorVolume == nil {
+			return xfer.ResponseErrorf("CStor volume  not found: %s", uid)
+		}
+		return f(req, cstorVolume.Namespace(), cstorVolume.Name())
+	}
+}
+
+// CaptureCStorVolumeReplica will return name and namespace of cstor volume replica
+func (r *Reporter) CaptureCStorVolumeReplica(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseCStorVolumeReplicaNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find cvr by UID
+		var cstorVolumeReplica CStorVolumeReplica
+		r.client.WalkCStorVolumeReplicas(func(c CStorVolumeReplica) error {
+			if c.UID() == uid {
+				cstorVolumeReplica = c
+			}
+			return nil
+		})
+		if cstorVolumeReplica == nil {
+			return xfer.ResponseErrorf("CStor volume replica  not found: %s", uid)
+		}
+		return f(req, cstorVolumeReplica.Namespace(), cstorVolumeReplica.Name())
+	}
+}
+
+// CaptureCStorPool will return name of cstor pool
+func (r *Reporter) CaptureCStorPool(f func(xfer.Request, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseCStorPoolNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find csp by UID
+		var cstorPool CStorPool
+		r.client.WalkCStorPools(func(c CStorPool) error {
+			if c.UID() == uid {
+				cstorPool = c
+			}
+			return nil
+		})
+		if cstorPool == nil {
+			return xfer.ResponseErrorf("CStor pool not found: %s", uid)
+		}
+		return f(req, cstorPool.Name())
+	}
+}
+
+// CaptureStoragePoolClaim will return name of spc
+func (r *Reporter) CaptureStoragePoolClaim(f func(xfer.Request, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseStoragePoolClaimNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find spc by UID
+		var spc StoragePoolClaim
+		r.client.WalkStoragePoolClaims(func(s StoragePoolClaim) error {
+			if s.UID() == uid {
+				spc = s
+			}
+			return nil
+		})
+		if spc == nil {
+			return xfer.ResponseErrorf("Storage pool claim not found: %s", uid)
+		}
+		return f(req, spc.Name())
+	}
+}
+
+// CaptureDisk will return name of disk
+func (r *Reporter) CaptureDisk(f func(xfer.Request, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseDiskNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find disk by UID
+		var disk Disk
+		r.client.WalkDisks(func(d Disk) error {
+			if d.UID() == uid {
+				disk = d
+			}
+			return nil
+		})
+		if disk == nil {
+			return xfer.ResponseErrorf("Disk  not found: %s", uid)
+		}
+		return f(req, disk.Name())
+	}
+}
+
+// CaptureBlockDevice will return name and namespace of block device
+func (r *Reporter) CaptureBlockDevice(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseBlockDeviceNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find blockDevice by UID
+		var blockDevice BlockDevice
+		r.client.WalkBlockDevices(func(b BlockDevice) error {
+			if b.UID() == uid {
+				blockDevice = b
+			}
+			return nil
+		})
+		if blockDevice == nil {
+			return xfer.ResponseErrorf("Block Device  not found: %s", uid)
+		}
+		return f(req, blockDevice.Namespace(), blockDevice.Name())
 	}
 }
 
