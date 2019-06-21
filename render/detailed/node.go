@@ -255,6 +255,13 @@ var nodeSummaryGroupSpecs = []struct {
 		},
 	},
 	{
+		topologyID: report.BlockDevice,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Block Device",
+			Columns: []Column{},
+		},
+	},
+	{
 		topologyID: report.VolumeSnapshot,
 		NodeSummaryGroup: NodeSummaryGroup{
 			Label:   "Volume Snapshots",

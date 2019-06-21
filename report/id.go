@@ -194,6 +194,12 @@ var (
 	// ParseDiskNodeID parses a disk node ID
 	ParseDiskNodeID = parseSingleComponentID("disk")
 
+	// MakeBlockDeviceNodeID produces a block device node ID from its composite parts.
+	MakeBlockDeviceNodeID = makeSingleComponentID("block_device")
+
+	// ParseBlockDeviceNodeID parses a block device node ID
+	ParseBlockDeviceNodeID = parseSingleComponentID("block_device")
+
 	// MakeStoragePoolClaimNodeID produces a Stoage Pool Claim node ID from its composite parts.
 	MakeStoragePoolClaimNodeID = makeSingleComponentID("storage_pool_claim")
 
