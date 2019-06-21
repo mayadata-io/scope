@@ -18,6 +18,7 @@ var storageComponents = map[string]string{
 	"persistent_volume_claim": "persistent_volume_claim",
 	"storage_class":           "storage_class",
 	"storage_pool_claim":      "storage_pool_claim",
+	"block_device":            "block_device",
 	"disk":                    "disk",
 	"volume_snapshot":         "volume_snapshot",
 	"volume_snapshot_data":    "volume_snapshot_data",
@@ -27,6 +28,7 @@ var cStorComponents = map[string]string{
 	"cstor_volume":         "cstor_volume",
 	"cstor_volume_replica": "cstor_volume_replica",
 	"cstor_pool":           "cstor_pool",
+	"block_device":         "block_device",
 	"disk":                 "disk",
 }
 

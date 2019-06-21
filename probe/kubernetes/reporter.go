@@ -23,6 +23,7 @@ const (
 	Type                         = report.KubernetesType
 	Ports                        = report.KubernetesPorts
 	VolumeClaim                  = report.KubernetesVolumeClaim
+	Storage                      = report.KubernetesStorage
 	StorageClassName             = report.KubernetesStorageClassName
 	AccessModes                  = report.KubernetesAccessModes
 	ReclaimPolicy                = report.KubernetesReclaimPolicy
@@ -65,6 +66,8 @@ const (
 	TotalBytesWritten            = report.KubernetesTotalBytesWritten
 	DeviceUtilizationRate        = report.KubernetesDeviceUtilizationRate
 	PercentEnduranceUsed         = report.KubernetesPercentEnduranceUsed
+	BlockDeviceList              = report.KubernetesBlockDeviceList
+	Path                         = report.KubernetesPath
 )
 
 var (
@@ -219,6 +222,15 @@ var (
 		TotalBytesWritten:     {ID: TotalBytesWritten, Label: "Total Bytes Written", From: report.FromLatest, Priority: 16},
 		DeviceUtilizationRate: {ID: DeviceUtilizationRate, Label: "Device Utilization Rate", From: report.FromLatest, Priority: 17},
 		PercentEnduranceUsed:  {ID: PercentEnduranceUsed, Label: "Percent Endurance Used", From: report.FromLatest, Priority: 18},
+	}
+
+	BlockDeviceMetadataTemplates = report.MetadataTemplates{
+		NodeType:          {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Model:             {ID: Model, Label: "Model", From: report.FromLatest, Priority: 2},
+		Serial:            {ID: Serial, Label: "Serial", From: report.FromLatest, Priority: 3},
+		Vendor:            {ID: Vendor, Label: "Vendor", From: report.FromLatest, Priority: 4},
+		FirmwareRevision:  {ID: FirmwareRevision, Label: "Firmware Revision", From: report.FromLatest, Priority: 5},
+		LogicalSectorSize: {ID: LogicalSectorSize, Label: "Logical Sector Size", From: report.FromLatest, Priority: 6},
 	}
 
 	StoragePoolClaimMetadataTemplates = report.MetadataTemplates{
@@ -446,6 +458,11 @@ func (r *Reporter) Report() (report.Report, error) {
 		return result, err
 	}
 
+	blockDeviceTopology, _, err := r.blockDeviceTopology()
+	if err != nil {
+		return result, err
+	}
+
 	storagePoolClaimTopology, _, err := r.storagePoolClaimTopology()
 	if err != nil {
 		return result, err
@@ -481,6 +498,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.CStorVolume = result.CStorVolume.Merge(cStorVolumeTopology)
 	result.CStorVolumeReplica = result.CStorVolumeReplica.Merge(cStorVolumeReplicaTopology)
 	result.CStorPool = result.CStorPool.Merge(cStorPoolTopology)
+	result.BlockDevice = result.BlockDevice.Merge(blockDeviceTopology)
 	return result, nil
 }
 
@@ -676,12 +694,27 @@ func (r *Reporter) diskTopology() (report.Topology, []Disk, error) {
 	result := report.MakeTopology().
 		WithMetadataTemplates(DiskMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkDisks(func(p Disk) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		disks = append(disks, p)
 		return nil
 	})
 	return result, disks, err
+}
+
+func (r *Reporter) blockDeviceTopology() (report.Topology, []BlockDevice, error) {
+	blockDevices := []BlockDevice{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(BlockDeviceMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkBlockDevices(func(p BlockDevice) error {
+		result.AddNode(p.GetNode(r.probeID))
+		blockDevices = append(blockDevices, p)
+		return nil
+	})
+	return result, blockDevices, err
 }
 
 func (r *Reporter) storagePoolClaimTopology() (report.Topology, []StoragePoolClaim, error) {
@@ -689,8 +722,9 @@ func (r *Reporter) storagePoolClaimTopology() (report.Topology, []StoragePoolCla
 	result := report.MakeTopology().
 		WithMetadataTemplates(StoragePoolClaimMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkStoragePoolClaims(func(p StoragePoolClaim) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		storagePoolClaims = append(storagePoolClaims, p)
 		return nil
 	})
@@ -702,8 +736,9 @@ func (r *Reporter) cStorVolumeTopology() (report.Topology, []CStorVolume, error)
 	result := report.MakeTopology().
 		WithMetadataTemplates(CStorVolumeMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCStorVolumes(func(p CStorVolume) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		cStorVolumes = append(cStorVolumes, p)
 		return nil
 	})
@@ -715,8 +750,9 @@ func (r *Reporter) cStorVolumeReplicaTopology() (report.Topology, []CStorVolumeR
 	result := report.MakeTopology().
 		WithMetadataTemplates(CStorVolumeReplicaMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCStorVolumeReplicas(func(p CStorVolumeReplica) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		cStorVolumeReplicas = append(cStorVolumeReplicas, p)
 		return nil
 	})
@@ -728,8 +764,9 @@ func (r *Reporter) cStorPoolTopology() (report.Topology, []CStorPool, error) {
 	result := report.MakeTopology().
 		WithMetadataTemplates(CStorPoolMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCStorPools(func(p CStorPool) error {
-		result.AddNode(p.GetNode())
+		result.AddNode(p.GetNode(r.probeID))
 		cStorPool = append(cStorPool, p)
 		return nil
 	})
