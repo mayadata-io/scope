@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The OpenEBS Authors
+Copyright The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,6 +53,8 @@ func (f *genericInformer) Lister() cache.GenericLister {
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
 	// Group=openebs.io, Version=v1alpha1
+	case v1alpha1.SchemeGroupVersion.WithResource("blockdevices"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Openebs().V1alpha1().BlockDevices().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("castemplates"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Openebs().V1alpha1().CASTemplates().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("cstorpools"):

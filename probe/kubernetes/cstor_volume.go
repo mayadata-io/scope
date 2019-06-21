@@ -11,7 +11,7 @@ import (
 // CStorVolume interface
 type CStorVolume interface {
 	Meta
-	GetNode() report.Node
+	GetNode(probeID string) report.Node
 	GetPersistentVolumeName() string
 	GetStatus() string
 	GetNodeTagOnStatus(status string) string
@@ -32,11 +32,12 @@ func NewCStorVolume(p *mayav1alpha1.CStorVolume) CStorVolume {
 }
 
 // GetNode returns updated node with CStor Volume details
-func (p *cStorVolume) GetNode() report.Node {
+func (p *cStorVolume) GetNode(probeID string) report.Node {
 	status := p.GetStatus()
 	latests := map[string]string{
-		NodeType:   "CStor Volume",
-		APIVersion: p.APIVersion,
+		NodeType:              "CStor Volume",
+		APIVersion:            p.APIVersion,
+		report.ControlProbeID: probeID,
 	}
 
 	if p.GetPersistentVolumeName() != "" {
@@ -61,7 +62,8 @@ func (p *cStorVolume) GetNode() report.Node {
 
 	return p.MetaNode(report.MakeCStorVolumeNodeID(p.Name())).
 		WithLatests(latests).
-		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status)))
+		WithNodeTag(p.GetNodeTagOnStatus(strings.ToLower(status))).
+		WithLatestActiveControls(Describe)
 }
 
 func (p *cStorVolume) GetPersistentVolumeName() string {

@@ -11,7 +11,7 @@ import (
 // StoragePoolClaim represent StoragePoolClaim interface
 type StoragePoolClaim interface {
 	Meta
-	GetNode() report.Node
+	GetNode(probeID string) report.Node
 }
 
 // storagePoolClaim represent the StoragePoolClaims CRD of Kubernetes
@@ -26,11 +26,12 @@ func NewStoragePoolClaim(p *mayav1alpha1.StoragePoolClaim) StoragePoolClaim {
 }
 
 // GetNode returns StoragePoolClaim as Node
-func (p *storagePoolClaim) GetNode() report.Node {
+func (p *storagePoolClaim) GetNode(probeID string) report.Node {
 	return p.MetaNode(report.MakeStoragePoolClaimNodeID(p.UID())).WithLatests(map[string]string{
-		NodeType:   "Storage Pool Claim",
-		APIVersion: p.APIVersion,
-		MaxPools:   strconv.Itoa(int(p.Spec.MaxPools)),
-		Status:     p.Status.Phase,
-	})
+		NodeType:              "Storage Pool Claim",
+		APIVersion:            p.APIVersion,
+		MaxPools:              strconv.Itoa(int(p.Spec.MaxPools)),
+		Status:                p.Status.Phase,
+		report.ControlProbeID: probeID,
+	}).WithLatestActiveControls(Describe)
 }
