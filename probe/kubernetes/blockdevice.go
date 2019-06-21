@@ -37,5 +37,5 @@ func (b *blockDevice) GetNode(probeID string) report.Node {
 		HostName:          b.GetLabels()["kubernetes.io/hostname"],
 		Path:              b.Spec.Path,
 		report.ControlProbeID: probeID,
-	})
+	}).WithLatestActiveControls(Describe)
 }

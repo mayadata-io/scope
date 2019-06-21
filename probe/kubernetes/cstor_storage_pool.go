@@ -16,6 +16,7 @@ type CStorPool interface {
 	GetHost() string
 	GetStoragePoolClaim() string
 	GetDiskList() string
+	GetBlockDeviceList() string
 }
 
 // cStorPool represents cStor Volume CSP
