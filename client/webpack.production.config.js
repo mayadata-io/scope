@@ -48,7 +48,7 @@ module.exports = {
   },
 
   plugins: [
-    new CleanWebpackPlugin([OUTPUT_PATH]),
+    new CleanWebpackPlugin(['build-external']),
     new webpack.DefinePlugin(GLOBALS),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.IgnorePlugin(/.*\.map$/, /xterm\/lib\/addons/),
