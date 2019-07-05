@@ -8,7 +8,6 @@ import { debounce, isEqual } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import theme from 'weaveworks-ui-components/lib/theme';
 
-import Logo from './logo';
 import Footer from './footer';
 import Sidebar from './sidebar';
 import HelpPanel from './help-panel';
@@ -199,7 +198,6 @@ class App extends React.Component {
       'contrast-mode': contrastMode,
       'time-travel-open': timeTravelSupported,
     });
-    const isIframe = window !== window.top;
 
     return (
       <ThemeProvider theme={theme}>
@@ -218,13 +216,6 @@ class App extends React.Component {
             {timeTravelSupported && this.props.renderTimeTravel()}
 
             <div className="selectors">
-              <div className="logo">
-                {!isIframe &&
-                  <svg width="100%" height="100%" viewBox="0 0 1089 217">
-                    <Logo />
-                  </svg>
-                }
-              </div>
               <Search />
               <Topologies />
               <ViewModeSelector />
