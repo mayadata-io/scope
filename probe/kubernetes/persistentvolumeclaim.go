@@ -53,7 +53,7 @@ func (p *persistentVolumeClaim) GetStorageClass() string {
 
 // GetCapacity returns the storage size of PVC
 func (p *persistentVolumeClaim) GetCapacity() string {
-	capacity := p.Spec.Resources.Requests[apiv1.ResourceStorage]
+	capacity := p.Status.Capacity[apiv1.ResourceStorage]
 	if capacity.String() != "" {
 		return capacity.String()
 	}
