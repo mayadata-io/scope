@@ -66,6 +66,8 @@ type Client interface {
 	WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error
 	WalkCStorPools(f func(CStorPool) error) error
 	WalkBlockDevices(f func(BlockDevice) error) error
+	WalkCStorPoolClusters(f func(CStorPoolCluster) error) error
+	WalkNewTestCStorPools(f func(NewTestCStorPool) error) error
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
@@ -118,6 +120,8 @@ type client struct {
 	cStorvolumeReplicaStore    cache.Store
 	cStorPoolStore             cache.Store
 	blockDeviceStore           cache.Store
+	cStorPoolClusterStore      cache.Store
+	newTestCStorPoolStore      cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -225,6 +229,8 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.cStorvolumeReplicaStore = result.setupStore("cstorvolumereplicas")
 	result.cStorPoolStore = result.setupStore("cstorpools")
 	result.blockDeviceStore = result.setupStore("blockdevices")
+	result.cStorPoolClusterStore = result.setupStore("cstorpoolclusters")
+	result.newTestCStorPoolStore = result.setupStore("newtestcstorpools")
 
 	return result, nil
 }
@@ -293,6 +299,10 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPool{}, nil
 	case "blockdevices":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDevice{}, nil
+	case "cstorpoolclusters":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolCluster{}, nil
+	case "newtestcstorpools":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.NewTestCStorPool{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -561,6 +571,26 @@ func (c *client) WalkCStorPools(f func(CStorPool) error) error {
 	for _, m := range c.cStorPoolStore.List() {
 		cStorPool := m.(*mayav1alpha1.CStorPool)
 		if err := f(NewCStorPool(cStorPool)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkCStorPoolClusters(f func(CStorPoolCluster) error) error {
+	for _, m := range c.cStorPoolClusterStore.List() {
+		cStorPoolCluster := m.(*mayav1alpha1.CStorPoolCluster)
+		if err := f(NewCStorPoolCluster(cStorPoolCluster)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkNewTestCStorPools(f func(NewTestCStorPool) error) error {
+	for _, m := range c.newTestCStorPoolStore.List() {
+		newTestCStorPool := m.(*mayav1alpha1.NewTestCStorPool)
+		if err := f(NewNewTestCStorPool(newTestCStorPool)); err != nil {
 			return err
 		}
 	}

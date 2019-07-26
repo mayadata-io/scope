@@ -40,6 +40,8 @@ const (
 	CStorVolumeReplica    = "cstor_volume_replica"
 	CStorPool             = "cstor_pool"
 	BlockDevice           = "block_device"
+	CStorPoolCluster      = "cstor_pool_cluster"
+	NewTestCStorPool      = "new_test_cstor_pool"
 
 	// Shapes used for different nodes
 	Circle         = "circle"
@@ -95,6 +97,8 @@ var topologyNames = []string{
 	CStorVolumeReplica,
 	CStorPool,
 	BlockDevice,
+	CStorPoolCluster,
+	NewTestCStorPool,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -224,6 +228,12 @@ type Report struct {
 	// StoragePoolClaim represent all the CRD kubernetes Storage Pool Claims on hosts running probes.
 	// Metadata is limited for now, more to come later.
 	StoragePoolClaim Topology
+
+	// CStorPoolCluster represent all the CSPC on hosts running probes.
+	CStorPoolCluster Topology
+
+	// NewTestCStorPool represent all the NCSP on hosts running probes.
+	NewTestCStorPool Topology
 
 	DNS DNSRecords
 
@@ -356,7 +366,6 @@ func MakeReport() Report {
 			WithShape(DottedSquare).
 			WithLabel("storage pool claim", "storage pool claims"),
 
-		//FIXME: Change shape to actual CV shape
 		CStorVolume: MakeTopology().
 			WithShape(Controller).
 			WithLabel("cStor Volume", "cStor Volumes"),
@@ -366,6 +375,14 @@ func MakeReport() Report {
 			WithLabel("cStor Volume Replica", "cStor Volume Replica"),
 
 		CStorPool: MakeTopology().
+			WithShape(Square).
+			WithLabel("cStor Pool", "cStor Pool"),
+
+		CStorPoolCluster: MakeTopology().
+			WithShape(DottedSquare).
+			WithLabel("cStor Pool Cluster", "cStor Pool Cluster"),
+
+		NewTestCStorPool: MakeTopology().
 			WithShape(Square).
 			WithLabel("cStor Pool", "cStor Pool"),
 
@@ -499,6 +516,10 @@ func (r *Report) topology(name string) *Topology {
 		return &r.CStorPool
 	case BlockDevice:
 		return &r.BlockDevice
+	case CStorPoolCluster:
+		return &r.CStorPoolCluster
+	case NewTestCStorPool:
+		return &r.NewTestCStorPool
 	}
 	return nil
 }

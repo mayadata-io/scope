@@ -211,6 +211,7 @@ var (
 
 	// ParseStoragePoolClaimNodeID parses a Stoage Pool Claim node ID
 	ParseStoragePoolClaimNodeID = parseSingleComponentID("storage_pool_claim")
+
 	// MakeCStorVolumeNodeID produces a CStor Volume node ID from its composite parts.
 	MakeCStorVolumeNodeID = makeSingleComponentID("cstor_volume")
 
@@ -228,6 +229,18 @@ var (
 
 	// ParseCStorPoolNodeID parses a CStor Volume node ID
 	ParseCStorPoolNodeID = parseSingleComponentID("cstor_pool")
+
+	// MakeCStorPoolClusterNodeID produces a CStor pool cluster node ID from its composite parts.
+	MakeCStorPoolClusterNodeID = makeSingleComponentID("cstor_pool_cluster")
+
+	// ParseCStorPoolClusterNodeID parses a CStor pool cluster node ID
+	ParseCStorPoolClusterNodeID = parseSingleComponentID("cstor_pool_cluster")
+
+	// MakeNewTestCStorPoolNodeID produces a CStor pool node ID from its composite parts.
+	MakeNewTestCStorPoolNodeID = makeSingleComponentID("new_test_cstor_pool")
+
+	// ParseNewTestCStorPoolNodeID parses a CStor pool node ID
+	ParseNewTestCStorPoolNodeID = parseSingleComponentID("new_test_cstor_pool")
 )
 
 // makeSingleComponentID makes a single-component node id encoder

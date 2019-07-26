@@ -11,8 +11,8 @@ import (
 // KubernetesStorageRenderer is a Renderer which combines all Kubernetes
 // storage components such as CstorPools, storage pool claims and disks.
 var KubernetesStorageRenderer = MakeReduce(
-	SPCToCSPRenderer,
-	CSPToBdOrDiskRenderer,
+	CSPCToNCSPRenderer,
+	NCSPToBDRenderer,
 	BlockDeviceToDiskRenderer,
 )
 

@@ -69,6 +69,9 @@ const (
 	PercentEnduranceUsed         = report.KubernetesPercentEnduranceUsed
 	BlockDeviceList              = report.KubernetesBlockDeviceList
 	Path                         = report.KubernetesPath
+	TotalSize                    = report.KubernetesTotalSize
+	FreeSize                     = report.KubernetesFreeSize
+	UsedSize                     = report.KubernetesUsedSize
 )
 
 var (
@@ -254,11 +257,29 @@ var (
 		VolumeName: {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
 		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
+
 	CStorPoolMetadataTemplates = report.MetadataTemplates{
 		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		VolumeName: {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
 		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
+
+	CStorPoolClusterMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
+		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
+		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
+		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+	}
+
+	NewTestCStorPoolMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
+		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
+		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
+		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+	}
+
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
@@ -489,6 +510,14 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	cStorPoolClusterTopology, _, err := r.cStorPoolClusterTopology()
+	if err != nil {
+		return result, err
+	}
+	newTestCStorPoolTopology, _, err := r.newTestCStorPoolTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -508,6 +537,8 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.CStorVolumeReplica = result.CStorVolumeReplica.Merge(cStorVolumeReplicaTopology)
 	result.CStorPool = result.CStorPool.Merge(cStorPoolTopology)
 	result.BlockDevice = result.BlockDevice.Merge(blockDeviceTopology)
+	result.CStorPoolCluster = result.CStorPoolCluster.Merge(cStorPoolClusterTopology)
+	result.NewTestCStorPool = result.NewTestCStorPool.Merge(newTestCStorPoolTopology)
 	return result, nil
 }
 
@@ -780,6 +811,34 @@ func (r *Reporter) cStorPoolTopology() (report.Topology, []CStorPool, error) {
 		return nil
 	})
 	return result, cStorPool, err
+}
+
+func (r *Reporter) cStorPoolClusterTopology() (report.Topology, []CStorPoolCluster, error) {
+	cStorPoolCluster := []CStorPoolCluster{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorPoolClusterMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkCStorPoolClusters(func(p CStorPoolCluster) error {
+		result.AddNode(p.GetNode(r.probeID))
+		cStorPoolCluster = append(cStorPoolCluster, p)
+		return nil
+	})
+	return result, cStorPoolCluster, err
+}
+
+func (r *Reporter) newTestCStorPoolTopology() (report.Topology, []NewTestCStorPool, error) {
+	newTestCStorPool := []NewTestCStorPool{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(NewTestCStorPoolMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkNewTestCStorPools(func(p NewTestCStorPool) error {
+		result.AddNode(p.GetNode(r.probeID))
+		newTestCStorPool = append(newTestCStorPool, p)
+		return nil
+	})
+	return result, newTestCStorPool, err
 }
 
 type labelledChild interface {
