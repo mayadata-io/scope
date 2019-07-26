@@ -32,7 +32,7 @@ import (
 // BlockDevicesGetter has a method to return a BlockDeviceInterface.
 // A group's client should implement this interface.
 type BlockDevicesGetter interface {
-	BlockDevices() BlockDeviceInterface
+	BlockDevices(namespace string) BlockDeviceInterface
 }
 
 // BlockDeviceInterface has methods to work with BlockDevice resources.
@@ -51,12 +51,14 @@ type BlockDeviceInterface interface {
 // blockDevices implements BlockDeviceInterface
 type blockDevices struct {
 	client rest.Interface
+	ns     string
 }
 
 // newBlockDevices returns a BlockDevices
-func newBlockDevices(c *OpenebsV1alpha1Client) *blockDevices {
+func newBlockDevices(c *OpenebsV1alpha1Client, namespace string) *blockDevices {
 	return &blockDevices{
 		client: c.RESTClient(),
+		ns:     namespace,
 	}
 }
 
@@ -64,6 +66,7 @@ func newBlockDevices(c *OpenebsV1alpha1Client) *blockDevices {
 func (c *blockDevices) Get(name string, options v1.GetOptions) (result *v1alpha1.BlockDevice, err error) {
 	result = &v1alpha1.BlockDevice{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
@@ -80,6 +83,7 @@ func (c *blockDevices) List(opts v1.ListOptions) (result *v1alpha1.BlockDeviceLi
 	}
 	result = &v1alpha1.BlockDeviceList{}
 	err = c.client.Get().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -96,6 +100,7 @@ func (c *blockDevices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 	}
 	opts.Watch = true
 	return c.client.Get().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -106,6 +111,7 @@ func (c *blockDevices) Watch(opts v1.ListOptions) (watch.Interface, error) {
 func (c *blockDevices) Create(blockDevice *v1alpha1.BlockDevice) (result *v1alpha1.BlockDevice, err error) {
 	result = &v1alpha1.BlockDevice{}
 	err = c.client.Post().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		Body(blockDevice).
 		Do().
@@ -117,6 +123,7 @@ func (c *blockDevices) Create(blockDevice *v1alpha1.BlockDevice) (result *v1alph
 func (c *blockDevices) Update(blockDevice *v1alpha1.BlockDevice) (result *v1alpha1.BlockDevice, err error) {
 	result = &v1alpha1.BlockDevice{}
 	err = c.client.Put().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		Name(blockDevice.Name).
 		Body(blockDevice).
@@ -128,6 +135,7 @@ func (c *blockDevices) Update(blockDevice *v1alpha1.BlockDevice) (result *v1alph
 // Delete takes name of the blockDevice and deletes it. Returns an error if one occurs.
 func (c *blockDevices) Delete(name string, options *v1.DeleteOptions) error {
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		Name(name).
 		Body(options).
@@ -142,6 +150,7 @@ func (c *blockDevices) DeleteCollection(options *v1.DeleteOptions, listOptions v
 		timeout = time.Duration(*listOptions.TimeoutSeconds) * time.Second
 	}
 	return c.client.Delete().
+		Namespace(c.ns).
 		Resource("blockdevices").
 		VersionedParams(&listOptions, scheme.ParameterCodec).
 		Timeout(timeout).
@@ -154,6 +163,7 @@ func (c *blockDevices) DeleteCollection(options *v1.DeleteOptions, listOptions v
 func (c *blockDevices) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.BlockDevice, err error) {
 	result = &v1alpha1.BlockDevice{}
 	err = c.client.Patch(pt).
+		Namespace(c.ns).
 		Resource("blockdevices").
 		SubResource(subresources...).
 		Name(name).
