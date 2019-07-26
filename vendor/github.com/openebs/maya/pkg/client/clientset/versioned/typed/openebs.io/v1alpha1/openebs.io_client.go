@@ -30,9 +30,11 @@ type OpenebsV1alpha1Interface interface {
 	BlockDevicesGetter
 	CASTemplatesGetter
 	CStorPoolsGetter
+	CStorPoolClustersGetter
 	CStorVolumesGetter
 	CStorVolumeReplicasGetter
 	DisksGetter
+	NewTestCStorPoolsGetter
 	RunTasksGetter
 	StoragePoolsGetter
 	StoragePoolClaimsGetter
@@ -43,8 +45,8 @@ type OpenebsV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *OpenebsV1alpha1Client) BlockDevices() BlockDeviceInterface {
-	return newBlockDevices(c)
+func (c *OpenebsV1alpha1Client) BlockDevices(namespace string) BlockDeviceInterface {
+	return newBlockDevices(c, namespace)
 }
 
 func (c *OpenebsV1alpha1Client) CASTemplates() CASTemplateInterface {
@@ -53,6 +55,10 @@ func (c *OpenebsV1alpha1Client) CASTemplates() CASTemplateInterface {
 
 func (c *OpenebsV1alpha1Client) CStorPools() CStorPoolInterface {
 	return newCStorPools(c)
+}
+
+func (c *OpenebsV1alpha1Client) CStorPoolClusters(namespace string) CStorPoolClusterInterface {
+	return newCStorPoolClusters(c, namespace)
 }
 
 func (c *OpenebsV1alpha1Client) CStorVolumes(namespace string) CStorVolumeInterface {
@@ -65,6 +71,10 @@ func (c *OpenebsV1alpha1Client) CStorVolumeReplicas(namespace string) CStorVolum
 
 func (c *OpenebsV1alpha1Client) Disks() DiskInterface {
 	return newDisks(c)
+}
+
+func (c *OpenebsV1alpha1Client) NewTestCStorPools(namespace string) NewTestCStorPoolInterface {
+	return newNewTestCStorPools(c, namespace)
 }
 
 func (c *OpenebsV1alpha1Client) RunTasks(namespace string) RunTaskInterface {

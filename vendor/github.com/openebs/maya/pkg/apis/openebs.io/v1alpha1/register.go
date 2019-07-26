@@ -51,6 +51,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&DiskList{},
 		&BlockDevice{},
 		&BlockDeviceList{},
+		&NewTestCStorPool{},
+		&NewTestCStorPoolList{},
+		&CStorPoolCluster{},
+		&CStorPoolClusterList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

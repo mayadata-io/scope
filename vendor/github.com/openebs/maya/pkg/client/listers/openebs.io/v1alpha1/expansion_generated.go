@@ -22,6 +22,10 @@ package v1alpha1
 // BlockDeviceLister.
 type BlockDeviceListerExpansion interface{}
 
+// BlockDeviceNamespaceListerExpansion allows custom methods to be added to
+// BlockDeviceNamespaceLister.
+type BlockDeviceNamespaceListerExpansion interface{}
+
 // CASTemplateListerExpansion allows custom methods to be added to
 // CASTemplateLister.
 type CASTemplateListerExpansion interface{}
@@ -29,6 +33,14 @@ type CASTemplateListerExpansion interface{}
 // CStorPoolListerExpansion allows custom methods to be added to
 // CStorPoolLister.
 type CStorPoolListerExpansion interface{}
+
+// CStorPoolClusterListerExpansion allows custom methods to be added to
+// CStorPoolClusterLister.
+type CStorPoolClusterListerExpansion interface{}
+
+// CStorPoolClusterNamespaceListerExpansion allows custom methods to be added to
+// CStorPoolClusterNamespaceLister.
+type CStorPoolClusterNamespaceListerExpansion interface{}
 
 // CStorVolumeListerExpansion allows custom methods to be added to
 // CStorVolumeLister.
@@ -49,6 +61,14 @@ type CStorVolumeReplicaNamespaceListerExpansion interface{}
 // DiskListerExpansion allows custom methods to be added to
 // DiskLister.
 type DiskListerExpansion interface{}
+
+// NewTestCStorPoolListerExpansion allows custom methods to be added to
+// NewTestCStorPoolLister.
+type NewTestCStorPoolListerExpansion interface{}
+
+// NewTestCStorPoolNamespaceListerExpansion allows custom methods to be added to
+// NewTestCStorPoolNamespaceLister.
+type NewTestCStorPoolNamespaceListerExpansion interface{}
 
 // RunTaskListerExpansion allows custom methods to be added to
 // RunTaskLister.

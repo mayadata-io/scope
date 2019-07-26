@@ -28,8 +28,8 @@ type FakeOpenebsV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeOpenebsV1alpha1) BlockDevices() v1alpha1.BlockDeviceInterface {
-	return &FakeBlockDevices{c}
+func (c *FakeOpenebsV1alpha1) BlockDevices(namespace string) v1alpha1.BlockDeviceInterface {
+	return &FakeBlockDevices{c, namespace}
 }
 
 func (c *FakeOpenebsV1alpha1) CASTemplates() v1alpha1.CASTemplateInterface {
@@ -38,6 +38,10 @@ func (c *FakeOpenebsV1alpha1) CASTemplates() v1alpha1.CASTemplateInterface {
 
 func (c *FakeOpenebsV1alpha1) CStorPools() v1alpha1.CStorPoolInterface {
 	return &FakeCStorPools{c}
+}
+
+func (c *FakeOpenebsV1alpha1) CStorPoolClusters(namespace string) v1alpha1.CStorPoolClusterInterface {
+	return &FakeCStorPoolClusters{c, namespace}
 }
 
 func (c *FakeOpenebsV1alpha1) CStorVolumes(namespace string) v1alpha1.CStorVolumeInterface {
@@ -50,6 +54,10 @@ func (c *FakeOpenebsV1alpha1) CStorVolumeReplicas(namespace string) v1alpha1.CSt
 
 func (c *FakeOpenebsV1alpha1) Disks() v1alpha1.DiskInterface {
 	return &FakeDisks{c}
+}
+
+func (c *FakeOpenebsV1alpha1) NewTestCStorPools(namespace string) v1alpha1.NewTestCStorPoolInterface {
+	return &FakeNewTestCStorPools{c, namespace}
 }
 
 func (c *FakeOpenebsV1alpha1) RunTasks(namespace string) v1alpha1.RunTaskInterface {

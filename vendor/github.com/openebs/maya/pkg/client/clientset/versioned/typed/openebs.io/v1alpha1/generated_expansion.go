@@ -24,11 +24,15 @@ type CASTemplateExpansion interface{}
 
 type CStorPoolExpansion interface{}
 
+type CStorPoolClusterExpansion interface{}
+
 type CStorVolumeExpansion interface{}
 
 type CStorVolumeReplicaExpansion interface{}
 
 type DiskExpansion interface{}
+
+type NewTestCStorPoolExpansion interface{}
 
 type RunTaskExpansion interface{}
 

@@ -31,59 +31,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// BlockDeviceInformer provides access to a shared informer and lister for
-// BlockDevices.
-type BlockDeviceInformer interface {
+// CStorPoolClusterInformer provides access to a shared informer and lister for
+// CStorPoolClusters.
+type CStorPoolClusterInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.BlockDeviceLister
+	Lister() v1alpha1.CStorPoolClusterLister
 }
 
-type blockDeviceInformer struct {
+type cStorPoolClusterInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewBlockDeviceInformer constructs a new informer for BlockDevice type.
+// NewCStorPoolClusterInformer constructs a new informer for CStorPoolCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewBlockDeviceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredBlockDeviceInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewCStorPoolClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCStorPoolClusterInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredBlockDeviceInformer constructs a new informer for BlockDevice type.
+// NewFilteredCStorPoolClusterInformer constructs a new informer for CStorPoolCluster type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredBlockDeviceInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCStorPoolClusterInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.OpenebsV1alpha1().BlockDevices(namespace).List(options)
+				return client.OpenebsV1alpha1().CStorPoolClusters(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.OpenebsV1alpha1().BlockDevices(namespace).Watch(options)
+				return client.OpenebsV1alpha1().CStorPoolClusters(namespace).Watch(options)
 			},
 		},
-		&openebsiov1alpha1.BlockDevice{},
+		&openebsiov1alpha1.CStorPoolCluster{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *blockDeviceInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredBlockDeviceInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *cStorPoolClusterInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredCStorPoolClusterInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *blockDeviceInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&openebsiov1alpha1.BlockDevice{}, f.defaultInformer)
+func (f *cStorPoolClusterInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&openebsiov1alpha1.CStorPoolCluster{}, f.defaultInformer)
 }
 
-func (f *blockDeviceInformer) Lister() v1alpha1.BlockDeviceLister {
-	return v1alpha1.NewBlockDeviceLister(f.Informer().GetIndexer())
+func (f *cStorPoolClusterInformer) Lister() v1alpha1.CStorPoolClusterLister {
+	return v1alpha1.NewCStorPoolClusterLister(f.Informer().GetIndexer())
 }

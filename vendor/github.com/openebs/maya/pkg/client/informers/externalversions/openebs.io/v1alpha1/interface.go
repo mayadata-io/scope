@@ -30,12 +30,16 @@ type Interface interface {
 	CASTemplates() CASTemplateInformer
 	// CStorPools returns a CStorPoolInformer.
 	CStorPools() CStorPoolInformer
+	// CStorPoolClusters returns a CStorPoolClusterInformer.
+	CStorPoolClusters() CStorPoolClusterInformer
 	// CStorVolumes returns a CStorVolumeInformer.
 	CStorVolumes() CStorVolumeInformer
 	// CStorVolumeReplicas returns a CStorVolumeReplicaInformer.
 	CStorVolumeReplicas() CStorVolumeReplicaInformer
 	// Disks returns a DiskInformer.
 	Disks() DiskInformer
+	// NewTestCStorPools returns a NewTestCStorPoolInformer.
+	NewTestCStorPools() NewTestCStorPoolInformer
 	// RunTasks returns a RunTaskInformer.
 	RunTasks() RunTaskInformer
 	// StoragePools returns a StoragePoolInformer.
@@ -57,7 +61,7 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 
 // BlockDevices returns a BlockDeviceInformer.
 func (v *version) BlockDevices() BlockDeviceInformer {
-	return &blockDeviceInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+	return &blockDeviceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CASTemplates returns a CASTemplateInformer.
@@ -68,6 +72,11 @@ func (v *version) CASTemplates() CASTemplateInformer {
 // CStorPools returns a CStorPoolInformer.
 func (v *version) CStorPools() CStorPoolInformer {
 	return &cStorPoolInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// CStorPoolClusters returns a CStorPoolClusterInformer.
+func (v *version) CStorPoolClusters() CStorPoolClusterInformer {
+	return &cStorPoolClusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CStorVolumes returns a CStorVolumeInformer.
@@ -83,6 +92,11 @@ func (v *version) CStorVolumeReplicas() CStorVolumeReplicaInformer {
 // Disks returns a DiskInformer.
 func (v *version) Disks() DiskInformer {
 	return &diskInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// NewTestCStorPools returns a NewTestCStorPoolInformer.
+func (v *version) NewTestCStorPools() NewTestCStorPoolInformer {
+	return &newTestCStorPoolInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // RunTasks returns a RunTaskInformer.
