@@ -24,13 +24,23 @@ func (v cStorVolumeRenderer) Render(ctx context.Context, rpt report.Report) Node
 	for cvrID, cvrNode := range rpt.CStorVolumeReplica.Nodes {
 		cStorVolume, _ := cvrNode.Latest.Lookup(kubernetes.CStorVolumeName)
 		cStorVolumeNodeID := report.MakeCStorVolumeNodeID(cStorVolume)
-
 		if cvNode, ok := cStorNodes[cStorVolumeNodeID]; ok {
 			cvNode.Adjacency = cvNode.Adjacency.Add(cvrID)
 			cvNode.Children = cvNode.Children.Add(cvrNode)
 			cStorNodes[cStorVolumeNodeID] = cvNode
 		}
 
+		cStorPoolName, _ := cvrNode.Latest.Lookup(kubernetes.CStorPoolName)
+		cStorPoolUID, _ := cvrNode.Latest.Lookup(kubernetes.CStorPoolUID)
+		for ncspID, ncspNode := range rpt.NewTestCStorPool.Nodes {
+			ncspName, _ := ncspNode.Latest.Lookup(kubernetes.Name)
+			ncspUID, _, _ := report.ParseNodeID(ncspID)
+			if ncspName == cStorPoolName && ncspUID == cStorPoolUID {
+				cvrNode.Adjacency = cvrNode.Adjacency.Add(ncspID)
+				cvrNode.Children = cvrNode.Children.Add(ncspNode)
+				break
+			}
+		}
 		cStorNodes[cvrID] = cvrNode
 	}
 	return Nodes{Nodes: cStorNodes}

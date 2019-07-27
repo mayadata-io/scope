@@ -270,9 +270,6 @@ var (
 	CStorPoolClusterMetadataTemplates = report.MetadataTemplates{
 		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
-		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
-		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
-		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
 	}
 
 	NewTestCStorPoolMetadataTemplates = report.MetadataTemplates{
