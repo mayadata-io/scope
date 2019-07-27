@@ -21,10 +21,6 @@ func (v cStorVolumeRenderer) Render(ctx context.Context, rpt report.Report) Node
 		cStorNodes[cvID] = cvNode
 	}
 
-	for cspID, cspNode := range rpt.CStorPool.Nodes {
-		cStorNodes[cspID] = cspNode
-	}
-
 	for cvrID, cvrNode := range rpt.CStorVolumeReplica.Nodes {
 		cStorVolume, _ := cvrNode.Latest.Lookup(kubernetes.CStorVolumeName)
 		cStorVolumeNodeID := report.MakeCStorVolumeNodeID(cStorVolume)
@@ -35,17 +31,7 @@ func (v cStorVolumeRenderer) Render(ctx context.Context, rpt report.Report) Node
 			cStorNodes[cStorVolumeNodeID] = cvNode
 		}
 
-		cStorPoolUID, _ := cvrNode.Latest.Lookup(kubernetes.CStorPoolUID)
-		cStorPoolNodeID := report.MakeCStorPoolNodeID(cStorPoolUID)
-		if cStorPoolNode, ok := cStorNodes[cStorPoolNodeID]; ok {
-			cvrNode.Children = cvrNode.Children.Add(cStorPoolNode)
-		}
-
 		cStorNodes[cvrID] = cvrNode
-	}
-
-	for diskID, diskNode := range rpt.Disk.Nodes {
-		cStorNodes[diskID] = diskNode
 	}
 	return Nodes{Nodes: cStorNodes}
 }
