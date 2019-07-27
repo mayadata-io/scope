@@ -32,6 +32,10 @@ func (c *FakeOpenebsV1alpha1) BlockDevices(namespace string) v1alpha1.BlockDevic
 	return &FakeBlockDevices{c, namespace}
 }
 
+func (c *FakeOpenebsV1alpha1) BlockDeviceClaims(namespace string) v1alpha1.BlockDeviceClaimInterface {
+	return &FakeBlockDeviceClaims{c, namespace}
+}
+
 func (c *FakeOpenebsV1alpha1) CASTemplates() v1alpha1.CASTemplateInterface {
 	return &FakeCASTemplates{c}
 }

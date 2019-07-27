@@ -51,6 +51,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&DiskList{},
 		&BlockDevice{},
 		&BlockDeviceList{},
+		&BlockDeviceClaim{},
+		&BlockDeviceClaimList{},
 		&NewTestCStorPool{},
 		&NewTestCStorPoolList{},
 		&CStorPoolCluster{},

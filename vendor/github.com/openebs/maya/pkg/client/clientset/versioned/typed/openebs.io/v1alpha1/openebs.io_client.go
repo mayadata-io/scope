@@ -28,6 +28,7 @@ import (
 type OpenebsV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	BlockDevicesGetter
+	BlockDeviceClaimsGetter
 	CASTemplatesGetter
 	CStorPoolsGetter
 	CStorPoolClustersGetter
@@ -47,6 +48,10 @@ type OpenebsV1alpha1Client struct {
 
 func (c *OpenebsV1alpha1Client) BlockDevices(namespace string) BlockDeviceInterface {
 	return newBlockDevices(c, namespace)
+}
+
+func (c *OpenebsV1alpha1Client) BlockDeviceClaims(namespace string) BlockDeviceClaimInterface {
+	return newBlockDeviceClaims(c, namespace)
 }
 
 func (c *OpenebsV1alpha1Client) CASTemplates() CASTemplateInterface {

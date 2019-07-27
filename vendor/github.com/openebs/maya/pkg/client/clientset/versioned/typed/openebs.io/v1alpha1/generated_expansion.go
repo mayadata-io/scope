@@ -20,6 +20,8 @@ package v1alpha1
 
 type BlockDeviceExpansion interface{}
 
+type BlockDeviceClaimExpansion interface{}
+
 type CASTemplateExpansion interface{}
 
 type CStorPoolExpansion interface{}

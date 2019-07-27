@@ -26,6 +26,14 @@ type BlockDeviceListerExpansion interface{}
 // BlockDeviceNamespaceLister.
 type BlockDeviceNamespaceListerExpansion interface{}
 
+// BlockDeviceClaimListerExpansion allows custom methods to be added to
+// BlockDeviceClaimLister.
+type BlockDeviceClaimListerExpansion interface{}
+
+// BlockDeviceClaimNamespaceListerExpansion allows custom methods to be added to
+// BlockDeviceClaimNamespaceLister.
+type BlockDeviceClaimNamespaceListerExpansion interface{}
+
 // CASTemplateListerExpansion allows custom methods to be added to
 // CASTemplateLister.
 type CASTemplateListerExpansion interface{}

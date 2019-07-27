@@ -26,6 +26,8 @@ import (
 type Interface interface {
 	// BlockDevices returns a BlockDeviceInformer.
 	BlockDevices() BlockDeviceInformer
+	// BlockDeviceClaims returns a BlockDeviceClaimInformer.
+	BlockDeviceClaims() BlockDeviceClaimInformer
 	// CASTemplates returns a CASTemplateInformer.
 	CASTemplates() CASTemplateInformer
 	// CStorPools returns a CStorPoolInformer.
@@ -62,6 +64,11 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // BlockDevices returns a BlockDeviceInformer.
 func (v *version) BlockDevices() BlockDeviceInformer {
 	return &blockDeviceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// BlockDeviceClaims returns a BlockDeviceClaimInformer.
+func (v *version) BlockDeviceClaims() BlockDeviceClaimInformer {
+	return &blockDeviceClaimInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // CASTemplates returns a CASTemplateInformer.
