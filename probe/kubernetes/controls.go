@@ -185,6 +185,17 @@ func (r *Reporter) describeBlockDevice(req xfer.Request, namespaceID, blockDevic
 	return r.describe(req, namespaceID, blockDeviceID, schema.GroupKind{}, restMapping)
 }
 
+func (r *Reporter) describeBlockDeviceClaim(req xfer.Request, namespaceID, blockDeviceClaimID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "blockdeviceclaims",
+		},
+	}
+	return r.describe(req, namespaceID, blockDeviceClaimID, schema.GroupKind{}, restMapping)
+}
+
 // GetLogs is the control to get the logs for a kubernetes pod
 func (r *Reporter) describe(req xfer.Request, namespaceID, resourceID string, groupKind schema.GroupKind, restMapping apimeta.RESTMapping) xfer.Response {
 	readCloser, err := r.client.Describe(namespaceID, resourceID, groupKind, restMapping)
@@ -290,6 +301,8 @@ func (r *Reporter) Describe() func(xfer.Request) xfer.Response {
 			f = r.CaptureDisk(r.describeDisk)
 		case "<block_device>":
 			f = r.CaptureBlockDevice(r.describeBlockDevice)
+		case "<block_device_claim>":
+			f = r.CaptureBlockDeviceClaim(r.describeBlockDeviceClaim)
 		default:
 			return xfer.ResponseErrorf("Node not found: %s", req.NodeID)
 		}
@@ -683,6 +696,28 @@ func (r *Reporter) CaptureBlockDevice(f func(xfer.Request, string, string) xfer.
 			return xfer.ResponseErrorf("Block Device  not found: %s", uid)
 		}
 		return f(req, blockDevice.Namespace(), blockDevice.Name())
+	}
+}
+
+// CaptureBlockDeviceClaim will return name and namespace of block device claim
+func (r *Reporter) CaptureBlockDeviceClaim(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseBlockDeviceClaimNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find blockDeviceClaim by UID
+		var blockDeviceClaim BlockDeviceClaim
+		r.client.WalkBlockDeviceClaims(func(b BlockDeviceClaim) error {
+			if b.UID() == uid {
+				blockDeviceClaim = b
+			}
+			return nil
+		})
+		if blockDeviceClaim == nil {
+			return xfer.ResponseErrorf("Block Device Claim  not found: %s", uid)
+		}
+		return f(req, blockDeviceClaim.Namespace(), blockDeviceClaim.Name())
 	}
 }
 

@@ -292,6 +292,13 @@ var nodeSummaryGroupSpecs = []struct {
 			Columns: []Column{},
 		},
 	},
+	{
+		topologyID: report.BlockDeviceClaim,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Block Device Claim",
+			Columns: []Column{},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {
