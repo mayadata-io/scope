@@ -43,4 +43,5 @@ var (
 	SelectDisk                  = TopologySelector(report.Disk)
 	SelectBlockDevice           = TopologySelector(report.BlockDevice)
 	SelectStoragePoolClaim      = TopologySelector(report.StoragePoolClaim)
+	SelectBlockDeviceClaim      = TopologySelector(report.BlockDeviceClaim)
 )

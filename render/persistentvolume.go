@@ -18,6 +18,7 @@ var KubernetesVolumesRenderer = MakeReduce(
 	PVToControllerRenderer,
 	VolumeSnapshotRenderer,
 	CSPToBdOrDiskRenderer,
+	BlockDeviceClaimToBlockDeviceRenderer,
 	BlockDeviceToDiskRenderer,
 	MakeFilter(
 		func(n report.Node) bool {
@@ -162,6 +163,19 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 			if pvName == volumeName {
 				p.Adjacency = p.Adjacency.Add(cvID)
 				p.Children = p.Children.Add(cvNode)
+			}
+		}
+
+		_, casOk := p.Latest.Lookup(kubernetes.CASType)
+		bdcNameFromPV, bdcOk := p.Latest.Lookup(kubernetes.BlockDeviceClaimName)
+		if casOk && bdcOk {
+			for bdcID, bdcNode := range rpt.BlockDeviceClaim.Nodes {
+				bdcName, _ := bdcNode.Latest.Lookup(kubernetes.Name)
+				if bdcName == bdcNameFromPV {
+					p.Adjacency = p.Adjacency.Add(bdcID)
+					p.Children = p.Children.Add(bdcNode)
+					break
+				}
 			}
 		}
 
