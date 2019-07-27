@@ -70,6 +70,8 @@ const (
 	BlockDeviceList              = report.KubernetesBlockDeviceList
 	Path                         = report.KubernetesPath
 	BlockDeviceName              = report.KubernetesBlockDeviceName
+	BlockDeviceClaimName         = report.KubernetesBlockDeviceClaimName
+	CASType                      = report.KubernetesCASType
 )
 
 var (
