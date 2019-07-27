@@ -69,6 +69,7 @@ const (
 	PercentEnduranceUsed         = report.KubernetesPercentEnduranceUsed
 	BlockDeviceList              = report.KubernetesBlockDeviceList
 	Path                         = report.KubernetesPath
+	BlockDeviceName              = report.KubernetesBlockDeviceName
 )
 
 var (
@@ -254,11 +255,20 @@ var (
 		VolumeName: {ID: CStorVolumeReplicaName, Label: "CStor Volume Replica", From: report.FromLatest, Priority: 2},
 		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
+
 	CStorPoolMetadataTemplates = report.MetadataTemplates{
 		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
 		VolumeName: {ID: CStorPoolName, Label: "CStor Pool", From: report.FromLatest, Priority: 2},
 		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 	}
+
+	BlockDeviceClaimMetadataTemplates = report.MetadataTemplates{
+		NodeType:        {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		BlockDeviceName: {ID: BlockDeviceName, Label: "Block device name", From: report.FromLatest, Priority: 2},
+		HostName:        {ID: HostName, Label: "Host", From: report.FromLatest, Priority: 3},
+		Status:          {ID: Status, Label: "Status", From: report.FromLatest, Priority: 4},
+	}
+
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
@@ -489,6 +499,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	blockDeviceClaimTopology, _, err := r.blockDeviceClaimTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -508,6 +522,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.CStorVolumeReplica = result.CStorVolumeReplica.Merge(cStorVolumeReplicaTopology)
 	result.CStorPool = result.CStorPool.Merge(cStorPoolTopology)
 	result.BlockDevice = result.BlockDevice.Merge(blockDeviceTopology)
+	result.BlockDeviceClaim = result.BlockDeviceClaim.Merge(blockDeviceClaimTopology)
 	return result, nil
 }
 
@@ -658,7 +673,7 @@ func (r *Reporter) volumeSnapshotTopology() (report.Topology, []VolumeSnapshot, 
 		Human:    "Delete",
 		Category: report.AdminControl,
 		Icon:     "far fa-trash-alt",
-		Rank:     1,
+		Rank:     3,
 	})
 	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkVolumeSnapshots(func(p VolumeSnapshot) error {
@@ -780,6 +795,20 @@ func (r *Reporter) cStorPoolTopology() (report.Topology, []CStorPool, error) {
 		return nil
 	})
 	return result, cStorPool, err
+}
+
+func (r *Reporter) blockDeviceClaimTopology() (report.Topology, []BlockDeviceClaim, error) {
+	blockDeviceClaims := []BlockDeviceClaim{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(BlockDeviceClaimMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkBlockDeviceClaims(func(p BlockDeviceClaim) error {
+		result.AddNode(p.GetNode(r.probeID))
+		blockDeviceClaims = append(blockDeviceClaims, p)
+		return nil
+	})
+	return result, blockDeviceClaims, err
 }
 
 type labelledChild interface {
