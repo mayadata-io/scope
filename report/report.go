@@ -43,23 +43,24 @@ const (
 	BlockDeviceClaim      = "block_device_claim"
 
 	// Shapes used for different nodes
-	Circle         = "circle"
-	Triangle       = "triangle"
-	Square         = "square"
-	Pentagon       = "pentagon"
-	Hexagon        = "hexagon"
-	Heptagon       = "heptagon"
-	Octagon        = "octagon"
-	Cloud          = "cloud"
-	Cylinder       = "cylinder"
-	DottedCylinder = "dottedcylinder"
-	StorageSheet   = "sheet"
-	Camera         = "camera"
-	DottedTriangle = "dottedtriangle"
-	DottedSquare   = "dottedsquare"
-	Controller     = "controller"
-	Replica        = "replica"
-	Rectangle      = "rectangle"
+	Circle          = "circle"
+	Triangle        = "triangle"
+	Square          = "square"
+	Pentagon        = "pentagon"
+	Hexagon         = "hexagon"
+	Heptagon        = "heptagon"
+	Octagon         = "octagon"
+	Cloud           = "cloud"
+	Cylinder        = "cylinder"
+	DottedCylinder  = "dottedcylinder"
+	StorageSheet    = "sheet"
+	Camera          = "camera"
+	DottedTriangle  = "dottedtriangle"
+	DottedSquare    = "dottedsquare"
+	Controller      = "controller"
+	Replica         = "replica"
+	Rectangle       = "rectangle"
+	DottedRectangle = "dottedrectangle"
 
 	// Used when counting the number of containers
 	ContainersKey = "containers"
@@ -374,7 +375,7 @@ func MakeReport() Report {
 			WithLabel("cStor Pool", "cStor Pool"),
 
 		BlockDeviceClaim: MakeTopology().
-			WithShape(Rectangle).
+			WithShape(DottedRectangle).
 			WithLabel("block device claim", "block device claims"),
 
 		DNS: DNSRecords{},
