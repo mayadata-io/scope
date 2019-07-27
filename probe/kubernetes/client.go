@@ -66,6 +66,7 @@ type Client interface {
 	WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error
 	WalkCStorPools(f func(CStorPool) error) error
 	WalkBlockDevices(f func(BlockDevice) error) error
+	WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
@@ -118,6 +119,7 @@ type client struct {
 	cStorvolumeReplicaStore    cache.Store
 	cStorPoolStore             cache.Store
 	blockDeviceStore           cache.Store
+	blockDeviceClaimStore      cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -225,6 +227,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.cStorvolumeReplicaStore = result.setupStore("cstorvolumereplicas")
 	result.cStorPoolStore = result.setupStore("cstorpools")
 	result.blockDeviceStore = result.setupStore("blockdevices")
+	result.blockDeviceClaimStore = result.setupStore("blockdeviceclaims")
 
 	return result, nil
 }
@@ -293,6 +296,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPool{}, nil
 	case "blockdevices":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDevice{}, nil
+	case "blockdeviceclaims":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDeviceClaim{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -561,6 +566,16 @@ func (c *client) WalkCStorPools(f func(CStorPool) error) error {
 	for _, m := range c.cStorPoolStore.List() {
 		cStorPool := m.(*mayav1alpha1.CStorPool)
 		if err := f(NewCStorPool(cStorPool)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error {
+	for _, m := range c.blockDeviceClaimStore.List() {
+		blockDeviceClaim := m.(*mayav1alpha1.BlockDeviceClaim)
+		if err := f(NewBlockDeviceClaim(blockDeviceClaim)); err != nil {
 			return err
 		}
 	}
