@@ -165,6 +165,19 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 			}
 		}
 
+		_, casOk := p.Latest.Lookup(kubernetes.CASType)
+		bdcNameFromPV, bdcOk := p.Latest.Lookup(kubernetes.BlockDeviceClaimName)
+		if casOk && bdcOk {
+			for bdcID, bdcNode := range rpt.BlockDeviceClaim.Nodes {
+				bdcName, _ := bdcNode.Latest.Lookup(kubernetes.Name)
+				if bdcName == bdcNameFromPV {
+					p.Adjacency = p.Adjacency.Add(bdcID)
+					p.Children = p.Children.Add(bdcNode)
+					break
+				}
+			}
+		}
+
 		if p.ID != "" {
 			nodes[pvNodeID] = p
 		}
