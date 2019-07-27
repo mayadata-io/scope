@@ -241,6 +241,12 @@ var (
 
 	// ParseNewTestCStorPoolNodeID parses a CStor pool node ID
 	ParseNewTestCStorPoolNodeID = parseSingleComponentID("new_test_cstor_pool")
+
+	// MakeBlockDeviceClaimNodeID produces a block device claim node ID from its composite parts.
+	MakeBlockDeviceClaimNodeID = makeSingleComponentID("block_device_claim")
+
+	// ParseBlockDeviceClaimNodeID parses a block device claim node ID
+	ParseBlockDeviceClaimNodeID = parseSingleComponentID("block_device_claim")
 )
 
 // makeSingleComponentID makes a single-component node id encoder

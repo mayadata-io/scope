@@ -131,6 +131,7 @@ const (
 	KubernetesTotalSize                    = "kubernetes_total_size"
 	KubernetesFreeSize                     = "kubernetes_free_size"
 	KubernetesUsedSize                     = "kubernetes_used_size"
+	KubernetesBlockDeviceName              = "kubernetes_block_device_name"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

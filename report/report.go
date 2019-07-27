@@ -42,6 +42,7 @@ const (
 	BlockDevice           = "block_device"
 	CStorPoolCluster      = "cstor_pool_cluster"
 	NewTestCStorPool      = "new_test_cstor_pool"
+	BlockDeviceClaim      = "block_device_claim"
 
 	// Shapes used for different nodes
 	Circle         = "circle"
@@ -99,6 +100,7 @@ var topologyNames = []string{
 	BlockDevice,
 	CStorPoolCluster,
 	NewTestCStorPool,
+	BlockDeviceClaim,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -234,6 +236,9 @@ type Report struct {
 
 	// NewTestCStorPool represent all the NCSP on hosts running probes.
 	NewTestCStorPool Topology
+
+	// BlockDeviceClaim represent all NDM BDCs on hosts running probes.
+	BlockDeviceClaim Topology
 
 	DNS DNSRecords
 
@@ -386,6 +391,10 @@ func MakeReport() Report {
 			WithShape(Square).
 			WithLabel("cStor Pool", "cStor Pool"),
 
+		BlockDeviceClaim: MakeTopology().
+			WithShape(Rectangle).
+			WithLabel("block device claim", "block device claims"),
+
 		DNS: DNSRecords{},
 
 		Sampling: Sampling{},
@@ -520,6 +529,8 @@ func (r *Report) topology(name string) *Topology {
 		return &r.CStorPoolCluster
 	case NewTestCStorPool:
 		return &r.NewTestCStorPool
+	case BlockDeviceClaim:
+		return &r.BlockDeviceClaim
 	}
 	return nil
 }

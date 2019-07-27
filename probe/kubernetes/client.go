@@ -68,6 +68,7 @@ type Client interface {
 	WalkBlockDevices(f func(BlockDevice) error) error
 	WalkCStorPoolClusters(f func(CStorPoolCluster) error) error
 	WalkNewTestCStorPools(f func(NewTestCStorPool) error) error
+	WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
@@ -122,6 +123,7 @@ type client struct {
 	blockDeviceStore           cache.Store
 	cStorPoolClusterStore      cache.Store
 	newTestCStorPoolStore      cache.Store
+	blockDeviceClaimStore      cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -231,6 +233,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.blockDeviceStore = result.setupStore("blockdevices")
 	result.cStorPoolClusterStore = result.setupStore("cstorpoolclusters")
 	result.newTestCStorPoolStore = result.setupStore("newtestcstorpools")
+	result.blockDeviceClaimStore = result.setupStore("blockdeviceclaims")
 
 	return result, nil
 }
@@ -303,6 +306,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolCluster{}, nil
 	case "newtestcstorpools":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.NewTestCStorPool{}, nil
+	case "blockdeviceclaims":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDeviceClaim{}, nil
 	case "cronjobs":
 		ok, err := c.isResourceSupported(c.client.BatchV1beta1().RESTClient().APIVersion(), resource)
 		if err != nil {
@@ -591,6 +596,16 @@ func (c *client) WalkNewTestCStorPools(f func(NewTestCStorPool) error) error {
 	for _, m := range c.newTestCStorPoolStore.List() {
 		newTestCStorPool := m.(*mayav1alpha1.NewTestCStorPool)
 		if err := f(NewNewTestCStorPool(newTestCStorPool)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error {
+	for _, m := range c.blockDeviceClaimStore.List() {
+		blockDeviceClaim := m.(*mayav1alpha1.BlockDeviceClaim)
+		if err := f(NewBlockDeviceClaim(blockDeviceClaim)); err != nil {
 			return err
 		}
 	}

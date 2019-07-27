@@ -72,6 +72,7 @@ const (
 	TotalSize                    = report.KubernetesTotalSize
 	FreeSize                     = report.KubernetesFreeSize
 	UsedSize                     = report.KubernetesUsedSize
+	BlockDeviceName              = report.KubernetesBlockDeviceName
 )
 
 var (
@@ -278,6 +279,13 @@ var (
 		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
 		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
 		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+	}
+
+	BlockDeviceClaimMetadataTemplates = report.MetadataTemplates{
+		NodeType:        {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		BlockDeviceName: {ID: BlockDeviceName, Label: "Block device name", From: report.FromLatest, Priority: 2},
+		HostName:        {ID: HostName, Label: "Host", From: report.FromLatest, Priority: 3},
+		Status:          {ID: Status, Label: "Status", From: report.FromLatest, Priority: 4},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -518,6 +526,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	blockDeviceClaimTopology, _, err := r.blockDeviceClaimTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -539,6 +551,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.BlockDevice = result.BlockDevice.Merge(blockDeviceTopology)
 	result.CStorPoolCluster = result.CStorPoolCluster.Merge(cStorPoolClusterTopology)
 	result.NewTestCStorPool = result.NewTestCStorPool.Merge(newTestCStorPoolTopology)
+	result.BlockDeviceClaim = result.BlockDeviceClaim.Merge(blockDeviceClaimTopology)
 	return result, nil
 }
 
@@ -689,7 +702,7 @@ func (r *Reporter) volumeSnapshotTopology() (report.Topology, []VolumeSnapshot, 
 		Human:    "Delete",
 		Category: report.AdminControl,
 		Icon:     "far fa-trash-alt",
-		Rank:     1,
+		Rank:     3,
 	})
 	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkVolumeSnapshots(func(p VolumeSnapshot) error {
@@ -839,6 +852,20 @@ func (r *Reporter) newTestCStorPoolTopology() (report.Topology, []NewTestCStorPo
 		return nil
 	})
 	return result, newTestCStorPool, err
+}
+
+func (r *Reporter) blockDeviceClaimTopology() (report.Topology, []BlockDeviceClaim, error) {
+	blockDeviceClaims := []BlockDeviceClaim{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(BlockDeviceClaimMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkBlockDeviceClaims(func(p BlockDeviceClaim) error {
+		result.AddNode(p.GetNode(r.probeID))
+		blockDeviceClaims = append(blockDeviceClaims, p)
+		return nil
+	})
+	return result, blockDeviceClaims, err
 }
 
 type labelledChild interface {

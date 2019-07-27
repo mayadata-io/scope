@@ -13,6 +13,7 @@ import (
 var KubernetesStorageRenderer = MakeReduce(
 	CSPCToNCSPRenderer,
 	NCSPToBDRenderer,
+	BlockDeviceClaimToBlockDeviceRenderer,
 	BlockDeviceToDiskRenderer,
 )
 
@@ -117,6 +118,31 @@ func (b blockDeviceToDiskRenderer) Render(ctx context.Context, rpt report.Report
 			nodes[diskNodeID] = diskNode
 		}
 		nodes[blockDeviceNodeID] = blockDeviceNode
+	}
+	return Nodes{Nodes: nodes}
+}
+
+// BlockDeviceClaimToBlockDeviceRenderer is a renderer which produces renderable k8s object of block device claim.
+var BlockDeviceClaimToBlockDeviceRenderer blockDeviceClaimToBlockDeviceRenderer
+
+// blockDeviceClaimToBlockDeviceRenderer is a renderer to render BDC and BD.
+type blockDeviceClaimToBlockDeviceRenderer struct{}
+
+func (b blockDeviceClaimToBlockDeviceRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for bdcID, bdcNode := range rpt.BlockDeviceClaim.Nodes {
+		bdcNamespace, _ := bdcNode.Latest.Lookup(kubernetes.Namespace)
+		bdNameFromBdc, _ := bdcNode.Latest.Lookup(kubernetes.BlockDeviceName)
+		for bdID, bdNode := range rpt.BlockDevice.Nodes {
+			bdName, _ := bdNode.Latest.Lookup(kubernetes.Name)
+			bdNamespace, _ := bdNode.Latest.Lookup(kubernetes.Namespace)
+			if bdName == bdNameFromBdc && bdNamespace == bdcNamespace {
+				bdcNode.Adjacency = bdcNode.Adjacency.Add(bdID)
+				bdcNode.Children = bdcNode.Children.Add(bdNode)
+				break
+			}
+		}
+		nodes[bdcID] = bdcNode
 	}
 	return Nodes{Nodes: nodes}
 }

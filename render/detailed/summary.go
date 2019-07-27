@@ -99,6 +99,7 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.CStorPool:             cStorPoolNodeSummary,
 	report.CStorPoolCluster:      cStorPoolClusterNodeSummary,
 	report.NewTestCStorPool:      newTestCStorPoolNodeSummary,
+	report.BlockDeviceClaim:      blockDeviceClaimNodeSummary,
 }
 
 // For each report.Topology, map to a 'primary' API topology. This can then be used in a variety of places.
@@ -130,6 +131,7 @@ var primaryAPITopology = map[string]string{
 	report.BlockDevice:           "pools",
 	report.CStorPoolCluster:      "pools",
 	report.NewTestCStorPool:      "pools",
+	report.BlockDeviceClaim:      "pools",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -486,6 +488,12 @@ func newTestCStorPoolNodeSummary(base BasicNodeSummary, n report.Node) BasicNode
 	base = addKubernetesLabelAndRank(base, n)
 	base.LabelMinor = "cStor Pool"
 	base.Stack = true
+	return base
+}
+
+func blockDeviceClaimNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "Block Device Claim"
 	return base
 }
 

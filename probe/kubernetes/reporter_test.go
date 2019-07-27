@@ -199,6 +199,9 @@ func (c *mockClient) WalkCStorPoolClusters(f func(kubernetes.CStorPoolCluster) e
 func (c *mockClient) WalkNewTestCStorPools(f func(kubernetes.NewTestCStorPool) error) error {
 	return nil
 }
+func (c *mockClient) WalkBlockDeviceClaims(f func(kubernetes.BlockDeviceClaim) error) error {
+	return nil
+}
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
 func (c *mockClient) GetLogs(namespaceID, podName string, _ []string) (io.ReadCloser, error) {
 	r, ok := c.logs[namespaceID+";"+podName]
