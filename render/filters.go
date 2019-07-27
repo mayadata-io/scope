@@ -22,6 +22,7 @@ var storageComponents = map[string]string{
 	"disk":                    "disk",
 	"volume_snapshot":         "volume_snapshot",
 	"volume_snapshot_data":    "volume_snapshot_data",
+	"block_device_claim":      "block_device_claim",
 }
 
 var cStorComponents = map[string]string{
@@ -30,6 +31,7 @@ var cStorComponents = map[string]string{
 	"cstor_pool":           "cstor_pool",
 	"block_device":         "block_device",
 	"disk":                 "disk",
+	"block_device_claim":   "block_device_claim",
 }
 
 // CustomRenderer allow for mapping functions that received the entire topology
