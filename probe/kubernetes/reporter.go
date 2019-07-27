@@ -73,6 +73,8 @@ const (
 	FreeSize                     = report.KubernetesFreeSize
 	UsedSize                     = report.KubernetesUsedSize
 	BlockDeviceName              = report.KubernetesBlockDeviceName
+	BlockDeviceClaimName         = report.KubernetesBlockDeviceClaimName
+	CASType                      = report.KubernetesCASType
 )
 
 var (
