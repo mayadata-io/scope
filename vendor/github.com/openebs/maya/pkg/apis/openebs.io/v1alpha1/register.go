@@ -51,6 +51,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&DiskList{},
 		&BlockDevice{},
 		&BlockDeviceList{},
+		&BlockDeviceClaim{},
+		&BlockDeviceClaimList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

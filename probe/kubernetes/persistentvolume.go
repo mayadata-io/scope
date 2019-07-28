@@ -7,6 +7,11 @@ import (
 	apiv1 "k8s.io/api/core/v1"
 )
 
+const (
+	casTypeLabel  = "openebs.io/cas-type"
+	bdcAnnotation = "local.openebs.io/blockdeviceclaim"
+)
+
 // PersistentVolume represent kubernetes PersistentVolume interface
 type PersistentVolume interface {
 	Meta
@@ -14,6 +19,8 @@ type PersistentVolume interface {
 	GetAccessMode() string
 	GetVolume() string
 	GetStorageDriver() string
+	GetCASType() string
+	GetBDCName() string
 }
 
 // persistentVolume represents kubernetes persistent volume
@@ -63,6 +70,18 @@ func (p *persistentVolume) GetStorageDriver() string {
 	return ""
 }
 
+func (p *persistentVolume) GetCASType() string {
+	casType := p.GetLabels()[casTypeLabel]
+	if casType == "local-device" {
+		return "local-device"
+	}
+	return ""
+}
+
+func (p *persistentVolume) GetBDCName() string {
+	return p.GetAnnotations()[bdcAnnotation]
+}
+
 // GetNode returns Persistent Volume as Node
 func (p *persistentVolume) GetNode(probeID string) report.Node {
 	latests := map[string]string{
@@ -76,6 +95,14 @@ func (p *persistentVolume) GetNode(probeID string) report.Node {
 
 	if p.GetStorageDriver() != "" {
 		latests[StorageDriver] = p.GetStorageDriver()
+	}
+
+	if p.GetCASType() != "" {
+		latests[CASType] = p.GetCASType()
+	}
+
+	if p.GetBDCName() != "" {
+		latests[BlockDeviceClaimName] = p.GetBDCName()
 	}
 
 	return p.MetaNode(report.MakePersistentVolumeNodeID(p.UID())).
