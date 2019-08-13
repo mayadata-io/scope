@@ -112,7 +112,7 @@ After it’s been launched, open your browser to `http://localhost:4040`.
 **Docker Compose Format Version 1:**
 
     scope:
-      image: weaveworks/scope:1.11.3
+      image: weaveworks/scope:1.11.4
       net: "host"
       pid: "host"
       privileged: true
@@ -128,7 +128,7 @@ After it’s been launched, open your browser to `http://localhost:4040`.
     version: '2'
     services:
       scope:
-        image: weaveworks/scope:1.11.3
+        image: weaveworks/scope:1.11.4
         network_mode: "host"
         pid: "host"
         privileged: true
@@ -167,6 +167,11 @@ Allowable parameters for the launcher URL:
     kubectl port-forward -n weave "$(kubectl get -n weave pod --selector=weave-scope-component=app -o jsonpath='{.items..metadata.name}')" 4040
 
 The URL is: http://localhost:4040.
+
+>**Note:** Do not expose the Scope service to the Internet, e.g. by
+   changing the type to NodePort or LoadBalancer. Scope allows anyone
+   with access to the user interface control over your hosts and
+   containers.
 
 ### Kubernetes (local clone)
 
