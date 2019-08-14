@@ -201,7 +201,6 @@ class App extends React.Component {
       'contrast-mode': contrastMode,
       'time-travel-open': timeTravelSupported,
     });
-    const isIframe = window !== window.top;
 
     return (
       <ThemeProvider theme={theme}>
