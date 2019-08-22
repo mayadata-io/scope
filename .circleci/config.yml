@@ -87,6 +87,7 @@ jobs:
       # - run: mv client/* /home/weave/
       - run: cp -rv client/* /home/weave/
       - run: cp client/.babelrc /home/weave/
+      - run: cp client/.eslintrc /home/weave/
       - run: cd /home/weave; mkdir build         ; yarn install; yarn run build         ; mv build          scope/client
       - run: cd /home/weave; mkdir build-external; yarn install; yarn run build-external; mv build-external scope/client
       - run: cd /home/weave; mkdir tmp           ; yarn install; yarn run bundle        ; mv tmp            scope
@@ -105,6 +106,7 @@ jobs:
       - run: |
           cp -r client/* /home/weave/
           cp client/.babelrc /home/weave
+          cp client/.eslintrc /home/weave/
           rm -rf /home/weave/node_modules
           cd /home/weave; yarn install
           cd /home/weave; yarn run lint
