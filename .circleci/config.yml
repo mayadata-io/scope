@@ -194,8 +194,8 @@ jobs:
           test -z "${DOCKER_USER}" && exit 0
           docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
-              docker tag weaveworks/scope:latest openebs/scope:latest
-              docker push openebs/scope:latest
+              docker tag weaveworks/scope:latest openebs/scope:staging.$CIRCLE_BUILD_NUM
+              docker push openebs/scope:staging.$CIRCLE_BUILD_NUM
           done
 
   deploy-prod:
