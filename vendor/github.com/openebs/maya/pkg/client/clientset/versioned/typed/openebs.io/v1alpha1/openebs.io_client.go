@@ -31,6 +31,8 @@ type OpenebsV1alpha1Interface interface {
 	BlockDeviceClaimsGetter
 	CASTemplatesGetter
 	CStorPoolsGetter
+	CStorPoolClustersGetter
+	CStorPoolInstancesGetter
 	CStorVolumesGetter
 	CStorVolumeReplicasGetter
 	DisksGetter
@@ -58,6 +60,14 @@ func (c *OpenebsV1alpha1Client) CASTemplates() CASTemplateInterface {
 
 func (c *OpenebsV1alpha1Client) CStorPools() CStorPoolInterface {
 	return newCStorPools(c)
+}
+
+func (c *OpenebsV1alpha1Client) CStorPoolClusters(namespace string) CStorPoolClusterInterface {
+	return newCStorPoolClusters(c, namespace)
+}
+
+func (c *OpenebsV1alpha1Client) CStorPoolInstances(namespace string) CStorPoolInstanceInterface {
+	return newCStorPoolInstances(c, namespace)
 }
 
 func (c *OpenebsV1alpha1Client) CStorVolumes(namespace string) CStorVolumeInterface {

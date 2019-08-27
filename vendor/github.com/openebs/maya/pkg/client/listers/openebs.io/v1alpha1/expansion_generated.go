@@ -42,6 +42,22 @@ type CASTemplateListerExpansion interface{}
 // CStorPoolLister.
 type CStorPoolListerExpansion interface{}
 
+// CStorPoolClusterListerExpansion allows custom methods to be added to
+// CStorPoolClusterLister.
+type CStorPoolClusterListerExpansion interface{}
+
+// CStorPoolClusterNamespaceListerExpansion allows custom methods to be added to
+// CStorPoolClusterNamespaceLister.
+type CStorPoolClusterNamespaceListerExpansion interface{}
+
+// CStorPoolInstanceListerExpansion allows custom methods to be added to
+// CStorPoolInstanceLister.
+type CStorPoolInstanceListerExpansion interface{}
+
+// CStorPoolInstanceNamespaceListerExpansion allows custom methods to be added to
+// CStorPoolInstanceNamespaceLister.
+type CStorPoolInstanceNamespaceListerExpansion interface{}
+
 // CStorVolumeListerExpansion allows custom methods to be added to
 // CStorVolumeLister.
 type CStorVolumeListerExpansion interface{}
