@@ -74,6 +74,7 @@ const (
 	TotalSize                    = report.KubernetesTotalSize
 	FreeSize                     = report.KubernetesFreeSize
 	UsedSize                     = report.KubernetesUsedSize
+	CStorPoolInstanceUID         = report.KubernetesCStorPoolInstanceUID
 )
 
 var (
