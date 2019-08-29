@@ -31,6 +31,8 @@ var cStorComponents = map[string]string{
 	"cstor_volume":         "cstor_volume",
 	"cstor_volume_replica": "cstor_volume_replica",
 	"cstor_pool":           "cstor_pool",
+	"cstor_pool_cluster":   "cstor_pool_cluster",
+	"cstor_pool_instance":  "cstor_pool_instance",
 	"block_device":         "block_device",
 	"disk":                 "disk",
 	"block_device_claim":   "block_device_claim",
