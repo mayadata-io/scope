@@ -19,6 +19,7 @@ var KubernetesVolumesRenderer = MakeReduce(
 	VolumeSnapshotRenderer,
 	CSPToBdOrDiskRenderer,
 	BlockDeviceClaimToBlockDeviceRenderer,
+	CSPIToBDRenderer,
 	BlockDeviceToDiskRenderer,
 	MakeFilter(
 		func(n report.Node) bool {
