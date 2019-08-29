@@ -65,6 +65,8 @@ type Client interface {
 	WalkCStorPools(f func(CStorPool) error) error
 	WalkBlockDevices(f func(BlockDevice) error) error
 	WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error
+	WalkCStorPoolClusters(f func(CStorPoolCluster) error) error
+	WalkCStorPoolInstances(f func(CStorPoolInstance) error) error
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
@@ -118,6 +120,8 @@ type client struct {
 	cStorPoolStore             cache.Store
 	blockDeviceStore           cache.Store
 	blockDeviceClaimStore      cache.Store
+	cStorPoolClusterStore      cache.Store
+	cStorPoolInstanceStore     cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -226,6 +230,8 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.cStorPoolStore = result.setupStore("cstorpools")
 	result.blockDeviceStore = result.setupStore("blockdevices")
 	result.blockDeviceClaimStore = result.setupStore("blockdeviceclaims")
+	result.cStorPoolClusterStore = result.setupStore("cstorpoolclusters")
+	result.cStorPoolInstanceStore = result.setupStore("cstorpoolinstances")
 
 	return result, nil
 }
@@ -296,6 +302,10 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDevice{}, nil
 	case "blockdeviceclaims":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDeviceClaim{}, nil
+	case "cstorpoolclusters":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolCluster{}, nil
+	case "cstorpoolinstances":
+		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolInstance{}, nil
 	case "cronjobs":
 		return c.client.BatchV1beta1().RESTClient(), &apibatchv1beta1.CronJob{}, nil
 	}
@@ -566,6 +576,26 @@ func (c *client) WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error {
 	for _, m := range c.blockDeviceClaimStore.List() {
 		blockDeviceClaim := m.(*mayav1alpha1.BlockDeviceClaim)
 		if err := f(NewBlockDeviceClaim(blockDeviceClaim)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkCStorPoolClusters(f func(CStorPoolCluster) error) error {
+	for _, m := range c.cStorPoolClusterStore.List() {
+		cStorPoolCluster := m.(*mayav1alpha1.CStorPoolCluster)
+		if err := f(NewCStorPoolCluster(cStorPoolCluster)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkCStorPoolInstances(f func(CStorPoolInstance) error) error {
+	for _, m := range c.cStorPoolInstanceStore.List() {
+		cStorPoolInstance := m.(*mayav1alpha1.CStorPoolInstance)
+		if err := f(NewCStorPoolInstance(cStorPoolInstance)); err != nil {
 			return err
 		}
 	}
