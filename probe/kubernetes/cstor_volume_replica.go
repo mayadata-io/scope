@@ -13,6 +13,7 @@ type CStorVolumeReplica interface {
 	GetNode(probeID string) report.Node
 	GetCStorVolume() string
 	GetCStorPool() string
+	GetCStorPoolInstance() string
 	GetStatus() string
 	GetNodeTagOnStatus(status string) string
 }
@@ -40,12 +41,21 @@ func (p *cStorVolumeReplica) GetNode(probeID string) report.Node {
 	if p.GetCStorVolume() != "" {
 		latests[CStorVolumeName] = p.GetCStorVolume()
 	}
+
 	if p.GetCStorPool() != "" {
 		cStorPoolNodeID = report.MakeCStorPoolNodeID(p.GetCStorPool())
 	}
 
 	if p.GetCStorPool() != "" {
 		latests[CStorPoolUID] = p.GetCStorPool()
+	}
+
+	if p.GetCStorPoolInstance() != "" {
+		cStorPoolNodeID = report.MakeCStorPoolInstanceNodeID(p.GetCStorPoolInstance())
+	}
+
+	if p.GetCStorPoolInstance() != "" {
+		latests[CStorPoolInstanceUID] = p.GetCStorPoolInstance()
 	}
 
 	if status != "" {
@@ -65,8 +75,13 @@ func (p *cStorVolumeReplica) GetCStorVolume() string {
 }
 
 func (p *cStorVolumeReplica) GetCStorPool() string {
-	cStorVolumeUID := p.Labels()["cstorpool.openebs.io/uid"]
-	return cStorVolumeUID
+	cStorPool := p.Labels()["cstorpool.openebs.io/uid"]
+	return cStorPool
+}
+
+func (p *cStorVolumeReplica) GetCStorPoolInstance() string {
+	cStorPoolInstance := p.Labels()["cstorpoolinstance.openebs.io/uid"]
+	return cStorPoolInstance
 }
 
 func (p *cStorVolumeReplica) GetStatus() string {

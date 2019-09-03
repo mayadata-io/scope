@@ -195,6 +195,27 @@ func (r *Reporter) describeBlockDeviceClaim(req xfer.Request, namespaceID, block
 	}
 	return r.describe(req, namespaceID, blockDeviceClaimID, schema.GroupKind{}, restMapping)
 }
+func (r *Reporter) describeCStorPoolCluster(req xfer.Request, namespaceID, cStorPoolClusterID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "cstorpoolclusters",
+		},
+	}
+	return r.describe(req, namespaceID, cStorPoolClusterID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeCStorPoolInstance(req xfer.Request, namespaceID, cStorPoolInstanceID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    OpenEBSGroupName,
+			Version:  OpenEBSVersion,
+			Resource: "cstorpoolinstances",
+		},
+	}
+	return r.describe(req, namespaceID, cStorPoolInstanceID, schema.GroupKind{}, restMapping)
+}
 
 // GetLogs is the control to get the logs for a kubernetes pod
 func (r *Reporter) describe(req xfer.Request, namespaceID, resourceID string, groupKind schema.GroupKind, restMapping apimeta.RESTMapping) xfer.Response {
@@ -303,6 +324,10 @@ func (r *Reporter) Describe() func(xfer.Request) xfer.Response {
 			f = r.CaptureBlockDevice(r.describeBlockDevice)
 		case "<block_device_claim>":
 			f = r.CaptureBlockDeviceClaim(r.describeBlockDeviceClaim)
+		case "<cstor_pool_cluster>":
+			f = r.CaptureCStorPoolCluster(r.describeCStorPoolCluster)
+		case "<cstor_pool_instance>":
+			f = r.CaptureCStorPoolInstance(r.describeCStorPoolInstance)
 		default:
 			return xfer.ResponseErrorf("Node not found: %s", req.NodeID)
 		}
@@ -718,6 +743,50 @@ func (r *Reporter) CaptureBlockDeviceClaim(f func(xfer.Request, string, string) 
 			return xfer.ResponseErrorf("Block Device Claim  not found: %s", uid)
 		}
 		return f(req, blockDeviceClaim.Namespace(), blockDeviceClaim.Name())
+	}
+}
+
+// CaptureCStorPoolCluster will return name and namespace of cstor pool cluster
+func (r *Reporter) CaptureCStorPoolCluster(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseCStorPoolClusterNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find cStorPoolCluster by UID
+		var cStorPoolCluster CStorPoolCluster
+		r.client.WalkCStorPoolClusters(func(c CStorPoolCluster) error {
+			if c.UID() == uid {
+				cStorPoolCluster = c
+			}
+			return nil
+		})
+		if cStorPoolCluster == nil {
+			return xfer.ResponseErrorf("CStor Pool Cluster not found: %s", uid)
+		}
+		return f(req, cStorPoolCluster.Namespace(), cStorPoolCluster.Name())
+	}
+}
+
+// CaptureCStorPoolInstance will return the name and namespace of new test cstor pool
+func (r *Reporter) CaptureCStorPoolInstance(f func(xfer.Request, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseCStorPoolInstanceNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find cStorPoolInstance by UID
+		var cStorPoolInstance CStorPoolInstance
+		r.client.WalkCStorPoolInstances(func(c CStorPoolInstance) error {
+			if c.UID() == uid {
+				cStorPoolInstance = c
+			}
+			return nil
+		})
+		if cStorPoolInstance == nil {
+			return xfer.ResponseErrorf("CStor Pool Cluster not found: %s", uid)
+		}
+		return f(req, cStorPoolInstance.Namespace(), cStorPoolInstance.Name())
 	}
 }
 

@@ -44,4 +44,6 @@ var (
 	SelectBlockDevice           = TopologySelector(report.BlockDevice)
 	SelectStoragePoolClaim      = TopologySelector(report.StoragePoolClaim)
 	SelectBlockDeviceClaim      = TopologySelector(report.BlockDeviceClaim)
+	SelectCStorPoolCluster      = TopologySelector(report.CStorPoolCluster)
+	SelectCStorPoolInstance     = TopologySelector(report.CStorPoolInstance)
 )
