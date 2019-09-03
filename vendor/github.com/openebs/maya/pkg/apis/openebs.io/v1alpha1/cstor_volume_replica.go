@@ -52,6 +52,8 @@ type CStorVolumeReplica struct {
 type CStorVolumeReplicaSpec struct {
 	TargetIP string `json:"targetIP"`
 	Capacity string `json:"capacity"`
+	// ZvolWorkers represents number of threads that executes client IOs
+	ZvolWorkers string `json:"zvolWorkers"`
 }
 
 // CStorVolumeReplicaPhase is to hold result of action.
@@ -62,22 +64,41 @@ const (
 	// CVRStatusEmpty ensures the create operation is to be done, if import fails.
 	CVRStatusEmpty CStorVolumeReplicaPhase = ""
 	// CVRStatusOnline ensures the resource is available.
-	CVRStatusOnline CStorVolumeReplicaPhase = "Online"
+	CVRStatusOnline CStorVolumeReplicaPhase = "Healthy"
 	// CVRStatusOffline ensures the resource is not available.
 	CVRStatusOffline CStorVolumeReplicaPhase = "Offline"
+	// CVRStatusDegraded means that the rebuilding has not yet started.
+	CVRStatusDegraded CStorVolumeReplicaPhase = "Degraded"
+	// CVRStatusRebuilding means that the volume is in re-building phase.
+	CVRStatusRebuilding CStorVolumeReplicaPhase = "Rebuilding"
+	// CVRStatusRebuilding means that the volume status could not be found.
+	CVRStatusError CStorVolumeReplicaPhase = "Error"
 	// CVRStatusDeletionFailed ensures the resource deletion has failed.
 	CVRStatusDeletionFailed CStorVolumeReplicaPhase = "DeletionFailed"
 	// CVRStatusInvalid ensures invalid resource.
 	CVRStatusInvalid CStorVolumeReplicaPhase = "Invalid"
 	// CVRStatusErrorDuplicate ensures error due to duplicate resource.
-	CVRStatusErrorDuplicate CStorVolumeReplicaPhase = "ErrorDuplicate"
-	// CVRStatusPending ensures pending task of cvr resource.
-	CVRStatusPending CStorVolumeReplicaPhase = "Pending"
+	CVRStatusErrorDuplicate CStorVolumeReplicaPhase = "Invalid"
+	// CVRStatusInit ensures Init task of cvr resource.
+	CVRStatusInit CStorVolumeReplicaPhase = "Init"
+	// CVRStatusRecreate ensures recreation task of cvr resource.
+	CVRStatusRecreate CStorVolumeReplicaPhase = "Recreate"
 )
 
 // CStorVolumeReplicaStatus is for handling status of cvr.
 type CStorVolumeReplicaStatus struct {
-	Phase CStorVolumeReplicaPhase `json:"phase"`
+	Phase    CStorVolumeReplicaPhase `json:"phase"`
+	Capacity CStorVolumeCapacityAttr `json:"capacity"`
+	// LastTransitionTime refers to the time when the phase changes
+	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty"`
+	LastUpdateTime     metav1.Time `json:"lastUpdateTime,omitempty"`
+	Message            string      `json:"message,omitempty"`
+}
+
+// CStorVolumeCapacityAttr is for storing the volume capacity.
+type CStorVolumeCapacityAttr struct {
+	TotalAllocated string `json:"totalAllocated"`
+	Used           string `json:"used"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

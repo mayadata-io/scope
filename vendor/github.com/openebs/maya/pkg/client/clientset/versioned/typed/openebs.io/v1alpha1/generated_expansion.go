@@ -26,6 +26,10 @@ type CASTemplateExpansion interface{}
 
 type CStorPoolExpansion interface{}
 
+type CStorPoolClusterExpansion interface{}
+
+type CStorPoolInstanceExpansion interface{}
+
 type CStorVolumeExpansion interface{}
 
 type CStorVolumeReplicaExpansion interface{}

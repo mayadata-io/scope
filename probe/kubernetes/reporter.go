@@ -72,6 +72,10 @@ const (
 	BlockDeviceName              = report.KubernetesBlockDeviceName
 	BlockDeviceClaimName         = report.KubernetesBlockDeviceClaimName
 	CASType                      = report.KubernetesCASType
+	TotalSize                    = report.KubernetesTotalSize
+	FreeSize                     = report.KubernetesFreeSize
+	UsedSize                     = report.KubernetesUsedSize
+	CStorPoolInstanceUID         = report.KubernetesCStorPoolInstanceUID
 )
 
 var (
@@ -269,6 +273,22 @@ var (
 		BlockDeviceName: {ID: BlockDeviceName, Label: "Block device name", From: report.FromLatest, Priority: 2},
 		HostName:        {ID: HostName, Label: "Host", From: report.FromLatest, Priority: 3},
 		Status:          {ID: Status, Label: "Status", From: report.FromLatest, Priority: 4},
+	}
+
+	CStorPoolClusterMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
+		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
+		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
+		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+	}
+
+	CStorPoolInstanceMetadataTemplates = report.MetadataTemplates{
+		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
+		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
+		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
+		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -505,6 +525,14 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	cStorPoolClusterTopology, _, err := r.cStorPoolClusterTopology()
+	if err != nil {
+		return result, err
+	}
+	cStorPoolInstanceTopology, _, err := r.cStorPoolInstanceTopology()
+	if err != nil {
+		return result, err
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -525,6 +553,8 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.CStorPool = result.CStorPool.Merge(cStorPoolTopology)
 	result.BlockDevice = result.BlockDevice.Merge(blockDeviceTopology)
 	result.BlockDeviceClaim = result.BlockDeviceClaim.Merge(blockDeviceClaimTopology)
+	result.CStorPoolCluster = result.CStorPoolCluster.Merge(cStorPoolClusterTopology)
+	result.CStorPoolInstance = result.CStorPoolInstance.Merge(cStorPoolInstanceTopology)
 	return result, nil
 }
 
@@ -811,6 +841,34 @@ func (r *Reporter) blockDeviceClaimTopology() (report.Topology, []BlockDeviceCla
 		return nil
 	})
 	return result, blockDeviceClaims, err
+}
+
+func (r *Reporter) cStorPoolClusterTopology() (report.Topology, []CStorPoolCluster, error) {
+	cStorPoolCluster := []CStorPoolCluster{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorPoolClusterMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkCStorPoolClusters(func(p CStorPoolCluster) error {
+		result.AddNode(p.GetNode(r.probeID))
+		cStorPoolCluster = append(cStorPoolCluster, p)
+		return nil
+	})
+	return result, cStorPoolCluster, err
+}
+
+func (r *Reporter) cStorPoolInstanceTopology() (report.Topology, []CStorPoolInstance, error) {
+	cStorPoolInstance := []CStorPoolInstance{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CStorPoolInstanceMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkCStorPoolInstances(func(p CStorPoolInstance) error {
+		result.AddNode(p.GetNode(r.probeID))
+		cStorPoolInstance = append(cStorPoolInstance, p)
+		return nil
+	})
+	return result, cStorPoolInstance, err
 }
 
 type labelledChild interface {
