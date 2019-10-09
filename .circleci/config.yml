@@ -8,11 +8,7 @@ defaults: &defaults
 client-defaults: &client-defaults
   working_directory: /home/weave/scope
   docker:
-<<<<<<< HEAD
     - image: weaveworks/scope-ui-build:master-d1bb0217
-=======
-    - image: weaveworks/scope-ui-build:master-fda40b83
->>>>>>> 2702e1d41... Update with latest changes
 
 workflows:
   version: 2
@@ -107,6 +103,7 @@ jobs:
           cp -r client/* /home/weave/
           cp client/.babelrc /home/weave
           cp client/.eslintrc /home/weave/
+          cp client/.stylelintrc /home/weave/
           rm -rf /home/weave/node_modules
           cd /home/weave; yarn install
           cd /home/weave; yarn run lint

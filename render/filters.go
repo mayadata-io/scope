@@ -169,7 +169,7 @@ func IsCStorCustomResource(node report.Node) bool {
 	}
 
 	if node.Topology == report.Pod {
-		_, ok := node.Latest.Lookup(kubernetes.VolumeClaim)
+		_, ok := node.Latest.Lookup(report.KubernetesVolumeClaim)
 		if ok {
 			return true
 		}
