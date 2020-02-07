@@ -197,7 +197,7 @@ class App extends React.Component {
     const {
       isTableViewMode, isGraphViewMode, isResourceViewMode, showingDetails,
       showingHelp, showingNetworkSelector, showingTroubleshootingMenu,
-      timeTravelTransitioning, timeTravelSupported, contrastMode,
+      timeTravelTransitioning, timeTravelSupported, contrastMode, zenMode
     } = this.props;
 
     const className = classNames('scope-app', {
@@ -209,7 +209,7 @@ class App extends React.Component {
       <ThemeProvider theme={{...commonTheme, scope: contrastMode ? contrastTheme : defaultTheme }}>
         <>
           <GlobalStyle />
-
+.0
           <div className={className} ref={this.saveAppRef}>
             {showingDebugToolbar() && <DebugToolbar />}
 
@@ -222,27 +222,30 @@ class App extends React.Component {
               renderNodeDetailsExtras={this.props.renderNodeDetailsExtras}
             />
             )}
+            {!zenMode && (
+              <div className="header">
+                {timeTravelSupported && this.props.renderTimeTravel()}
 
-            <div className="header">
-              {timeTravelSupported && this.props.renderTimeTravel()}
-
-              <div className="selectors">
-                <Search />
-                <Topologies />
-                <ViewModeSelector />
-                <TimeControl />
+                <div className="selectors">
+                  <Search />
+                  <Topologies />
+                  <ViewModeSelector />
+                  <TimeControl />
+                </div>
               </div>
-            </div>
+            )}
 
             <Nodes />
 
+            {!zenMode && (
             <Sidebar classNames={isTableViewMode ? 'sidebar-gridmode' : ''}>
               {showingNetworkSelector && isGraphViewMode && <NetworkSelector />}
               {!isResourceViewMode && <Status />}
               {!isResourceViewMode && <TopologyOptions />}
             </Sidebar>
+            )}
 
-            <Footer />
+            {!zenMode && <Footer />}
 
             <Overlay faded={timeTravelTransitioning} />
           </div>
@@ -271,7 +274,8 @@ function mapStateToProps(state) {
     timeTravelSupported: timeTravelSupportedSelector(state),
     timeTravelTransitioning: state.get('timeTravelTransitioning'),
     topologyViewMode: state.get('topologyViewMode'),
-    urlState: getUrlState(state)
+    urlState: getUrlState(state),
+    zenMode: state.get('zenMode'),
   };
 }
 
