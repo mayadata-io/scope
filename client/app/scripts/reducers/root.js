@@ -698,6 +698,11 @@ export function rootReducer(state = initialState, action) {
       if (action.state.contrastMode !== undefined) {
         state = state.set('contrastMode', action.state.contrastMode);
       }
+      // zenMode is if the value of this flag is true, scope will render only the topology
+      // in the canvas. Header, footer, and sider will be disabled.
+      // default: false
+      // @example: 
+      //    http://<ip>:<port>/#!/state/{"topologyId":"pods","topologyOptions":{"hosts":{"snapshot":["show"]}},"zenMode":true} 
       if (action.state.zenMode !== undefined) {
         state = state.set('zenMode', action.state.zenMode);
       }
