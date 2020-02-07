@@ -93,6 +93,7 @@ export const initialState = makeMap({
   // Set some initial numerical values to prevent NaN in case of edgy race conditions.
   viewport: makeMap({ height: 0, width: 0 }),
   websocketClosed: false,
+  zenMode: false,
   zoomCache: makeMap(),
 });
 
@@ -696,6 +697,9 @@ export function rootReducer(state = initialState, action) {
       }
       if (action.state.contrastMode !== undefined) {
         state = state.set('contrastMode', action.state.contrastMode);
+      }
+      if (action.state.zenMode !== undefined) {
+        state = state.set('zenMode', action.state.zenMode);
       }
       if (action.state.showingNetworks) {
         state = state.set('showingNetworks', action.state.showingNetworks);
