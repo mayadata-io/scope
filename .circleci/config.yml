@@ -191,8 +191,8 @@ jobs:
           test -z "${DOCKER_USER}" && exit 0
           docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
-              docker tag weaveworks/scope:latest openebs/scope:staging.$CIRCLE_BUILD_NUM
-              docker push openebs/scope:staging.$CIRCLE_BUILD_NUM
+              docker tag weaveworks/scope:latest mayadataio/scope:staging.$CIRCLE_BUILD_NUM
+              docker push mayadataio/scope:staging.$CIRCLE_BUILD_NUM
           done
 
   deploy-prod:
@@ -212,8 +212,8 @@ jobs:
           test -z "${DOCKER_USER}" && exit 0
           docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
-              docker tag weaveworks/scope:latest openebs/scope:v1.11.$CIRCLE_BUILD_NUM
-              docker push openebs/scope:v1.11.$CIRCLE_BUILD_NUM
+              docker tag weaveworks/scope:latest mayadataio/scope:v1.11.$CIRCLE_BUILD_NUM
+              docker push mayadataio/scope:v1.11.$CIRCLE_BUILD_NUM
           done
   deploy-mdap:
     <<: *defaults
@@ -232,6 +232,6 @@ jobs:
           test -z "${DOCKER_USER}" && exit 0
           docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
-              docker tag weaveworks/scope:latest openebs/scope:mdap-rc1
-              docker push openebs/scope:mdap-rc1
+              docker tag weaveworks/scope:latest mayadataio/scope:mdap-rc1
+              docker push mayadataio/scope:mdap-rc1
           done
