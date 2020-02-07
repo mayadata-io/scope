@@ -209,7 +209,6 @@ class App extends React.Component {
       <ThemeProvider theme={{...commonTheme, scope: contrastMode ? contrastTheme : defaultTheme }}>
         <>
           <GlobalStyle />
-.0
           <div className={className} ref={this.saveAppRef}>
             {showingDebugToolbar() && <DebugToolbar />}
 
