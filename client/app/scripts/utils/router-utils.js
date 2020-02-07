@@ -99,6 +99,7 @@ export function getUrlState(state) {
     topologyId: state.get('currentTopologyId'),
     topologyOptions: topologyOptionsDiff,
     topologyViewMode: state.get('topologyViewMode'),
+    zenMode: state.get('zenMode'),
   };
 
   if (state.get('showingNetworks')) {
