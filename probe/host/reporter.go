@@ -2,6 +2,7 @@ package host
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"strconv"
 	"sync"
@@ -24,6 +25,7 @@ const (
 	CPUUsage      = report.HostCPUUsage
 	MemoryUsage   = report.HostMemoryUsage
 	ScopeVersion  = report.ScopeVersion
+	NodeName      = report.KubernetesNodeName
 )
 
 // Exposed for testing.
@@ -43,6 +45,7 @@ var (
 		OS:            {ID: OS, Label: "OS", From: report.FromLatest, Priority: 12},
 		LocalNetworks: {ID: LocalNetworks, Label: "Local networks", From: report.FromSets, Priority: 13},
 		ScopeVersion:  {ID: ScopeVersion, Label: "Scope version", From: report.FromLatest, Priority: 14},
+		NodeName:      {ID: NodeName, Label: "Nodename", From: report.FromLatest, Priority: 15},
 	}
 
 	MetricTemplates = report.MetricTemplates{
@@ -124,11 +127,18 @@ func (r *Reporter) Report() (report.Report, error) {
 	memoryUsage, max := GetMemoryUsageBytes()
 	metrics[MemoryUsage] = report.MakeSingletonMetric(now, memoryUsage).WithMax(max)
 
+	// get k8s node name from the environment variable, if it is not present then set it to hostname
+	kubernetesNodeName, ok := os.LookupEnv("KUBERNETES_NODE_NAME")
+	if !ok {
+		kubernetesNodeName = r.hostName
+	}
+
 	rep.Host.AddNode(
 		report.MakeNodeWith(report.MakeHostNodeID(r.hostID), map[string]string{
 			report.ControlProbeID: r.probeID,
 			Timestamp:             mtime.Now().UTC().Format(time.RFC3339Nano),
 			HostName:              r.hostName,
+			NodeName:              kubernetesNodeName,
 			OS:                    runtime.GOOS,
 			KernelVersion:         kernel,
 			Uptime:                strconv.Itoa(int(uptime / time.Second)), // uptime in seconds

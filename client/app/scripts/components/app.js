@@ -221,18 +221,16 @@ class App extends React.Component {
               renderNodeDetailsExtras={this.props.renderNodeDetailsExtras}
             />
             )}
-            {!zenMode && (
-              <div className="header">
-                {timeTravelSupported && this.props.renderTimeTravel()}
+            <div className="header">
+              {timeTravelSupported && this.props.renderTimeTravel()}
 
-                <div className="selectors">
-                  <Search />
-                  <Topologies />
-                  <ViewModeSelector />
-                  <TimeControl />
-                </div>
+              <div className="selectors">
+                {!zenMode && <Search />}
+                {!zenMode && <Topologies />}
+                <ViewModeSelector />
+                {!zenMode && <TimeControl />}
               </div>
-            )}
+            </div>
 
             <Nodes />
 
