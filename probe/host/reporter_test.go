@@ -74,6 +74,7 @@ func TestReporter(t *testing.T) {
 	}{
 		{host.Timestamp, timestamp.UTC().Format(time.RFC3339Nano)},
 		{host.HostName, hostname},
+		{host.NodeName, hostname},
 		{host.OS, runtime.GOOS},
 		{host.Uptime, uptime},
 		{host.KernelVersion, kernel},
