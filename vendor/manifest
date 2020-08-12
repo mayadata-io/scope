@@ -1246,6 +1246,1788 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/pkg",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "/pkg",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/apis/volumesnapshot/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/clientset/versioned",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/client/clientset/versioned",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/informers/externalversions/internalinterfaces",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/client/informers/externalversions/internalinterfaces",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/informers/externalversions/volumesnapshot",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/client/informers/externalversions/volumesnapshot",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/listers/volumesnapshot/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/client/listers/volumesnapshot/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/snapshotter",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/snapshotter",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/v2/pkg/utils",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "v2/pkg/utils",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/beorn7/perks/quantile",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/beorn7/perks/quantile",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/blang/semver",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/blang/semver",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/cespare/xxhash/v2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/cespare/xxhash/v2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/container-storage-interface/spec/lib/go/csi",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/container-storage-interface/spec/lib/go/csi",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/davecgh/go-spew/spew",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/evanphx/json-patch",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/evanphx/json-patch",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/go-logr/logr",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/go-logr/logr",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/gogo/protobuf/proto",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/gogo/protobuf/proto",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/gogo/protobuf/sortkeys",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/gogo/protobuf/sortkeys",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/golang/groupcache/lru",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/golang/groupcache/lru",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/golang/protobuf/proto",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/golang/protobuf/proto",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/golang/protobuf/ptypes",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/golang/protobuf/ptypes",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/google/go-cmp/cmp",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/google/go-cmp/cmp",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/google/gofuzz",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/google/gofuzz",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/googleapis/gnostic/compiler",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/googleapis/gnostic/compiler",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/googleapis/gnostic/extensions",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/googleapis/gnostic/extensions",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/googleapis/gnostic/openapiv2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/googleapis/gnostic/openapiv2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/hashicorp/golang-lru",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/hashicorp/golang-lru",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/json-iterator/go",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/json-iterator/go",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/kubernetes-csi/csi-lib-utils/rpc",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/kubernetes-csi/csi-lib-utils/rpc",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/matttproud/golang_protobuf_extensions/pbutil",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/matttproud/golang_protobuf_extensions/pbutil",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/modern-go/concurrent",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/modern-go/concurrent",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/modern-go/reflect2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/modern-go/reflect2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/pkg/errors",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/pkg/errors",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/prometheus/client_golang/prometheus",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/prometheus/client_golang/prometheus",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/prometheus/client_model/go",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/prometheus/client_model/go",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/prometheus/common/expfmt",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/prometheus/common/expfmt",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/prometheus/common/model",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/prometheus/common/model",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/prometheus/procfs",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/prometheus/procfs",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/github.com/spf13/pflag",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/github.com/spf13/pflag",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/crypto/ssh/terminal",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/crypto/ssh/terminal",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/net/context",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/net/context",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/net/http/httpguts",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/net/http/httpguts",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/net/http2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/net/http2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/net/idna",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/net/idna",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/net/internal/timeseries",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/net/internal/timeseries",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/net/trace",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/net/trace",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/oauth2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/oauth2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/sys/internal/unsafeheader",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/sys/internal/unsafeheader",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/sys/unix",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/sys/unix",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/sys/windows",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/sys/windows",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/text/secure/bidirule",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/text/secure/bidirule",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/text/transform",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/text/transform",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/text/unicode/bidi",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/text/unicode/bidi",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/text/unicode/norm",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/text/unicode/norm",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/golang.org/x/time/rate",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/golang.org/x/time/rate",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/appengine/internal",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/appengine/internal",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/appengine/urlfetch",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/appengine/urlfetch",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/genproto/googleapis/rpc/status",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/genproto/googleapis/rpc/status",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/grpc",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/grpc",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/encoding/prototext",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/encoding/prototext",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/encoding/protowire",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/encoding/protowire",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/descfmt",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/descfmt",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/descopts",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/descopts",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/detrand",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/detrand",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/encoding/defval",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/encoding/defval",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/encoding/messageset",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/encoding/messageset",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/encoding/tag",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/encoding/tag",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/encoding/text",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/encoding/text",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/errors",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/errors",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/fieldnum",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/fieldnum",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/fieldsort",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/fieldsort",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/filedesc",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/filedesc",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/filetype",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/filetype",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/flags",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/flags",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/genname",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/genname",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/impl",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/impl",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/mapsort",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/mapsort",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/pragma",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/pragma",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/set",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/set",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/strs",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/strs",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/internal/version",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/internal/version",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/proto",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/proto",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/reflect/protoreflect",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/reflect/protoreflect",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/reflect/protoregistry",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/reflect/protoregistry",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/runtime/protoiface",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/runtime/protoiface",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/runtime/protoimpl",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/runtime/protoimpl",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/types/descriptorpb",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/types/descriptorpb",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/types/known/anypb",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/types/known/anypb",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/types/known/durationpb",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/types/known/durationpb",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/types/known/timestamppb",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/types/known/timestamppb",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/google.golang.org/protobuf/types/known/wrapperspb",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/google.golang.org/protobuf/types/known/wrapperspb",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/gopkg.in/inf.v0",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/gopkg.in/inf.v0",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/gopkg.in/yaml.v2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/gopkg.in/yaml.v2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/admissionregistration/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/admissionregistration/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/admissionregistration/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/admissionregistration/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/apps/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/apps/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/apps/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/apps/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/apps/v1beta2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/apps/v1beta2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/authentication/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/authentication/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/authentication/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/authentication/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/authorization/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/authorization/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/authorization/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/authorization/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/autoscaling/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/autoscaling/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/autoscaling/v2beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/autoscaling/v2beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/autoscaling/v2beta2",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/autoscaling/v2beta2",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/batch/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/batch/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/batch/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/batch/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/batch/v2alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/batch/v2alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/certificates/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/certificates/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/certificates/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/certificates/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/coordination/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/coordination/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/coordination/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/coordination/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/core/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/core/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/discovery/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/discovery/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/discovery/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/discovery/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/events/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/events/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/events/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/events/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/extensions/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/extensions/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/flowcontrol/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/flowcontrol/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/networking/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/networking/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/networking/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/networking/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/node/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/node/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/node/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/node/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/policy/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/policy/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/rbac/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/rbac/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/rbac/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/rbac/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/rbac/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/rbac/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/scheduling/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/scheduling/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/scheduling/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/scheduling/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/scheduling/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/scheduling/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/settings/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/settings/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/storage/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/storage/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/storage/v1alpha1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/storage/v1alpha1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/api/storage/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/api/storage/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/api/errors",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/api/errors",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/api/meta",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/api/meta",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/api/resource",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/api/resource",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/apis/meta/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/apis/meta/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/apis/meta/v1beta1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/apis/meta/v1beta1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/conversion",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/conversion",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/fields",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/fields",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/labels",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/labels",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/runtime",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/runtime",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/selection",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/selection",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/types",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/types",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/cache",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/cache",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/clock",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/clock",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/diff",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/diff",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/errors",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/errors",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/framer",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/framer",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/intstr",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/intstr",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/json",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/json",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/mergepatch",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/mergepatch",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/naming",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/naming",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/net",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/net",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/runtime",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/runtime",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/sets",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/sets",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/strategicpatch",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/strategicpatch",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/validation",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/validation",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/wait",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/wait",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/util/yaml",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/util/yaml",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/version",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/version",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/pkg/watch",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/pkg/watch",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/third_party/forked/golang/json",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/third_party/forked/golang/json",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/apimachinery/third_party/forked/golang/reflect",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/apimachinery/third_party/forked/golang/reflect",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/discovery",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/discovery",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/informers/core/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/informers/core/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/informers/internalinterfaces",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/informers/internalinterfaces",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/kubernetes",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/kubernetes",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/listers/core/v1",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/listers/core/v1",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/pkg/apis/clientauthentication",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/pkg/apis/clientauthentication",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/pkg/version",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/pkg/version",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/plugin/pkg/client/auth/exec",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/plugin/pkg/client/auth/exec",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/rest",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/rest",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/testing",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/testing",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/tools/cache",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/tools/cache",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/tools/clientcmd/api",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/tools/clientcmd/api",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/tools/metrics",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/tools/metrics",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/tools/pager",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/tools/pager",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/tools/record",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/tools/record",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/tools/reference",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/tools/reference",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/transport",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/transport",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/util/cert",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/util/cert",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/util/connrotation",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/util/connrotation",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/util/flowcontrol",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/util/flowcontrol",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/util/keyutil",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/util/keyutil",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/client-go/util/workqueue",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/client-go/util/workqueue",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/component-base/metrics",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/component-base/metrics",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/component-base/version",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/component-base/version",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/klog",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/klog",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/kube-openapi/pkg/util/proto",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/kube-openapi/pkg/util/proto",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/utils/buffer",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/utils/buffer",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/utils/integer",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/utils/integer",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/k8s.io/utils/trace",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/k8s.io/utils/trace",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/sigs.k8s.io/structured-merge-diff/v3/value",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/sigs.k8s.io/structured-merge-diff/v3/value",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kubernetes-csi/external-snapshotter/vendor/sigs.k8s.io/yaml",
+			"repository": "https://github.com/kubernetes-csi/external-snapshotter",
+			"vcs": "git",
+			"revision": "4e0d027241c05eba95e6c9b6f2bb3fa66b8cee76",
+			"branch": "master",
+			"path": "vendor/sigs.k8s.io/yaml",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/lsegal/gucumber",
 			"repository": "https://github.com/lsegal/gucumber",
 			"vcs": "",
