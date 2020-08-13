@@ -9,6 +9,7 @@ import (
 type StorageClass interface {
 	Meta
 	GetNode(probeID string) report.Node
+	GetProvisioner() string
 }
 
 // storageClass represents kubernetes storage classes
@@ -22,12 +23,17 @@ func NewStorageClass(p *storagev1.StorageClass) StorageClass {
 	return &storageClass{StorageClass: p, Meta: meta{p.ObjectMeta}}
 }
 
+// GetProvisioner returns the provisioner name
+func (p *storageClass) GetProvisioner() string {
+	return p.Provisioner
+}
+
 // GetNode returns StorageClass as Node
 func (p *storageClass) GetNode(probeID string) report.Node {
 	return p.MetaNode(report.MakeStorageClassNodeID(p.UID())).WithLatests(map[string]string{
 		NodeType:              "Storage Class",
 		Name:                  p.GetName(),
-		Provisioner:           p.Provisioner,
+		Provisioner:           p.GetProvisioner(),
 		report.ControlProbeID: probeID,
 	}).WithLatestActiveControls(Describe)
 }

@@ -75,11 +75,13 @@ type Client interface {
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error
-	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string, ctx context.Context) error
+	CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error
+	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error
 	GetLogs(namespaceID, podID string, containerNames []string, ctx context.Context) (io.ReadCloser, error)
 	Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping apimeta.RESTMapping) (io.ReadCloser, error)
 	DeletePod(namespaceID, podID string, ctx context.Context) error
 	DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error
+	DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error
 	ScaleUp(namespaceID, id string, ctx context.Context) error
 	ScaleDown(namespaceID, id string, ctx context.Context) error
 }
@@ -97,6 +99,102 @@ var ResourceMap = map[string]schema.GroupKind{
 	"PersistentVolume":      {Group: apiv1.GroupName, Kind: "PersistentVolume"},
 	"PersistentVolumeClaim": {Group: apiv1.GroupName, Kind: "PersistentVolumeClaim"},
 	"StorageClass":          {Group: storagev1.GroupName, Kind: "StorageClass"},
+}
+
+var csiDriverMap = map[string]bool{
+	"diskplugin.csi.alibabacloud.com":          true,
+	"nasplugin.csi.alibabacloud.com":           true,
+	"ossplugin.csi.alibabacloud.com":           true,
+	"arstor.csi.huayun.io":                     true,
+	"ebs.csi.aws.com":                          true,
+	"efs.csi.aws.com":                          true,
+	"fsx.csi.aws.com":                          true,
+	"disk.csi.azure.com":                       true,
+	"file.csi.azure.com":                       true,
+	"csi.block.bigtera.com":                    true,
+	"csi.fs.bigtera.com":                       true,
+	"cephfs.csi.ceph.com":                      true,
+	"rbd.csi.ceph.com":                         true,
+	"csi.chubaofs.com":                         true,
+	"cinder.csi.openstack.org":                 true,
+	"csi.cloudscale.ch":                        true,
+	"csi-infiblock-plugin":                     true,
+	"csi-infifs-plugin":                        true,
+	"dsp.csi.daterainc.io":                     true,
+	"csi-isilon.dellemc.com":                   true,
+	"csi-powermax.dellemc.com":                 true,
+	"csi-powerstore.dellemc.com":               true,
+	"csi-unity.dellemc.com":                    true,
+	"csi-vxflexos.dellemc.com":                 true,
+	"csi-xtremio.dellemc.com":                  true,
+	"org.democratic-csi.v1.0":                  true,
+	"org.democratic-csi.v1.1":                  true,
+	"org.democratic-csi.v1.2":                  true,
+	"dcx.csi.diamanti.com":                     true,
+	"dobs.csi.digitalocean.com":                true,
+	"csi.drivescale.com":                       true,
+	"v0.2.ember-csi.io":                        true,
+	"v0.3.ember-csi.io":                        true,
+	"v1.0.ember-csi.io":                        true,
+	"pd.csi.storage.gke.io":                    true,
+	"com.google.csi.filestore":                 true,
+	"gcs.csi.ofek.dev":                         true,
+	"org.gluster.glusterfs":                    true,
+	"org.gluster.glustervirtblock":             true,
+	"com.hammerspace.csi":                      true,
+	"io.hedvig.csi":                            true,
+	"csi.hetzner.cloud":                        true,
+	"com.hitachi.hspc.csi":                     true,
+	"csi.hpe.com":                              true,
+	"csi.huawei.com":                           true,
+	"eu.zetanova.csi.hyperv":                   true,
+	"block.csi.ibm.com":                        true,
+	"spectrumscale.csi.ibm.com":                true,
+	"vpc.block.csi.ibm.io":                     true,
+	"infinibox-csi-driver":                     true,
+	"csi-instorage":                            true,
+	"pmem-csi.intel.com":                       true,
+	"csi.juicefs.com":                          true,
+	"org.kadalu.gluster":                       true,
+	"linodebs.csi.linode.com":                  true,
+	"io.drbd.linstor-csi":                      true,
+	"driver.longhorn.io":                       true,
+	"csi-macrosan":                             true,
+	"manila.csi.openstack.org":                 true,
+	"com.mapr.csi-kdf":                         true,
+	"com.tuxera.csi.moosefs":                   true,
+	"csi.trident.netapp.io":                    true,
+	"nexentastor-csi-driver.nexenta.com":       true,
+	"nexentastor-block-csi-driver.nexenta.com": true,
+	"com.nutanix.csi":                          true,
+	"cstor.csi.openebs.io":                     true,
+	"csi-opensdsplugin":                        true,
+	"com.open-e.joviandss.csi":                 true,
+	"pxd.openstorage.org":                      true,
+	"pure-csi":                                 true,
+	"disk.csi.qingcloud.com":                   true,
+	"csi-neonsan":                              true,
+	"quobyte-csi":                              true,
+	"robin":                                    true,
+	"csi-sandstone-plugin":                     true,
+	"eds.csi.sangfor.com":                      true,
+	"seaweedfs-csi-driver":                     true,
+	"secrets-store.csi.k8s.io":                 true,
+	"csi-smtx-plugin":                          true,
+	"csi.spdk.io":                              true,
+	"storageos":                                true,
+	"com.tencent.cloud.csi.cbs":                true,
+	"com.tencent.cloud.csi.cfs":                true,
+	"com.tencent.cloud.csi.cosfs":              true,
+	"topolvm.cybozu.com":                       true,
+	"csi.vastdata.com":                         true,
+	"csi.block.xsky.com":                       true,
+	"csi.fs.xsky.com":                          true,
+	"secrets.csi.kubevault.com":                true,
+	"csi.vsphere.vmware.com":                   true,
+	"csi.weka.io":                              true,
+	"yandex.csi.flant.com":                     true,
+	"csi.zadara.com":                           true,
 }
 
 type client struct {
@@ -723,25 +821,16 @@ func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVo
 	return nil
 }
 
-func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
+func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
 	UID := strings.Split(uuid.New(), "-")
-	volumeSnapshot := &snapshotv1.VolumeSnapshot{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1],
-			Namespace: namespaceID,
-			Annotations: map[string]string{
-				"capacity": capacity,
-			},
-		},
-		Spec: snapshotv1.VolumeSnapshotSpec{
-			PersistentVolumeClaimName: persistentVolumeClaimID,
-		},
+	snapshotName := "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1]
+	var err error
+	if _, ok := csiDriverMap[driver]; ok {
+		err = c.createCsiVolumeSnapshot(ctx, snapshotName, namespaceID, persistentVolumeClaimID, capacity, driver)
+	} else {
+		err = c.createVolumeSnapshot(ctx, snapshotName, namespaceID, persistentVolumeClaimID, capacity)
 	}
-	_, err := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Create(ctx, volumeSnapshot, metav1.CreateOptions{})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (c *client) GetLogs(namespaceID, podID string, containerNames []string, ctx context.Context) (io.ReadCloser, error) {
@@ -802,6 +891,10 @@ func (c *client) DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx 
 	return c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Delete(ctx, volumeSnapshotID, metav1.DeleteOptions{})
 }
 
+func (c *client) DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error {
+	return c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshots(namespaceID).Delete(ctx, volumeSnapshotID, metav1.DeleteOptions{})
+}
+
 func (c *client) ScaleUp(namespaceID, id string, ctx context.Context) error {
 	return c.modifyScale(namespaceID, id, ctx, func(scale *autoscalingv1.Scale) {
 		scale.Spec.Replicas++
@@ -827,4 +920,138 @@ func (c *client) modifyScale(namespaceID, id string, ctx context.Context, f func
 
 func (c *client) Stop() {
 	close(c.quit)
+}
+
+func (c *client) createVolumeSnapshot(ctx context.Context, name, namespaceID, persistentVolumeClaimID, capacity string) error {
+	volumeSnapshot := &snapshotv1.VolumeSnapshot{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespaceID,
+			Annotations: map[string]string{
+				"capacity": capacity,
+			},
+		},
+		Spec: snapshotv1.VolumeSnapshotSpec{
+			PersistentVolumeClaimName: persistentVolumeClaimID,
+		},
+	}
+	_, err := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Create(ctx, volumeSnapshot, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) createCsiVolumeSnapshot(ctx context.Context, name, namespaceID, persistentVolumeClaimID, capacity, driver string) error {
+	volumeSnapshotClassName := strings.ReplaceAll(driver, ".", "-")
+	_, err := c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshotClasses().Get(ctx, volumeSnapshotClassName, metav1.GetOptions{})
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			err = c.createVolumeSnapshotClass(ctx, volumeSnapshotClassName, driver)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+
+	volumeSnapshot := &csisnapshotv1beta1.VolumeSnapshot{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespaceID,
+			Annotations: map[string]string{
+				Capacity:         capacity,
+				DriverAnnotation: driver,
+			},
+		},
+		Spec: csisnapshotv1beta1.VolumeSnapshotSpec{
+			VolumeSnapshotClassName: &volumeSnapshotClassName,
+			Source: csisnapshotv1beta1.VolumeSnapshotSource{
+				PersistentVolumeClaimName: &persistentVolumeClaimID,
+			},
+		},
+	}
+	_, err = c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshots(namespaceID).Create(ctx, volumeSnapshot, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) createVolumeSnapshotClass(ctx context.Context, name, driver string) error {
+	volumeSnapshotClass := &csisnapshotv1beta1.VolumeSnapshotClass{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+		Driver:         driver,
+		DeletionPolicy: csisnapshotv1beta1.VolumeSnapshotContentDelete,
+	}
+
+	_, err := c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshotClasses().Create(ctx, volumeSnapshotClass, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
+	var scName string
+	var claimSize string
+	UID := strings.Split(uuid.New(), "-")
+	scList, err := c.client.StorageV1().StorageClasses().List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	// Retrieve the first snapshot-promoter storage class
+	for _, sc := range scList.Items {
+		if sc.Provisioner == driver {
+			scName = sc.Name
+			break
+		}
+	}
+	if scName == "" {
+		return errors.New("csi driver " + driver + " related storage class is not present")
+	}
+	persistentVolumeClaim, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Get(ctx, persistentVolumeClaimID, metav1.GetOptions{})
+	if err == nil {
+		storage := persistentVolumeClaim.Spec.Resources.Requests[apiv1.ResourceStorage]
+		if storage.String() != "" {
+			claimSize = storage.String()
+		}
+	}
+	// Set default volume size to the one stored in volume snapshot annotation,
+	// if unable to get PVC size.
+	if claimSize == "" {
+		claimSize = capacity
+	}
+
+	csiAPIGroup := "snapshot.storage.k8s.io"
+	clonePVC := &apiv1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "clone-" + persistentVolumeClaimID + "-" + UID[1],
+			Namespace: namespaceID,
+		},
+		Spec: apiv1.PersistentVolumeClaimSpec{
+			StorageClassName: &scName,
+			AccessModes: []apiv1.PersistentVolumeAccessMode{
+				apiv1.ReadWriteOnce,
+			},
+			Resources: apiv1.ResourceRequirements{
+				Requests: apiv1.ResourceList{
+					apiv1.ResourceName(apiv1.ResourceStorage): resource.MustParse(claimSize),
+				},
+			},
+			DataSource: &apiv1.TypedLocalObjectReference{
+				APIGroup: &csiAPIGroup,
+				Name:     volumeSnapshotID,
+				Kind:     "VolumeSnapshot",
+			},
+		},
+	}
+	_, err = c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(ctx, clonePVC, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
 }

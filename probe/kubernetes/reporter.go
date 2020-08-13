@@ -765,6 +765,20 @@ func (r *Reporter) csiVolumeSnapshotTopology() (report.Topology, []CsiVolumeSnap
 	result := report.MakeTopology().
 		WithMetadataTemplates(CsiVolumeSnapshotMetadataTemplates).
 		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(report.Control{
+		ID:       CloneCsiVolumeSnapshot,
+		Human:    "Clone snapshot",
+		Category: report.AdminControl,
+		Icon:     "far fa-clone",
+		Rank:     0,
+	})
+	result.Controls.AddControl(report.Control{
+		ID:       DeleteCsiVolumeSnapshot,
+		Human:    "Delete",
+		Category: report.AdminControl,
+		Icon:     "far fa-trash-alt",
+		Rank:     3,
+	})
 	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkCsiVolumeSnapshots(func(p CsiVolumeSnapshot) error {
 		result.AddNode(p.GetNode(r.probeID))

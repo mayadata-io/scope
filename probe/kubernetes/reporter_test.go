@@ -232,7 +232,7 @@ func (c *mockClient) ScaleDown(namespaceID, id string, ctx context.Context) erro
 func (c *mockClient) CloneVolumeSnapshot(namespaceID, VolumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
 	return nil
 }
-func (c *mockClient) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
+func (c *mockClient) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
 	return nil
 }
 func (c *mockClient) DeleteVolumeSnapshot(namespaceID, VolumeSnapshotID string, ctx context.Context) error {
@@ -240,6 +240,21 @@ func (c *mockClient) DeleteVolumeSnapshot(namespaceID, VolumeSnapshotID string, 
 }
 func (c *mockClient) Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping k8smeta.RESTMapping) (io.ReadCloser, error) {
 	return nil, nil
+}
+func (c *mockClient) createVolumeSnapshot(ctx context.Context, name, namespaceID, persistentVolumeClaimID, capacity string) error {
+	return nil
+}
+func (c *mockClient) createCsiVolumeSnapshot(ctx context.Context, name, namespaceID, persistentVolumeClaimID, capacity, driver string) error {
+	return nil
+}
+func (c *mockClient) createVolumeSnapshotClass(ctx context.Context, name, driver string) error {
+	return nil
+}
+func (c *mockClient) CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
+	return nil
+}
+func (m *mockClient) DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error {
+	return nil
 }
 
 type mockPipeClient map[string]xfer.Pipe

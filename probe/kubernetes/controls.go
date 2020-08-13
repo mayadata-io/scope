@@ -14,14 +14,16 @@ import (
 
 // Control IDs used by the kubernetes integration.
 const (
-	CloneVolumeSnapshot  = report.KubernetesCloneVolumeSnapshot
-	CreateVolumeSnapshot = report.KubernetesCreateVolumeSnapshot
-	GetLogs              = report.KubernetesGetLogs
-	Describe             = report.KubernetesDescribe
-	DeletePod            = report.KubernetesDeletePod
-	DeleteVolumeSnapshot = report.KubernetesDeleteVolumeSnapshot
-	ScaleUp              = report.KubernetesScaleUp
-	ScaleDown            = report.KubernetesScaleDown
+	CloneVolumeSnapshot     = report.KubernetesCloneVolumeSnapshot
+	CloneCsiVolumeSnapshot  = report.KubernetesCloneCsiVolumeSnapshot
+	CreateVolumeSnapshot    = report.KubernetesCreateVolumeSnapshot
+	GetLogs                 = report.KubernetesGetLogs
+	Describe                = report.KubernetesDescribe
+	DeletePod               = report.KubernetesDeletePod
+	DeleteVolumeSnapshot    = report.KubernetesDeleteVolumeSnapshot
+	DeleteCsiVolumeSnapshot = report.KubernetesDeleteCsiVolumeSnapshot
+	ScaleUp                 = report.KubernetesScaleUp
+	ScaleDown               = report.KubernetesScaleDown
 )
 
 // GroupName and version used by CRDs
@@ -64,7 +66,7 @@ func (r *Reporter) describePod(req xfer.Request, namespaceID, podID string, _ []
 	return r.describe(req, namespaceID, podID, ResourceMap["Pod"], apimeta.RESTMapping{})
 }
 
-func (r *Reporter) describePVC(req xfer.Request, namespaceID, pvcID, _ string) xfer.Response {
+func (r *Reporter) describePVC(req xfer.Request, namespaceID, pvcID, _, _ string) xfer.Response {
 	return r.describe(req, namespaceID, pvcID, ResourceMap["PersistentVolumeClaim"], apimeta.RESTMapping{})
 }
 
@@ -122,7 +124,7 @@ func (r *Reporter) describeVolumeSnapshotData(req xfer.Request, volumeSnapshotID
 	return r.describe(req, "", volumeSnapshotID, schema.GroupKind{}, restMapping)
 }
 
-func (r *Reporter) describeCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _ string) xfer.Response {
+func (r *Reporter) describeCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _, _ string) xfer.Response {
 	restMapping := apimeta.RESTMapping{
 		Resource: schema.GroupVersionResource{
 			Group:    CsiSnapshotGroupName,
@@ -287,8 +289,16 @@ func (r *Reporter) cloneVolumeSnapshot(req xfer.Request, namespaceID, volumeSnap
 	return xfer.Response{}
 }
 
-func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID, capacity string) xfer.Response {
-	err := r.client.CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, context.Background())
+func (r *Reporter) cloneCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) xfer.Response {
+	err := r.client.CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver, context.Background())
+	if err != nil {
+		return xfer.ResponseError(err)
+	}
+	return xfer.Response{}
+}
+
+func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID, capacity, driver string) xfer.Response {
+	err := r.client.CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver, context.Background())
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -306,6 +316,15 @@ func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []st
 
 func (r *Reporter) deleteVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _ string) xfer.Response {
 	if err := r.client.DeleteVolumeSnapshot(namespaceID, volumeSnapshotID, context.Background()); err != nil {
+		return xfer.ResponseError(err)
+	}
+	return xfer.Response{
+		RemovedNode: req.NodeID,
+	}
+}
+
+func (r *Reporter) deleteCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _, _ string) xfer.Response {
+	if err := r.client.DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID, context.Background()); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -421,7 +440,7 @@ func (r *Reporter) CaptureDeployment(f func(xfer.Request, string, string) xfer.R
 }
 
 // CapturePersistentVolumeClaim will return name, namespace and capacity of PVC
-func (r *Reporter) CapturePersistentVolumeClaim(f func(xfer.Request, string, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+func (r *Reporter) CapturePersistentVolumeClaim(f func(xfer.Request, string, string, string, string) xfer.Response) func(xfer.Request) xfer.Response {
 	return func(req xfer.Request) xfer.Response {
 		uid, ok := report.ParsePersistentVolumeClaimNodeID(req.NodeID)
 		if !ok {
@@ -438,7 +457,16 @@ func (r *Reporter) CapturePersistentVolumeClaim(f func(xfer.Request, string, str
 		if persistentVolumeClaim == nil {
 			return xfer.ResponseErrorf("Persistent volume claim not found: %s", uid)
 		}
-		return f(req, persistentVolumeClaim.Namespace(), persistentVolumeClaim.Name(), persistentVolumeClaim.GetCapacity())
+
+		// find provisioner from storage class
+		var storageClass StorageClass
+		r.client.WalkStorageClasses(func(p StorageClass) error {
+			if p.Name() == persistentVolumeClaim.GetStorageClass() {
+				storageClass = p
+			}
+			return nil
+		})
+		return f(req, persistentVolumeClaim.Namespace(), persistentVolumeClaim.Name(), persistentVolumeClaim.GetCapacity(), storageClass.GetProvisioner())
 	}
 }
 
@@ -465,7 +493,7 @@ func (r *Reporter) CaptureVolumeSnapshot(f func(xfer.Request, string, string, st
 }
 
 // CaptureCsiVolumeSnapshot will return name, pvc name, namespace and capacity of volume snapshot
-func (r *Reporter) CaptureCsiVolumeSnapshot(f func(xfer.Request, string, string, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+func (r *Reporter) CaptureCsiVolumeSnapshot(f func(xfer.Request, string, string, string, string, string) xfer.Response) func(xfer.Request) xfer.Response {
 	return func(req xfer.Request) xfer.Response {
 		uid, ok := report.ParseCsiVolumeSnapshotNodeID(req.NodeID)
 		if !ok {
@@ -482,7 +510,7 @@ func (r *Reporter) CaptureCsiVolumeSnapshot(f func(xfer.Request, string, string,
 		if volumeSnapshot == nil {
 			return xfer.ResponseErrorf("Volume snapshot not found: %s", uid)
 		}
-		return f(req, volumeSnapshot.Namespace(), volumeSnapshot.Name(), volumeSnapshot.GetVolumeName(), "")
+		return f(req, volumeSnapshot.Namespace(), volumeSnapshot.Name(), volumeSnapshot.GetVolumeName(), volumeSnapshot.GetCapacity(), volumeSnapshot.GetDriver())
 	}
 }
 
@@ -910,14 +938,16 @@ func (r *Reporter) ScaleDown(req xfer.Request, namespace, id string) xfer.Respon
 
 func (r *Reporter) registerControls() {
 	controls := map[string]xfer.ControlHandlerFunc{
-		CloneVolumeSnapshot:  r.CaptureVolumeSnapshot(r.cloneVolumeSnapshot),
-		CreateVolumeSnapshot: r.CapturePersistentVolumeClaim(r.createVolumeSnapshot),
-		GetLogs:              r.CapturePod(r.GetLogs),
-		Describe:             r.Describe(),
-		DeletePod:            r.CapturePod(r.deletePod),
-		DeleteVolumeSnapshot: r.CaptureVolumeSnapshot(r.deleteVolumeSnapshot),
-		ScaleUp:              r.CaptureDeployment(r.ScaleUp),
-		ScaleDown:            r.CaptureDeployment(r.ScaleDown),
+		CloneVolumeSnapshot:     r.CaptureVolumeSnapshot(r.cloneVolumeSnapshot),
+		CloneCsiVolumeSnapshot:  r.CaptureCsiVolumeSnapshot(r.cloneCsiVolumeSnapshot),
+		CreateVolumeSnapshot:    r.CapturePersistentVolumeClaim(r.createVolumeSnapshot),
+		GetLogs:                 r.CapturePod(r.GetLogs),
+		Describe:                r.Describe(),
+		DeletePod:               r.CapturePod(r.deletePod),
+		DeleteVolumeSnapshot:    r.CaptureVolumeSnapshot(r.deleteVolumeSnapshot),
+		DeleteCsiVolumeSnapshot: r.CaptureCsiVolumeSnapshot(r.deleteCsiVolumeSnapshot),
+		ScaleUp:                 r.CaptureDeployment(r.ScaleUp),
+		ScaleDown:               r.CaptureDeployment(r.ScaleDown),
 	}
 	r.handlerRegistry.Batch(nil, controls)
 }
@@ -925,11 +955,13 @@ func (r *Reporter) registerControls() {
 func (r *Reporter) deregisterControls() {
 	controls := []string{
 		CloneVolumeSnapshot,
+		CloneCsiVolumeSnapshot,
 		CreateVolumeSnapshot,
 		GetLogs,
 		Describe,
 		DeletePod,
 		DeleteVolumeSnapshot,
+		DeleteCsiVolumeSnapshot,
 		ScaleUp,
 		ScaleDown,
 	}
