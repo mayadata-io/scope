@@ -222,6 +222,12 @@ var (
 	// ParseVolumeSnapshotClassNodeID parses a volume snapshot class node ID
 	ParseVolumeSnapshotClassNodeID = parseSingleComponentID("volume_snapshot_class")
 
+	// MakeVolumeSnapshotContentNodeID produces a volume snapshot content node ID from its composite parts.
+	MakeVolumeSnapshotContentNodeID = makeSingleComponentID("volume_snapshot_content")
+
+	// ParseVolumeSnapshotContentNodeID parses a volume snapshot content node ID
+	ParseVolumeSnapshotContentNodeID = parseSingleComponentID("volume_snapshot_content")
+
 	// MakeDiskNodeID produces a disk node ID from its composite parts.
 	MakeDiskNodeID = makeSingleComponentID("disk")
 

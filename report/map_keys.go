@@ -89,6 +89,7 @@ const (
 	KubernetesProvisioner                  = "kubernetes_provisioner"
 	KubernetesStorageDriver                = "kubernetes_storage_driver"
 	KubernetesVolumeSnapshotName           = "kubernetes_volume_snapshot_name"
+	KubernetesVolumeSnapshotNamespace      = "kubernetes_volume_snapshot_namespace"
 	KubernetesSnapshotData                 = "kubernetes_snapshot_data"
 	KubernetesSnapshotClass                = "kubernetes_snapshot_class"
 	KubernetesCreateVolumeSnapshot         = "kubernetes_create_volume_snapshot"

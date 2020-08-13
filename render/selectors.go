@@ -48,4 +48,5 @@ var (
 	SelectCStorPoolInstance     = TopologySelector(report.CStorPoolInstance)
 	SelectCsiVolumeSnapshot     = TopologySelector(report.CsiVolumeSnapshot)
 	SelectVolumeSnapshotClass   = TopologySelector(report.VolumeSnapshotClass)
+	SelectVolumeSnapshotContent = TopologySelector(report.VolumeSnapshotContent)
 )

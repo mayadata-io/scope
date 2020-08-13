@@ -320,6 +320,13 @@ var nodeSummaryGroupSpecs = []struct {
 			Columns: []Column{},
 		},
 	},
+	{
+		topologyID: report.VolumeSnapshotContent,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Volume Snapshot Content",
+			Columns: []Column{},
+		},
+	},
 }
 
 func children(rc RenderContext, n report.Node) []NodeSummaryGroup {

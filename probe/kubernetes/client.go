@@ -71,6 +71,7 @@ type Client interface {
 	WalkCStorPoolInstances(f func(CStorPoolInstance) error) error
 	WalkCsiVolumeSnapshots(f func(CsiVolumeSnapshot) error) error
 	WalkVolumeSnapshotClasses(f func(VolumeSnapshotClass) error) error
+	WalkVolumeSnapshotContents(f func(VolumeSnapshotContent) error) error
 	WatchPods(f func(Event, Pod))
 
 	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error
@@ -129,6 +130,7 @@ type client struct {
 	cStorPoolInstanceStore     cache.Store
 	csiVolumeSnapshotStore     cache.Store
 	volumeSnapshotClassStore   cache.Store
+	volumeSnapshotContentStore cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -247,6 +249,7 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.cStorPoolInstanceStore = result.setupStore("cstorpoolinstances")
 	result.csiVolumeSnapshotStore = result.setupStore("csivolumesnapshots")
 	result.volumeSnapshotClassStore = result.setupStore("volumesnapshotclasses")
+	result.volumeSnapshotContentStore = result.setupStore("volumesnapshotcontents")
 
 	return result, nil
 }
@@ -327,6 +330,8 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 		return c.csiSnapshotClient.SnapshotV1beta1().RESTClient(), &csisnapshotv1beta1.VolumeSnapshot{}, nil
 	case "volumesnapshotclasses":
 		return c.csiSnapshotClient.SnapshotV1beta1().RESTClient(), &csisnapshotv1beta1.VolumeSnapshotClass{}, nil
+	case "volumesnapshotcontents":
+		return c.csiSnapshotClient.SnapshotV1beta1().RESTClient(), &csisnapshotv1beta1.VolumeSnapshotContent{}, nil
 	}
 	return nil, nil, fmt.Errorf("Invalid resource: %v", resource)
 }
@@ -540,6 +545,16 @@ func (c *client) WalkVolumeSnapshotClasses(f func(VolumeSnapshotClass) error) er
 	for _, m := range c.volumeSnapshotClassStore.List() {
 		vsc := m.(*csisnapshotv1beta1.VolumeSnapshotClass)
 		if err := f(NewVolumeSnapshotClass(vsc)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkVolumeSnapshotContents(f func(VolumeSnapshotContent) error) error {
+	for _, m := range c.volumeSnapshotContentStore.List() {
+		vsc := m.(*csisnapshotv1beta1.VolumeSnapshotContent)
+		if err := f(NewVolumeSnapshotContent(vsc)); err != nil {
 			return err
 		}
 	}

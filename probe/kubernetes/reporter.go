@@ -33,6 +33,7 @@ const (
 	Provisioner                  = report.KubernetesProvisioner
 	StorageDriver                = report.KubernetesStorageDriver
 	VolumeSnapshotName           = report.KubernetesVolumeSnapshotName
+	VolumeSnapshotNamespace      = report.KubernetesVolumeSnapshotNamespace
 	SnapshotData                 = report.KubernetesSnapshotData
 	SnapshotClass                = report.KubernetesSnapshotClass
 	VolumeCapacity               = report.KubernetesVolumeCapacity
@@ -307,6 +308,12 @@ var (
 		DeletionPolicy: {ID: DeletionPolicy, Label: "Deletion policy", From: report.FromLatest, Priority: 3},
 	}
 
+	VolumeSnapshotContentMetadataTemplates = report.MetadataTemplates{
+		NodeType:                {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeSnapshotName:      {ID: VolumeSnapshotName, Label: "Volume snapshot name", From: report.FromLatest, Priority: 2},
+		VolumeSnapshotNamespace: {ID: VolumeSnapshotNamespace, Label: "Volume snapshot namespace", From: report.FromLatest, Priority: 3},
+	}
+
 	TableTemplates = report.TableTemplates{
 		LabelPrefix: {
 			ID:     LabelPrefix,
@@ -549,6 +556,10 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, nil
 	}
+	volumeSnapshotContentTopology, _, err := r.volumeSnapshotContentTopology()
+	if err != nil {
+		return result, nil
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -573,6 +584,7 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.CStorPoolInstance = result.CStorPoolInstance.Merge(cStorPoolInstanceTopology)
 	result.CsiVolumeSnapshot = result.CsiVolumeSnapshot.Merge(csiVolumeSnapshotTopology)
 	result.VolumeSnapshotClass = result.VolumeSnapshotClass.Merge(volumeSnapshotClassTopology)
+	result.VolumeSnapshotContent = result.VolumeSnapshotContent.Merge(volumeSnapshotContentTopology)
 	return result, nil
 }
 
@@ -769,6 +781,20 @@ func (r *Reporter) volumeSnapshotClassTopology() (report.Topology, []VolumeSnaps
 		WithTableTemplates(TableTemplates)
 	result.Controls.AddControl(DescribeControl)
 	err := r.client.WalkVolumeSnapshotClasses(func(p VolumeSnapshotClass) error {
+		result.AddNode(p.GetNode(r.probeID))
+		vsc = append(vsc, p)
+		return nil
+	})
+	return result, vsc, err
+}
+
+func (r *Reporter) volumeSnapshotContentTopology() (report.Topology, []VolumeSnapshotContent, error) {
+	vsc := []VolumeSnapshotContent{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(VolumeSnapshotContentMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkVolumeSnapshotContents(func(p VolumeSnapshotContent) error {
 		result.AddNode(p.GetNode(r.probeID))
 		vsc = append(vsc, p)
 		return nil

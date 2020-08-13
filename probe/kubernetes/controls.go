@@ -144,6 +144,17 @@ func (r *Reporter) describeVolumeSnapshotClass(req xfer.Request, volumeSnapshotC
 	return r.describe(req, "", volumeSnapshotClassID, schema.GroupKind{}, restMapping)
 }
 
+func (r *Reporter) describeVolumeSnapshotContent(req xfer.Request, volumeSnapshotContentID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    CsiSnapshotGroupName,
+			Version:  CsiSnapshotVersion,
+			Resource: "volumesnapshotcontents",
+		},
+	}
+	return r.describe(req, "", volumeSnapshotContentID, schema.GroupKind{}, restMapping)
+}
+
 func (r *Reporter) describeCV(req xfer.Request, namespaceID, CVID string) xfer.Response {
 	restMapping := apimeta.RESTMapping{
 		Resource: schema.GroupVersionResource{
@@ -357,6 +368,8 @@ func (r *Reporter) Describe() func(xfer.Request) xfer.Response {
 			f = r.CaptureCsiVolumeSnapshot(r.describeCsiVolumeSnapshot)
 		case "<volume_snapshot_class>":
 			f = r.CaptureVolumeSnapshotClass(r.describeVolumeSnapshotClass)
+		case "<volume_snapshot_content>":
+			f = r.CaptureVolumeSnapshotContent(r.describeVolumeSnapshotContent)
 		default:
 			return xfer.ResponseErrorf("Node not found: %s", req.NodeID)
 		}
@@ -480,7 +493,7 @@ func (r *Reporter) CaptureVolumeSnapshotClass(f func(xfer.Request, string) xfer.
 		if !ok {
 			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
 		}
-		// find volume snapshot by UID
+		// find volume snapshot class by UID
 		var volumeSnapshotClass VolumeSnapshotClass
 		r.client.WalkVolumeSnapshotClasses(func(p VolumeSnapshotClass) error {
 			if p.UID() == uid {
@@ -492,6 +505,28 @@ func (r *Reporter) CaptureVolumeSnapshotClass(f func(xfer.Request, string) xfer.
 			return xfer.ResponseErrorf("Volume snapshot class not found: %s", uid)
 		}
 		return f(req, volumeSnapshotClass.Name())
+	}
+}
+
+// CaptureVolumeSnapshotClass will return name
+func (r *Reporter) CaptureVolumeSnapshotContent(f func(xfer.Request, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseVolumeSnapshotContentNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find volume snapshot by UID
+		var volumeSnapshotContent VolumeSnapshotContent
+		r.client.WalkVolumeSnapshotContents(func(p VolumeSnapshotContent) error {
+			if p.UID() == uid {
+				volumeSnapshotContent = p
+			}
+			return nil
+		})
+		if volumeSnapshotContent == nil {
+			return xfer.ResponseErrorf("Volume snapshot content not found: %s", uid)
+		}
+		return f(req, volumeSnapshotContent.Name())
 	}
 }
 

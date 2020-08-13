@@ -246,6 +246,7 @@ func (v csiVolumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report
 	nodes := make(report.Nodes)
 	for volumeSnapshotID, volumeSnapshotNode := range rpt.CsiVolumeSnapshot.Nodes {
 		volumeSnapshotName, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesName)
+		volumeSnapshotNamespace, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesNamespace)
 		for persistentVolumeClaimID, persistentVolumeClaimNode := range rpt.PersistentVolumeClaim.Nodes {
 			vsName, ok := persistentVolumeClaimNode.Latest.Lookup(report.KubernetesVolumeSnapshotName)
 			if !ok {
@@ -256,6 +257,17 @@ func (v csiVolumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report
 				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(persistentVolumeClaimNode)
 			}
 		}
+
+		for volumeSnapshotContentID, volumeSnapshotContentNode := range rpt.VolumeSnapshotContent.Nodes {
+			vsName, _ := volumeSnapshotContentNode.Latest.Lookup(report.KubernetesVolumeSnapshotName)
+			vsNamespace, _ := volumeSnapshotContentNode.Latest.Lookup(report.KubernetesVolumeSnapshotNamespace)
+			if vsName == volumeSnapshotName && vsNamespace == volumeSnapshotNamespace {
+				volumeSnapshotNode.Adjacency = volumeSnapshotNode.Adjacency.Add(volumeSnapshotContentNode.ID)
+				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(volumeSnapshotContentNode)
+			}
+			nodes[volumeSnapshotContentID] = volumeSnapshotContentNode
+		}
+
 		nodes[volumeSnapshotID] = volumeSnapshotNode
 	}
 	return Nodes{Nodes: nodes}
