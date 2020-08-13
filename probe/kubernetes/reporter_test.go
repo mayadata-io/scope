@@ -213,29 +213,29 @@ func (c *mockClient) WalkVolumeSnapshotContents(f func(kubernetes.VolumeSnapshot
 	return nil
 }
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
-func (c *mockClient) GetLogs(namespaceID, podName string, _ []string, ctx context.Context) (io.ReadCloser, error) {
+func (c *mockClient) GetLogs(ctx context.Context, namespaceID, podName string, _ []string) (io.ReadCloser, error) {
 	r, ok := c.logs[namespaceID+";"+podName]
 	if !ok {
 		return nil, fmt.Errorf("Not found")
 	}
 	return r, nil
 }
-func (c *mockClient) DeletePod(namespaceID, podID string, ctx context.Context) error {
+func (c *mockClient) DeletePod(ctx context.Context, namespaceID, podID string) error {
 	return nil
 }
-func (c *mockClient) ScaleUp(namespaceID, id string, ctx context.Context) error {
+func (c *mockClient) ScaleUp(ctx context.Context, namespaceID, id string) error {
 	return nil
 }
-func (c *mockClient) ScaleDown(namespaceID, id string, ctx context.Context) error {
+func (c *mockClient) ScaleDown(ctx context.Context, namespaceID, id string) error {
 	return nil
 }
-func (c *mockClient) CloneVolumeSnapshot(namespaceID, VolumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
+func (c *mockClient) CloneVolumeSnapshot(ctx context.Context, namespaceID, VolumeSnapshotID, persistentVolumeClaimID, capacity string) error {
 	return nil
 }
-func (c *mockClient) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
+func (c *mockClient) CreateVolumeSnapshot(ctx context.Context, namespaceID, persistentVolumeClaimID, capacity, driver string) error {
 	return nil
 }
-func (c *mockClient) DeleteVolumeSnapshot(namespaceID, VolumeSnapshotID string, ctx context.Context) error {
+func (c *mockClient) DeleteVolumeSnapshot(ctx context.Context, namespaceID, VolumeSnapshotID string) error {
 	return nil
 }
 func (c *mockClient) Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping k8smeta.RESTMapping) (io.ReadCloser, error) {
@@ -250,10 +250,10 @@ func (c *mockClient) createCsiVolumeSnapshot(ctx context.Context, name, namespac
 func (c *mockClient) createVolumeSnapshotClass(ctx context.Context, name, driver string) error {
 	return nil
 }
-func (c *mockClient) CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
+func (c *mockClient) CloneCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) error {
 	return nil
 }
-func (m *mockClient) DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error {
+func (m *mockClient) DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
 	return nil
 }
 

@@ -74,16 +74,16 @@ type Client interface {
 	WalkVolumeSnapshotContents(f func(VolumeSnapshotContent) error) error
 	WatchPods(f func(Event, Pod))
 
-	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error
-	CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error
-	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error
-	GetLogs(namespaceID, podID string, containerNames []string, ctx context.Context) (io.ReadCloser, error)
+	CloneVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
+	CloneCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) error
+	CreateVolumeSnapshot(ctx context.Context, namespaceID, persistentVolumeClaimID, capacity, driver string) error
+	GetLogs(ctx context.Context, namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
 	Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping apimeta.RESTMapping) (io.ReadCloser, error)
-	DeletePod(namespaceID, podID string, ctx context.Context) error
-	DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error
-	DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error
-	ScaleUp(namespaceID, id string, ctx context.Context) error
-	ScaleDown(namespaceID, id string, ctx context.Context) error
+	DeletePod(ctx context.Context, namespaceID, podID string) error
+	DeleteVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error
+	DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error
+	ScaleUp(ctx context.Context, namespaceID, id string) error
+	ScaleDown(ctx context.Context, namespaceID, id string) error
 }
 
 // ResourceMap is the mapping of resource and their GroupKind
@@ -759,7 +759,7 @@ func (c *client) WalkCStorPoolInstances(f func(CStorPoolInstance) error) error {
 	return nil
 }
 
-func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
+func (c *client) CloneVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error {
 	var scName string
 	var claimSize string
 	UID := strings.Split(uuid.New(), "-")
@@ -821,7 +821,7 @@ func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVo
 	return nil
 }
 
-func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
+func (c *client) CreateVolumeSnapshot(ctx context.Context, namespaceID, persistentVolumeClaimID, capacity, driver string) error {
 	UID := strings.Split(uuid.New(), "-")
 	snapshotName := "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1]
 	var err error
@@ -833,7 +833,7 @@ func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capa
 	return err
 }
 
-func (c *client) GetLogs(namespaceID, podID string, containerNames []string, ctx context.Context) (io.ReadCloser, error) {
+func (c *client) GetLogs(ctx context.Context, namespaceID, podID string, containerNames []string) (io.ReadCloser, error) {
 	readClosersWithLabel := map[io.ReadCloser]string{}
 	for _, container := range containerNames {
 		req := c.client.CoreV1().Pods(namespaceID).GetLogs(
@@ -883,31 +883,31 @@ func (c *client) Describe(namespaceID, resourceID string, groupKind schema.Group
 	return NewLogReadCloser(readClosersWithLabel), nil
 }
 
-func (c *client) DeletePod(namespaceID, podID string, ctx context.Context) error {
+func (c *client) DeletePod(ctx context.Context, namespaceID, podID string) error {
 	return c.client.CoreV1().Pods(namespaceID).Delete(ctx, podID, metav1.DeleteOptions{})
 }
 
-func (c *client) DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error {
+func (c *client) DeleteVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
 	return c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Delete(ctx, volumeSnapshotID, metav1.DeleteOptions{})
 }
 
-func (c *client) DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID string, ctx context.Context) error {
+func (c *client) DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
 	return c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshots(namespaceID).Delete(ctx, volumeSnapshotID, metav1.DeleteOptions{})
 }
 
-func (c *client) ScaleUp(namespaceID, id string, ctx context.Context) error {
-	return c.modifyScale(namespaceID, id, ctx, func(scale *autoscalingv1.Scale) {
+func (c *client) ScaleUp(ctx context.Context, namespaceID, id string) error {
+	return c.modifyScale(ctx, namespaceID, id, func(scale *autoscalingv1.Scale) {
 		scale.Spec.Replicas++
 	})
 }
 
-func (c *client) ScaleDown(namespaceID, id string, ctx context.Context) error {
-	return c.modifyScale(namespaceID, id, ctx, func(scale *autoscalingv1.Scale) {
+func (c *client) ScaleDown(ctx context.Context, namespaceID, id string) error {
+	return c.modifyScale(ctx, namespaceID, id, func(scale *autoscalingv1.Scale) {
 		scale.Spec.Replicas--
 	})
 }
 
-func (c *client) modifyScale(namespaceID, id string, ctx context.Context, f func(*autoscalingv1.Scale)) error {
+func (c *client) modifyScale(ctx context.Context, namespaceID, id string, f func(*autoscalingv1.Scale)) error {
 	scaler := c.client.AppsV1().Deployments(namespaceID)
 	scale, err := scaler.GetScale(ctx, id, metav1.GetOptions{})
 	if err != nil {
@@ -995,7 +995,7 @@ func (c *client) createVolumeSnapshotClass(ctx context.Context, name, driver str
 	return nil
 }
 
-func (c *client) CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string, ctx context.Context) error {
+func (c *client) CloneCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) error {
 	var scName string
 	var claimSize string
 	UID := strings.Split(uuid.New(), "-")

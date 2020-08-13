@@ -36,9 +36,11 @@ const (
 	OpenEBSVersion       = "v1alpha1"
 )
 
+var ctx = context.TODO()
+
 // GetLogs is the control to get the logs for a kubernetes pod
 func (r *Reporter) GetLogs(req xfer.Request, namespaceID, podID string, containerNames []string) xfer.Response {
-	readCloser, err := r.client.GetLogs(namespaceID, podID, containerNames, context.Background())
+	readCloser, err := r.client.GetLogs(ctx, namespaceID, podID, containerNames)
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -282,7 +284,7 @@ func (r *Reporter) describe(req xfer.Request, namespaceID, resourceID string, gr
 }
 
 func (r *Reporter) cloneVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) xfer.Response {
-	err := r.client.CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, context.Background())
+	err := r.client.CloneVolumeSnapshot(ctx, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity)
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -290,7 +292,7 @@ func (r *Reporter) cloneVolumeSnapshot(req xfer.Request, namespaceID, volumeSnap
 }
 
 func (r *Reporter) cloneCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) xfer.Response {
-	err := r.client.CloneCsiVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver, context.Background())
+	err := r.client.CloneCsiVolumeSnapshot(ctx, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver)
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -298,7 +300,7 @@ func (r *Reporter) cloneCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeS
 }
 
 func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID, capacity, driver string) xfer.Response {
-	err := r.client.CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, driver, context.Background())
+	err := r.client.CreateVolumeSnapshot(ctx, namespaceID, persistentVolumeClaimID, capacity, driver)
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -306,7 +308,7 @@ func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persisten
 }
 
 func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []string) xfer.Response {
-	if err := r.client.DeletePod(namespaceID, podID, context.Background()); err != nil {
+	if err := r.client.DeletePod(ctx, namespaceID, podID); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -315,7 +317,7 @@ func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []st
 }
 
 func (r *Reporter) deleteVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _ string) xfer.Response {
-	if err := r.client.DeleteVolumeSnapshot(namespaceID, volumeSnapshotID, context.Background()); err != nil {
+	if err := r.client.DeleteVolumeSnapshot(ctx, namespaceID, volumeSnapshotID); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -324,7 +326,7 @@ func (r *Reporter) deleteVolumeSnapshot(req xfer.Request, namespaceID, volumeSna
 }
 
 func (r *Reporter) deleteCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _, _ string) xfer.Response {
-	if err := r.client.DeleteCsiVolumeSnapshot(namespaceID, volumeSnapshotID, context.Background()); err != nil {
+	if err := r.client.DeleteCsiVolumeSnapshot(ctx, namespaceID, volumeSnapshotID); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -928,12 +930,12 @@ func (r *Reporter) CaptureCStorPoolInstance(f func(xfer.Request, string, string)
 
 // ScaleUp is the control to scale up a deployment
 func (r *Reporter) ScaleUp(req xfer.Request, namespace, id string) xfer.Response {
-	return xfer.ResponseError(r.client.ScaleUp(namespace, id, context.Background()))
+	return xfer.ResponseError(r.client.ScaleUp(ctx, namespace, id))
 }
 
 // ScaleDown is the control to scale up a deployment
 func (r *Reporter) ScaleDown(req xfer.Request, namespace, id string) xfer.Response {
-	return xfer.ResponseError(r.client.ScaleDown(namespace, id, context.Background()))
+	return xfer.ResponseError(r.client.ScaleDown(ctx, namespace, id))
 }
 
 func (r *Reporter) registerControls() {
