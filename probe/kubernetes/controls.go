@@ -538,7 +538,7 @@ func (r *Reporter) CaptureVolumeSnapshotClass(f func(xfer.Request, string) xfer.
 	}
 }
 
-// CaptureVolumeSnapshotClass will return name
+// CaptureVolumeSnapshotContent will return name
 func (r *Reporter) CaptureVolumeSnapshotContent(f func(xfer.Request, string) xfer.Response) func(xfer.Request) xfer.Response {
 	return func(req xfer.Request) xfer.Response {
 		uid, ok := report.ParseVolumeSnapshotContentNodeID(req.NodeID)

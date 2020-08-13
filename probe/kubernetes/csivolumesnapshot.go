@@ -5,6 +5,7 @@ import (
 	"github.com/weaveworks/scope/report"
 )
 
+// DriverAnnotation is the annotation for sc provisioner
 const (
 	DriverAnnotation = "driver"
 )
@@ -43,7 +44,7 @@ func (p *csiVolumeSnapshot) GetCapacity() string {
 	return ""
 }
 
-// GetCapacity returns the capacity of the source PVC stored in annotation
+// GetGetDriver returns the driver of the PVC storage class stored in annotation
 func (p *csiVolumeSnapshot) GetDriver() string {
 	driver := p.GetAnnotations()[DriverAnnotation]
 	if driver != "" {
