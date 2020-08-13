@@ -43,6 +43,8 @@ const (
 	BlockDeviceClaim      = "block_device_claim"
 	CStorPoolCluster      = "cstor_pool_cluster"
 	CStorPoolInstance     = "cstor_pool_instance"
+	CsiVolumeSnapshot     = "csi_volume_snapshot"
+	VolumeSnapshotClass   = "volume_snapshot_class"
 
 	// Shapes used for different nodes
 	Circle          = "circle"
@@ -102,6 +104,8 @@ var topologyNames = []string{
 	BlockDeviceClaim,
 	CStorPoolCluster,
 	CStorPoolInstance,
+	CsiVolumeSnapshot,
+	VolumeSnapshotClass,
 }
 
 // Report is the core data type. It's produced by probes, and consumed and
@@ -240,6 +244,11 @@ type Report struct {
 
 	// CStorPoolInstance represent all the CSPI on hosts running probes.
 	CStorPoolInstance Topology
+
+	// CsiVolumeSnapshot represent all Kubernetes CSI Volume Snapshots on hosts running probes.
+	CsiVolumeSnapshot Topology
+
+	VolumeSnapshotClass Topology
 
 	DNS DNSRecords `json:"nodes,omitempty" deepequal:"nil==empty"`
 
@@ -396,6 +405,16 @@ func MakeReport() Report {
 			WithShape(Square).
 			WithLabel("cStor Pool Instance", "cStor Pool Instance"),
 
+		CsiVolumeSnapshot: MakeTopology().
+			WithShape(DottedCylinder).
+			WithTag(Camera).
+			WithLabel("csi volume snapshot", "csi volume snapshots"),
+
+		VolumeSnapshotClass: MakeTopology().
+			WithShape(StorageSheet).
+			WithTag(Camera).
+			WithLabel("volume snapshot class", "volume snapshot classes"),
+
 		DNS: DNSRecords{},
 
 		Sampling: Sampling{},
@@ -542,6 +561,10 @@ func (r *Report) topology(name string) *Topology {
 		return &r.CStorPoolCluster
 	case CStorPoolInstance:
 		return &r.CStorPoolInstance
+	case CsiVolumeSnapshot:
+		return &r.CsiVolumeSnapshot
+	case VolumeSnapshotClass:
+		return &r.VolumeSnapshotClass
 	}
 	return nil
 }

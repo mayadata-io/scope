@@ -1,6 +1,7 @@
 package kubernetes_test
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -202,30 +203,36 @@ func (c *mockClient) WalkCStorPoolClusters(f func(kubernetes.CStorPoolCluster) e
 func (c *mockClient) WalkCStorPoolInstances(f func(kubernetes.CStorPoolInstance) error) error {
 	return nil
 }
+func (c *mockClient) WalkCsiVolumeSnapshots(f func(kubernetes.CsiVolumeSnapshot) error) error {
+	return nil
+}
+func (c *mockClient) WalkVolumeSnapshotClasses(f func(kubernetes.VolumeSnapshotClass) error) error {
+	return nil
+}
 func (*mockClient) WatchPods(func(kubernetes.Event, kubernetes.Pod)) {}
-func (c *mockClient) GetLogs(namespaceID, podName string, _ []string) (io.ReadCloser, error) {
+func (c *mockClient) GetLogs(namespaceID, podName string, _ []string, ctx context.Context) (io.ReadCloser, error) {
 	r, ok := c.logs[namespaceID+";"+podName]
 	if !ok {
 		return nil, fmt.Errorf("Not found")
 	}
 	return r, nil
 }
-func (c *mockClient) DeletePod(namespaceID, podID string) error {
+func (c *mockClient) DeletePod(namespaceID, podID string, ctx context.Context) error {
 	return nil
 }
-func (c *mockClient) ScaleUp(namespaceID, id string) error {
+func (c *mockClient) ScaleUp(namespaceID, id string, ctx context.Context) error {
 	return nil
 }
-func (c *mockClient) ScaleDown(namespaceID, id string) error {
+func (c *mockClient) ScaleDown(namespaceID, id string, ctx context.Context) error {
 	return nil
 }
-func (c *mockClient) CloneVolumeSnapshot(namespaceID, VolumeSnapshotID, persistentVolumeClaimID, capacity string) error {
+func (c *mockClient) CloneVolumeSnapshot(namespaceID, VolumeSnapshotID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
 	return nil
 }
-func (c *mockClient) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string) error {
+func (c *mockClient) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string, ctx context.Context) error {
 	return nil
 }
-func (c *mockClient) DeleteVolumeSnapshot(namespaceID, VolumeSnapshotID string) error {
+func (c *mockClient) DeleteVolumeSnapshot(namespaceID, VolumeSnapshotID string, ctx context.Context) error {
 	return nil
 }
 func (c *mockClient) Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping k8smeta.RESTMapping) (io.ReadCloser, error) {

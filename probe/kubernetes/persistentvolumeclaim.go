@@ -65,6 +65,11 @@ func (p *persistentVolumeClaim) GetVolumeSnapshot() string {
 	if volumeSnapshotName != "" {
 		return volumeSnapshotName
 	}
+	if p.Spec.DataSource != nil {
+		if p.Spec.DataSource.Name != "" {
+			return p.Spec.DataSource.Name
+		}
+	}
 	return ""
 }
 

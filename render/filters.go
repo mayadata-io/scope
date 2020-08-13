@@ -22,6 +22,8 @@ var storageComponents = map[string]string{
 	"disk":                    "disk",
 	"volume_snapshot":         "volume_snapshot",
 	"volume_snapshot_data":    "volume_snapshot_data",
+	"csi_volume_snapshot":     "csi_volume_snapshot",
+	"volume_snapshot_class":   "volume_snapshot_class",
 	"block_device_claim":      "block_device_claim",
 }
 
@@ -152,7 +154,8 @@ func IsConnected(node report.Node) bool {
 
 // IsNonSnapshotComponent checks whether given node is everything but Volume Snapshot, Volume Snapshot Data
 func IsNonSnapshotComponent(node report.Node) bool {
-	if node.Topology == "volume_snapshot" || node.Topology == "volume_snapshot_data" {
+	if node.Topology == "volume_snapshot" || node.Topology == "volume_snapshot_data" ||
+		node.Topology == "csi_volume_snapshot" || node.Topology == "volume_snapshot_class" {
 		return false
 	}
 	return true

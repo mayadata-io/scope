@@ -89,7 +89,8 @@ const (
 	KubernetesProvisioner                  = "kubernetes_provisioner"
 	KubernetesStorageDriver                = "kubernetes_storage_driver"
 	KubernetesVolumeSnapshotName           = "kubernetes_volume_snapshot_name"
-	KubernetesSnapshotData                 = "kuberneets_snapshot_data"
+	KubernetesSnapshotData                 = "kubernetes_snapshot_data"
+	KubernetesSnapshotClass                = "kubernetes_snapshot_class"
 	KubernetesCreateVolumeSnapshot         = "kubernetes_create_volume_snapshot"
 	KubernetesVolumeCapacity               = "kubernetes_volume_capacity"
 	KubernetesCloneVolumeSnapshot          = "kubernetes_clone_volume_snapshot"
@@ -137,6 +138,8 @@ const (
 	KubernetesUsedSize                     = "kubernetes_used_size"
 	KubernetesCStorPoolInstanceUID         = "kubernetes_cstor_pool_instance"
 	KubernetesNodeName                     = "kubernetes_node_name"
+	KubernetesDriver                       = "kubernetes_driver"
+	KubernetesDeletionPolicy               = "kubernetes_deletion_policy"
 	// probe/awsecs
 	ECSCluster             = "ecs_cluster"
 	ECSCreatedAt           = "ecs_created_at"

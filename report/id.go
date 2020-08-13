@@ -210,6 +210,18 @@ var (
 	// ParseVolumeSnapshotDataNodeID parses a volume snapshot data node ID
 	ParseVolumeSnapshotDataNodeID = parseSingleComponentID("volume_snapshot_data")
 
+	// MakeCsiVolumeSnapshotNodeID produces a csi volume snapshot node ID from its composite parts.
+	MakeCsiVolumeSnapshotNodeID = makeSingleComponentID("csi_volume_snapshot")
+
+	// ParseCsiVolumeSnapshotNodeID parses a csi volume snapshot node ID
+	ParseCsiVolumeSnapshotNodeID = parseSingleComponentID("csi_volume_snapshot")
+
+	// MakeVolumeSnapshotClassNodeID produces a volume snapshot class node ID from its composite parts.
+	MakeVolumeSnapshotClassNodeID = makeSingleComponentID("volume_snapshot_class")
+
+	// ParseVolumeSnapshotClassNodeID parses a volume snapshot class node ID
+	ParseVolumeSnapshotClassNodeID = parseSingleComponentID("volume_snapshot_class")
+
 	// MakeDiskNodeID produces a disk node ID from its composite parts.
 	MakeDiskNodeID = makeSingleComponentID("disk")
 

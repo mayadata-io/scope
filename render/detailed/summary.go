@@ -100,6 +100,8 @@ var renderers = map[string]func(BasicNodeSummary, report.Node) BasicNodeSummary{
 	report.BlockDeviceClaim:      blockDeviceClaimNodeSummary,
 	report.CStorPoolCluster:      cStorPoolClusterNodeSummary,
 	report.CStorPoolInstance:     cStorPoolInstanceNodeSummary,
+	report.CsiVolumeSnapshot:     csiVolumeSnapshotNodeSummary,
+	report.VolumeSnapshotClass:   volumeSnapshotClassNodeSummary,
 }
 
 // For each report.Topology, map to a 'primary' API topology. This can then be used in a variety of places.
@@ -132,6 +134,8 @@ var primaryAPITopology = map[string]string{
 	report.BlockDeviceClaim:      "pools",
 	report.CStorPoolCluster:      "pools",
 	report.CStorPoolInstance:     "pools",
+	report.CsiVolumeSnapshot:     "volumes",
+	report.VolumeSnapshotClass:   "volumes",
 }
 
 // MakeBasicNodeSummary returns a basic summary of a node, if
@@ -430,6 +434,18 @@ func storageClassNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSumm
 func volumeSnapshotNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
 	base = addKubernetesLabelAndRank(base, n)
 	base.LabelMinor = "Volume snapshot"
+	return base
+}
+
+func csiVolumeSnapshotNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "Volume snapshot"
+	return base
+}
+
+func volumeSnapshotClassNodeSummary(base BasicNodeSummary, n report.Node) BasicNodeSummary {
+	base = addKubernetesLabelAndRank(base, n)
+	base.LabelMinor = "Volume snapshot Class"
 	return base
 }
 

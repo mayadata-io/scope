@@ -46,4 +46,6 @@ var (
 	SelectBlockDeviceClaim      = TopologySelector(report.BlockDeviceClaim)
 	SelectCStorPoolCluster      = TopologySelector(report.CStorPoolCluster)
 	SelectCStorPoolInstance     = TopologySelector(report.CStorPoolInstance)
+	SelectCsiVolumeSnapshot     = TopologySelector(report.CsiVolumeSnapshot)
+	SelectVolumeSnapshotClass   = TopologySelector(report.VolumeSnapshotClass)
 )

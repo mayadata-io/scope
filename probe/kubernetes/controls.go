@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"context"
 	"io"
 	"io/ioutil"
 
@@ -25,15 +26,17 @@ const (
 
 // GroupName and version used by CRDs
 const (
-	SnapshotGroupName = "volumesnapshot.external-storage.k8s.io"
-	SnapshotVersion   = "v1"
-	OpenEBSGroupName  = "openebs.io"
-	OpenEBSVersion    = "v1alpha1"
+	SnapshotGroupName    = "volumesnapshot.external-storage.k8s.io"
+	SnapshotVersion      = "v1"
+	CsiSnapshotGroupName = "snapshot.storage.k8s.io"
+	CsiSnapshotVersion   = "v1beta1"
+	OpenEBSGroupName     = "openebs.io"
+	OpenEBSVersion       = "v1alpha1"
 )
 
 // GetLogs is the control to get the logs for a kubernetes pod
 func (r *Reporter) GetLogs(req xfer.Request, namespaceID, podID string, containerNames []string) xfer.Response {
-	readCloser, err := r.client.GetLogs(namespaceID, podID, containerNames)
+	readCloser, err := r.client.GetLogs(namespaceID, podID, containerNames, context.Background())
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -117,6 +120,28 @@ func (r *Reporter) describeVolumeSnapshotData(req xfer.Request, volumeSnapshotID
 		},
 	}
 	return r.describe(req, "", volumeSnapshotID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeCsiVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _ string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    CsiSnapshotGroupName,
+			Version:  CsiSnapshotVersion,
+			Resource: "volumesnapshots",
+		},
+	}
+	return r.describe(req, namespaceID, volumeSnapshotID, schema.GroupKind{}, restMapping)
+}
+
+func (r *Reporter) describeVolumeSnapshotClass(req xfer.Request, volumeSnapshotClassID string) xfer.Response {
+	restMapping := apimeta.RESTMapping{
+		Resource: schema.GroupVersionResource{
+			Group:    CsiSnapshotGroupName,
+			Version:  CsiSnapshotVersion,
+			Resource: "volumesnapshotclasses",
+		},
+	}
+	return r.describe(req, "", volumeSnapshotClassID, schema.GroupKind{}, restMapping)
 }
 
 func (r *Reporter) describeCV(req xfer.Request, namespaceID, CVID string) xfer.Response {
@@ -244,7 +269,7 @@ func (r *Reporter) describe(req xfer.Request, namespaceID, resourceID string, gr
 }
 
 func (r *Reporter) cloneVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) xfer.Response {
-	err := r.client.CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity)
+	err := r.client.CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, context.Background())
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -252,7 +277,7 @@ func (r *Reporter) cloneVolumeSnapshot(req xfer.Request, namespaceID, volumeSnap
 }
 
 func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persistentVolumeClaimID, capacity string) xfer.Response {
-	err := r.client.CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity)
+	err := r.client.CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity, context.Background())
 	if err != nil {
 		return xfer.ResponseError(err)
 	}
@@ -260,7 +285,7 @@ func (r *Reporter) createVolumeSnapshot(req xfer.Request, namespaceID, persisten
 }
 
 func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []string) xfer.Response {
-	if err := r.client.DeletePod(namespaceID, podID); err != nil {
+	if err := r.client.DeletePod(namespaceID, podID, context.Background()); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -269,7 +294,7 @@ func (r *Reporter) deletePod(req xfer.Request, namespaceID, podID string, _ []st
 }
 
 func (r *Reporter) deleteVolumeSnapshot(req xfer.Request, namespaceID, volumeSnapshotID, _, _ string) xfer.Response {
-	if err := r.client.DeleteVolumeSnapshot(namespaceID, volumeSnapshotID); err != nil {
+	if err := r.client.DeleteVolumeSnapshot(namespaceID, volumeSnapshotID, context.Background()); err != nil {
 		return xfer.ResponseError(err)
 	}
 	return xfer.Response{
@@ -328,6 +353,10 @@ func (r *Reporter) Describe() func(xfer.Request) xfer.Response {
 			f = r.CaptureCStorPoolCluster(r.describeCStorPoolCluster)
 		case "<cstor_pool_instance>":
 			f = r.CaptureCStorPoolInstance(r.describeCStorPoolInstance)
+		case "<csi_volume_snapshot>":
+			f = r.CaptureCsiVolumeSnapshot(r.describeCsiVolumeSnapshot)
+		case "<volume_snapshot_class>":
+			f = r.CaptureVolumeSnapshotClass(r.describeVolumeSnapshotClass)
 		default:
 			return xfer.ResponseErrorf("Node not found: %s", req.NodeID)
 		}
@@ -419,6 +448,50 @@ func (r *Reporter) CaptureVolumeSnapshot(f func(xfer.Request, string, string, st
 			return xfer.ResponseErrorf("Volume snapshot not found: %s", uid)
 		}
 		return f(req, volumeSnapshot.Namespace(), volumeSnapshot.Name(), volumeSnapshot.GetVolumeName(), volumeSnapshot.GetCapacity())
+	}
+}
+
+// CaptureCsiVolumeSnapshot will return name, pvc name, namespace and capacity of volume snapshot
+func (r *Reporter) CaptureCsiVolumeSnapshot(f func(xfer.Request, string, string, string, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseCsiVolumeSnapshotNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find volume snapshot by UID
+		var volumeSnapshot CsiVolumeSnapshot
+		r.client.WalkCsiVolumeSnapshots(func(p CsiVolumeSnapshot) error {
+			if p.UID() == uid {
+				volumeSnapshot = p
+			}
+			return nil
+		})
+		if volumeSnapshot == nil {
+			return xfer.ResponseErrorf("Volume snapshot not found: %s", uid)
+		}
+		return f(req, volumeSnapshot.Namespace(), volumeSnapshot.Name(), volumeSnapshot.GetVolumeName(), "")
+	}
+}
+
+// CaptureVolumeSnapshotClass will return name
+func (r *Reporter) CaptureVolumeSnapshotClass(f func(xfer.Request, string) xfer.Response) func(xfer.Request) xfer.Response {
+	return func(req xfer.Request) xfer.Response {
+		uid, ok := report.ParseVolumeSnapshotClassNodeID(req.NodeID)
+		if !ok {
+			return xfer.ResponseErrorf("Invalid ID: %s", req.NodeID)
+		}
+		// find volume snapshot by UID
+		var volumeSnapshotClass VolumeSnapshotClass
+		r.client.WalkVolumeSnapshotClasses(func(p VolumeSnapshotClass) error {
+			if p.UID() == uid {
+				volumeSnapshotClass = p
+			}
+			return nil
+		})
+		if volumeSnapshotClass == nil {
+			return xfer.ResponseErrorf("Volume snapshot class not found: %s", uid)
+		}
+		return f(req, volumeSnapshotClass.Name())
 	}
 }
 
@@ -792,12 +865,12 @@ func (r *Reporter) CaptureCStorPoolInstance(f func(xfer.Request, string, string)
 
 // ScaleUp is the control to scale up a deployment
 func (r *Reporter) ScaleUp(req xfer.Request, namespace, id string) xfer.Response {
-	return xfer.ResponseError(r.client.ScaleUp(namespace, id))
+	return xfer.ResponseError(r.client.ScaleUp(namespace, id, context.Background()))
 }
 
 // ScaleDown is the control to scale up a deployment
 func (r *Reporter) ScaleDown(req xfer.Request, namespace, id string) xfer.Response {
-	return xfer.ResponseError(r.client.ScaleDown(namespace, id))
+	return xfer.ResponseError(r.client.ScaleDown(namespace, id, context.Background()))
 }
 
 func (r *Reporter) registerControls() {
