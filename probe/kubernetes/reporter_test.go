@@ -253,7 +253,7 @@ func (c *mockClient) createVolumeSnapshotClass(ctx context.Context, name, driver
 func (c *mockClient) CloneCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) error {
 	return nil
 }
-func (m *mockClient) DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
+func (c *mockClient) DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
 	return nil
 }
 
