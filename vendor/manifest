@@ -3587,6 +3587,14 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/ryanuber/columnize",
+			"repository": "https://github.com/ryanuber/columnize",
+			"vcs": "git",
+			"revision": "d363dedc9af5c63c6809f74e28650cbd635640e0",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/sercand/kuberesolver",
 			"repository": "https://github.com/sercand/kuberesolver",
 			"vcs": "git",
