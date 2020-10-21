@@ -3,7 +3,7 @@ package kubernetes
 import (
 	"strings"
 
-	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	cstorv1 "github.com/openebs/api/pkg/apis/cstor/v1"
 	"github.com/weaveworks/scope/report"
 )
 
@@ -20,12 +20,12 @@ type CStorVolumeReplica interface {
 
 // cStorVolume represents cStor Volume Replica CR
 type cStorVolumeReplica struct {
-	*mayav1alpha1.CStorVolumeReplica
+	*cstorv1.CStorVolumeReplica
 	Meta
 }
 
 // NewCStorVolumeReplica returns fresh CStorVolumeReplica instance
-func NewCStorVolumeReplica(p *mayav1alpha1.CStorVolumeReplica) CStorVolumeReplica {
+func NewCStorVolumeReplica(p *cstorv1.CStorVolumeReplica) CStorVolumeReplica {
 	return &cStorVolumeReplica{CStorVolumeReplica: p, Meta: meta{p.ObjectMeta}}
 }
 

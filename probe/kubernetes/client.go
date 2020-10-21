@@ -18,10 +18,10 @@ import (
 
 	csisnapshotv1beta1 "github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1"
 	csisnapshot "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/clientset/versioned"
-	openebsapiv1 "github.com/openebs/api/pkg/apis/cstor/v1"
-	openebsapiclient "github.com/openebs/api/pkg/client/clientset/versioned"
 	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 	mayaclient "github.com/openebs/maya/pkg/client/clientset/versioned"
+	cstorv1 "github.com/openebs/api/pkg/apis/cstor/v1"
+	cstorclient "github.com/openebs/api/pkg/client/clientset/versioned"
 
 	"github.com/pborman/uuid"
 	log "github.com/sirupsen/logrus"
@@ -205,7 +205,7 @@ type client struct {
 	snapshotClient             *snapshot.Clientset
 	mayaClient                 *mayaclient.Clientset
 	csiSnapshotClient          *csisnapshot.Clientset
-	openebsAPIClient           *openebsapiclient.Clientset
+	cstorClient                *cstorclient.Clientset
 	podStore                   cache.Store
 	serviceStore               cache.Store
 	deploymentStore            cache.Store
@@ -315,7 +315,7 @@ func NewClient(config ClientConfig) (Client, error) {
 		return nil, err
 	}
 
-	openebsClient, err := openebsapiclient.NewForConfig(restConfig)
+	cc, err := cstorclient.NewForConfig(restConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +326,7 @@ func NewClient(config ClientConfig) (Client, error) {
 		snapshotClient:    sc,
 		mayaClient:        mc,
 		csiSnapshotClient: csc,
-		openebsAPIClient:  openebsClient,
+		cstorClient:  cc,
 	}
 
 	result.podStore = NewEventStore(result.triggerPodWatches, cache.MetaNamespaceKeyFunc)
@@ -418,9 +418,9 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 	case "storagepoolclaims":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePoolClaim{}, nil
 	case "cstorvolumes":
-		return c.openebsAPIClient.CstorV1().RESTClient(), &openebsapiv1.CStorVolume{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorVolume{}, nil
 	case "cstorvolumereplicas":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolumeReplica{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorVolumeReplica{}, nil
 	case "cstorpools":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPool{}, nil
 	case "blockdevices":
@@ -428,9 +428,9 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 	case "blockdeviceclaims":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDeviceClaim{}, nil
 	case "cstorpoolclusters":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolCluster{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorPoolCluster{}, nil
 	case "cstorpoolinstances":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolInstance{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorPoolInstance{}, nil
 	case "cronjobs":
 		return c.client.BatchV1beta1().RESTClient(), &apibatchv1beta1.CronJob{}, nil
 	case "csivolumesnapshots":
@@ -710,7 +710,7 @@ func (c *client) WalkStoragePoolClaims(f func(StoragePoolClaim) error) error {
 
 func (c *client) WalkCStorVolumes(f func(CStorVolume) error) error {
 	for _, m := range c.cStorvolumeStore.List() {
-		cStorVolume := m.(*openebsapiv1.CStorVolume)
+		cStorVolume := m.(*cstorv1.CStorVolume)
 		if err := f(NewCStorVolume(cStorVolume)); err != nil {
 			return err
 		}
@@ -720,7 +720,7 @@ func (c *client) WalkCStorVolumes(f func(CStorVolume) error) error {
 
 func (c *client) WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error {
 	for _, m := range c.cStorvolumeReplicaStore.List() {
-		cStorVolumeReplica := m.(*mayav1alpha1.CStorVolumeReplica)
+		cStorVolumeReplica := m.(*cstorv1.CStorVolumeReplica)
 		if err := f(NewCStorVolumeReplica(cStorVolumeReplica)); err != nil {
 			return err
 		}
@@ -750,7 +750,7 @@ func (c *client) WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error {
 
 func (c *client) WalkCStorPoolClusters(f func(CStorPoolCluster) error) error {
 	for _, m := range c.cStorPoolClusterStore.List() {
-		cStorPoolCluster := m.(*mayav1alpha1.CStorPoolCluster)
+		cStorPoolCluster := m.(*cstorv1.CStorPoolCluster)
 		if err := f(NewCStorPoolCluster(cStorPoolCluster)); err != nil {
 			return err
 		}
@@ -760,7 +760,7 @@ func (c *client) WalkCStorPoolClusters(f func(CStorPoolCluster) error) error {
 
 func (c *client) WalkCStorPoolInstances(f func(CStorPoolInstance) error) error {
 	for _, m := range c.cStorPoolInstanceStore.List() {
-		cStorPoolInstance := m.(*mayav1alpha1.CStorPoolInstance)
+		cStorPoolInstance := m.(*cstorv1.CStorPoolInstance)
 		if err := f(NewCStorPoolInstance(cStorPoolInstance)); err != nil {
 			return err
 		}
