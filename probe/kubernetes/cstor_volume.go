@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	openebsapiv1 "github.com/openebs/api/pkg/apis/cstor/v1"
+	cstorv1 "github.com/openebs/api/pkg/apis/cstor/v1"
 	"github.com/weaveworks/scope/report"
 )
 
@@ -22,12 +22,12 @@ type CStorVolume interface {
 
 // cStorVolume represents cStor Volume CR
 type cStorVolume struct {
-	*openebsapiv1.CStorVolume
+	*cstorv1.CStorVolume
 	Meta
 }
 
 // NewCStorVolume returns fresh CStorVolume instance
-func NewCStorVolume(p *openebsapiv1.CStorVolume) CStorVolume {
+func NewCStorVolume(p *cstorv1.CStorVolume) CStorVolume {
 	return &cStorVolume{CStorVolume: p, Meta: meta{p.ObjectMeta}}
 }
 
