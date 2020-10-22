@@ -189,7 +189,7 @@ jobs:
           docker load -i cloud-agent.tar
       - run: |
           test -z "${DOCKER_USER}" && exit 0
-          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
               docker tag weaveworks/scope:latest mayadataio/scope:staging.$CIRCLE_BUILD_NUM
               docker push mayadataio/scope:staging.$CIRCLE_BUILD_NUM
@@ -210,7 +210,7 @@ jobs:
           docker load -i cloud-agent.tar
       - run: |
           test -z "${DOCKER_USER}" && exit 0
-          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
               docker tag weaveworks/scope:latest mayadataio/scope:v1.11.$CIRCLE_BUILD_NUM
               docker push mayadataio/scope:v1.11.$CIRCLE_BUILD_NUM
@@ -230,7 +230,7 @@ jobs:
           docker load -i cloud-agent.tar
       - run: |
           test -z "${DOCKER_USER}" && exit 0
-          docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
           for IMAGE in $IMAGES; do
               docker tag weaveworks/scope:latest mayadataio/scope:mdap-rc1
               docker push mayadataio/scope:mdap-rc1
