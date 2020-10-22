@@ -265,9 +265,9 @@ var nodeSummaryGroupSpecs = []struct {
 		},
 	},
 	{
-		topologyID: report.VolumeSnapshot,
+		topologyID: report.CsiVolumeSnapshot,
 		NodeSummaryGroup: NodeSummaryGroup{
-			Label:   "Volume Snapshots",
+			Label:   "CSI Volume Snapshots",
 			Columns: []Column{},
 		},
 	},
@@ -310,6 +310,20 @@ var nodeSummaryGroupSpecs = []struct {
 		topologyID: report.CStorPoolInstance,
 		NodeSummaryGroup: NodeSummaryGroup{
 			Label:   "New CStor Pool",
+			Columns: []Column{},
+		},
+	},
+	{
+		topologyID: report.VolumeSnapshotClass,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Volume Snapshot Class",
+			Columns: []Column{},
+		},
+	},
+	{
+		topologyID: report.VolumeSnapshotContent,
+		NodeSummaryGroup: NodeSummaryGroup{
+			Label:   "Volume Snapshot Content",
 			Columns: []Column{},
 		},
 	},

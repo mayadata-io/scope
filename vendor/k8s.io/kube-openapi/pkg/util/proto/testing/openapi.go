@@ -23,8 +23,8 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/googleapis/gnostic/OpenAPIv2"
 	"github.com/googleapis/gnostic/compiler"
+	openapi_v2 "github.com/googleapis/gnostic/openapiv2"
 )
 
 // Fake opens and returns a openapi swagger from a file Path. It will
@@ -59,4 +59,10 @@ func (f *Fake) OpenAPISchema() (*openapi_v2.Document, error) {
 		f.document, f.err = openapi_v2.NewDocument(info, compiler.NewContext("$root", nil))
 	})
 	return f.document, f.err
+}
+
+type Empty struct{}
+
+func (Empty) OpenAPISchema() (*openapi_v2.Document, error) {
+	return nil, nil
 }

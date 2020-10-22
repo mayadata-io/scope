@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import (
 )
 
 // CStorPoolClusterLister helps list CStorPoolClusters.
+// All objects returned here must be treated as read-only.
 type CStorPoolClusterLister interface {
 	// List lists all CStorPoolClusters in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.CStorPoolCluster, err error)
 	// CStorPoolClusters returns an object that can list and get CStorPoolClusters.
 	CStorPoolClusters(namespace string) CStorPoolClusterNamespaceLister
@@ -58,10 +60,13 @@ func (s *cStorPoolClusterLister) CStorPoolClusters(namespace string) CStorPoolCl
 }
 
 // CStorPoolClusterNamespaceLister helps list and get CStorPoolClusters.
+// All objects returned here must be treated as read-only.
 type CStorPoolClusterNamespaceLister interface {
 	// List lists all CStorPoolClusters in the indexer for a given namespace.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.CStorPoolCluster, err error)
 	// Get retrieves the CStorPoolCluster from the indexer for a given namespace and name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.CStorPoolCluster, error)
 	CStorPoolClusterNamespaceListerExpansion
 }
