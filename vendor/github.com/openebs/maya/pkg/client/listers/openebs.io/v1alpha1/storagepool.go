@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,10 +26,13 @@ import (
 )
 
 // StoragePoolLister helps list StoragePools.
+// All objects returned here must be treated as read-only.
 type StoragePoolLister interface {
 	// List lists all StoragePools in the indexer.
+	// Objects returned here must be treated as read-only.
 	List(selector labels.Selector) (ret []*v1alpha1.StoragePool, err error)
 	// Get retrieves the StoragePool from the index for a given name.
+	// Objects returned here must be treated as read-only.
 	Get(name string) (*v1alpha1.StoragePool, error)
 	StoragePoolListerExpansion
 }

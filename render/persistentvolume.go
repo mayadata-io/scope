@@ -20,6 +20,8 @@ var KubernetesVolumesRenderer = MakeReduce(
 	BlockDeviceClaimToBlockDeviceRenderer,
 	CSPIToBDRenderer,
 	BlockDeviceToDiskRenderer,
+	CSiVolumeSnapshotRenderer,
+	VolumeSnapshotClassRenderer,
 	MakeFilter(
 		func(n report.Node) bool {
 			value, _ := n.Latest.Lookup(report.KubernetesVolumePod)
@@ -142,6 +144,7 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 	nodes := make(report.Nodes)
 	for pvNodeID, p := range rpt.PersistentVolume.Nodes {
 		volumeName, _ := p.Latest.Lookup(report.KubernetesName)
+		volumeClaimName, _ := p.Latest.Lookup(report.KubernetesVolumeClaim)
 		for _, podNode := range rpt.Pod.Nodes {
 			podVolumeName, _ := podNode.Latest.Lookup(report.KubernetesVolumeName)
 			if volumeName == podVolumeName {
@@ -155,6 +158,14 @@ func (v pvToControllerRenderer) Render(ctx context.Context, rpt report.Report) N
 			if volumeName == snapshotPVName {
 				p.Adjacency = p.Adjacency.Add(volumeSnapshotNode.ID)
 				p.Children = p.Children.Add(volumeSnapshotNode)
+			}
+		}
+
+		for _, csiVolumeSnapshotNode := range rpt.CsiVolumeSnapshot.Nodes {
+			snapshotPVCName, _ := csiVolumeSnapshotNode.Latest.Lookup(report.KubernetesVolumeClaim)
+			if volumeClaimName == snapshotPVCName {
+				p.Adjacency = p.Adjacency.Add(csiVolumeSnapshotNode.ID)
+				p.Children = p.Children.Add(csiVolumeSnapshotNode)
 			}
 		}
 
@@ -219,6 +230,69 @@ func (v volumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report) N
 			}
 		}
 		nodes[volumeSnapshotID] = volumeSnapshotNode
+	}
+	return Nodes{Nodes: nodes}
+}
+
+// CSiVolumeSnapshotRenderer is a renderer which produces a renderable Kubernetes Volume Snapshot and Volume Snapshot Data
+var CSiVolumeSnapshotRenderer = csiVolumeSnapshotRenderer{}
+
+// csiVolumeSnapshotRenderer is a render to volume snapshot & volume snapshot data
+type csiVolumeSnapshotRenderer struct{}
+
+// Render renders the volumeSnapshots & volumeSnapshotData with adjacency
+// It checks for the volumeSnapshotData name in volumeSnapshot, adjacency is created by matching the volumeSnapshotData name.
+func (v csiVolumeSnapshotRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for volumeSnapshotID, volumeSnapshotNode := range rpt.CsiVolumeSnapshot.Nodes {
+		volumeSnapshotName, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesName)
+		volumeSnapshotNamespace, _ := volumeSnapshotNode.Latest.Lookup(report.KubernetesNamespace)
+		for persistentVolumeClaimID, persistentVolumeClaimNode := range rpt.PersistentVolumeClaim.Nodes {
+			vsName, ok := persistentVolumeClaimNode.Latest.Lookup(report.KubernetesVolumeSnapshotName)
+			if !ok {
+				continue
+			}
+			if vsName == volumeSnapshotName {
+				volumeSnapshotNode.Adjacency = volumeSnapshotNode.Adjacency.Add(persistentVolumeClaimID)
+				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(persistentVolumeClaimNode)
+			}
+		}
+
+		for volumeSnapshotContentID, volumeSnapshotContentNode := range rpt.VolumeSnapshotContent.Nodes {
+			vsName, _ := volumeSnapshotContentNode.Latest.Lookup(report.KubernetesVolumeSnapshotName)
+			vsNamespace, _ := volumeSnapshotContentNode.Latest.Lookup(report.KubernetesVolumeSnapshotNamespace)
+			if vsName == volumeSnapshotName && vsNamespace == volumeSnapshotNamespace {
+				volumeSnapshotNode.Adjacency = volumeSnapshotNode.Adjacency.Add(volumeSnapshotContentNode.ID)
+				volumeSnapshotNode.Children = volumeSnapshotNode.Children.Add(volumeSnapshotContentNode)
+			}
+			nodes[volumeSnapshotContentID] = volumeSnapshotContentNode
+		}
+
+		nodes[volumeSnapshotID] = volumeSnapshotNode
+	}
+	return Nodes{Nodes: nodes}
+}
+
+// VolumeSnapshotClassRenderer is a renderer which produces a renderable Kubernetes Volume Snapshot class and Volume Snapshot
+var VolumeSnapshotClassRenderer = volumeSnapshotClassRenderer{}
+
+// csiVolumeSnapshotRenderer is a render to volume snapshot class & volume snapshot
+type volumeSnapshotClassRenderer struct{}
+
+// Render renders the csiVolumeSnapshots & volumeSnapshotClass with adjacency
+// It checks for the volumeSnapshotClass name in volumeSnapshot, adjacency is created by matching the volumeSnapshotClass name.
+func (v volumeSnapshotClassRenderer) Render(ctx context.Context, rpt report.Report) Nodes {
+	nodes := make(report.Nodes)
+	for volumeSnapshotClassID, volumeSnapshotClassNode := range rpt.VolumeSnapshotClass.Nodes {
+		volumeSnapshotClassName, _ := volumeSnapshotClassNode.Latest.Lookup(report.KubernetesName)
+		for _, csiVolumeSnapshotNode := range rpt.CsiVolumeSnapshot.Nodes {
+			snsapshotClassName, _ := csiVolumeSnapshotNode.Latest.Lookup(report.KubernetesSnapshotClass)
+			if volumeSnapshotClassName == snsapshotClassName {
+				volumeSnapshotClassNode.Adjacency = volumeSnapshotClassNode.Adjacency.Add(csiVolumeSnapshotNode.ID)
+				volumeSnapshotClassNode.Children = volumeSnapshotClassNode.Children.Add(csiVolumeSnapshotNode)
+			}
+		}
+		nodes[volumeSnapshotClassID] = volumeSnapshotClassNode
 	}
 	return Nodes{Nodes: nodes}
 }

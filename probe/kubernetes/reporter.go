@@ -33,7 +33,9 @@ const (
 	Provisioner                  = report.KubernetesProvisioner
 	StorageDriver                = report.KubernetesStorageDriver
 	VolumeSnapshotName           = report.KubernetesVolumeSnapshotName
+	VolumeSnapshotNamespace      = report.KubernetesVolumeSnapshotNamespace
 	SnapshotData                 = report.KubernetesSnapshotData
+	SnapshotClass                = report.KubernetesSnapshotClass
 	VolumeCapacity               = report.KubernetesVolumeCapacity
 	Model                        = report.KubernetesModel
 	LogicalSectorSize            = report.KubernetesLogicalSectorSize
@@ -75,6 +77,8 @@ const (
 	FreeSize                     = report.KubernetesFreeSize
 	UsedSize                     = report.KubernetesUsedSize
 	CStorPoolInstanceUID         = report.KubernetesCStorPoolInstanceUID
+	Driver                       = report.KubernetesDriver
+	DeletionPolicy               = report.KubernetesDeletionPolicy
 )
 
 var (
@@ -248,9 +252,9 @@ var (
 	}
 
 	CStorVolumeMetadataTemplates = report.MetadataTemplates{
-		NodeType:   {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		VolumeName: {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
-		Status:     {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
+		NodeType:                     {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeName:                   {ID: CStorVolumeName, Label: "CStor Volume", From: report.FromLatest, Priority: 2},
+		Status:                       {ID: Status, Label: "Status", From: report.FromLatest, Priority: 3},
 		CStorVolumeConsistencyFactor: {ID: CStorVolumeConsistencyFactor, Label: "Conistency Factor", From: report.FromLatest, Priority: 4},
 		CStorVolumeReplicationFactor: {ID: CStorVolumeReplicationFactor, Label: "Replication Factor", From: report.FromLatest, Priority: 5},
 		CStorVolumeIQN:               {ID: CStorVolumeIQN, Label: "Iqn", From: report.FromLatest, Priority: 6},
@@ -288,6 +292,26 @@ var (
 		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
 		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
 		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+	}
+
+	CsiVolumeSnapshotMetadataTemplates = report.MetadataTemplates{
+		NodeType:      {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Namespace:     {ID: Namespace, Label: "Name", From: report.FromLatest, Priority: 2},
+		VolumeClaim:   {ID: VolumeClaim, Label: "Persistent volume claim", From: report.FromLatest, Priority: 3},
+		SnapshotData:  {ID: SnapshotData, Label: "Volume snapshot data", From: report.FromLatest, Priority: 4},
+		SnapshotClass: {ID: SnapshotClass, Label: "Volume snapshot class", From: report.FromLatest, Priority: 5},
+	}
+
+	VolumeSnapshotClassMetadataTemplates = report.MetadataTemplates{
+		NodeType:       {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Driver:         {ID: Driver, Label: "Driver", From: report.FromLatest, Priority: 2},
+		DeletionPolicy: {ID: DeletionPolicy, Label: "Deletion policy", From: report.FromLatest, Priority: 3},
+	}
+
+	VolumeSnapshotContentMetadataTemplates = report.MetadataTemplates{
+		NodeType:                {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		VolumeSnapshotName:      {ID: VolumeSnapshotName, Label: "Volume snapshot name", From: report.FromLatest, Priority: 2},
+		VolumeSnapshotNamespace: {ID: VolumeSnapshotNamespace, Label: "Volume snapshot namespace", From: report.FromLatest, Priority: 3},
 	}
 
 	TableTemplates = report.TableTemplates{
@@ -524,6 +548,18 @@ func (r *Reporter) Report() (report.Report, error) {
 	if err != nil {
 		return result, err
 	}
+	csiVolumeSnapshotTopology, _, err := r.csiVolumeSnapshotTopology()
+	if err != nil {
+		return result, nil
+	}
+	volumeSnapshotClassTopology, _, err := r.volumeSnapshotClassTopology()
+	if err != nil {
+		return result, nil
+	}
+	volumeSnapshotContentTopology, _, err := r.volumeSnapshotContentTopology()
+	if err != nil {
+		return result, nil
+	}
 	result.Pod = result.Pod.Merge(podTopology)
 	result.Service = result.Service.Merge(serviceTopology)
 	result.DaemonSet = result.DaemonSet.Merge(daemonSetTopology)
@@ -546,6 +582,9 @@ func (r *Reporter) Report() (report.Report, error) {
 	result.BlockDeviceClaim = result.BlockDeviceClaim.Merge(blockDeviceClaimTopology)
 	result.CStorPoolCluster = result.CStorPoolCluster.Merge(cStorPoolClusterTopology)
 	result.CStorPoolInstance = result.CStorPoolInstance.Merge(cStorPoolInstanceTopology)
+	result.CsiVolumeSnapshot = result.CsiVolumeSnapshot.Merge(csiVolumeSnapshotTopology)
+	result.VolumeSnapshotClass = result.VolumeSnapshotClass.Merge(volumeSnapshotClassTopology)
+	result.VolumeSnapshotContent = result.VolumeSnapshotContent.Merge(volumeSnapshotContentTopology)
 	return result, nil
 }
 
@@ -719,6 +758,62 @@ func (r *Reporter) volumeSnapshotDataTopology() (report.Topology, []VolumeSnapsh
 		return nil
 	})
 	return result, volumeSnapshotData, err
+}
+
+func (r *Reporter) csiVolumeSnapshotTopology() (report.Topology, []CsiVolumeSnapshot, error) {
+	volumeSnapshots := []CsiVolumeSnapshot{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(CsiVolumeSnapshotMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(report.Control{
+		ID:       CloneCsiVolumeSnapshot,
+		Human:    "Clone snapshot",
+		Category: report.AdminControl,
+		Icon:     "far fa-clone",
+		Rank:     0,
+	})
+	result.Controls.AddControl(report.Control{
+		ID:       DeleteCsiVolumeSnapshot,
+		Human:    "Delete",
+		Category: report.AdminControl,
+		Icon:     "far fa-trash-alt",
+		Rank:     3,
+	})
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkCsiVolumeSnapshots(func(p CsiVolumeSnapshot) error {
+		result.AddNode(p.GetNode(r.probeID))
+		volumeSnapshots = append(volumeSnapshots, p)
+		return nil
+	})
+	return result, volumeSnapshots, err
+}
+
+func (r *Reporter) volumeSnapshotClassTopology() (report.Topology, []VolumeSnapshotClass, error) {
+	vsc := []VolumeSnapshotClass{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(VolumeSnapshotClassMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkVolumeSnapshotClasses(func(p VolumeSnapshotClass) error {
+		result.AddNode(p.GetNode(r.probeID))
+		vsc = append(vsc, p)
+		return nil
+	})
+	return result, vsc, err
+}
+
+func (r *Reporter) volumeSnapshotContentTopology() (report.Topology, []VolumeSnapshotContent, error) {
+	vsc := []VolumeSnapshotContent{}
+	result := report.MakeTopology().
+		WithMetadataTemplates(VolumeSnapshotContentMetadataTemplates).
+		WithTableTemplates(TableTemplates)
+	result.Controls.AddControl(DescribeControl)
+	err := r.client.WalkVolumeSnapshotContents(func(p VolumeSnapshotContent) error {
+		result.AddNode(p.GetNode(r.probeID))
+		vsc = append(vsc, p)
+		return nil
+	})
+	return result, vsc, err
 }
 
 func (r *Reporter) jobTopology() (report.Topology, []Job, error) {
