@@ -1,8 +1,9 @@
 package kubernetes
 
 import (
-	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
+	cstorv1 "github.com/openebs/api/pkg/apis/cstor/v1"
 	"github.com/weaveworks/scope/report"
+	"strconv"
 )
 
 // CStorPoolCluster represent CStorPoolCluster interface.
@@ -13,12 +14,12 @@ type CStorPoolCluster interface {
 
 // cStorPoolCluster represent the cStorPoolCluster CRD of Kubernetes.
 type cStorPoolCluster struct {
-	*mayav1alpha1.CStorPoolCluster
+	*cstorv1.CStorPoolCluster
 	Meta
 }
 
 // NewCStorPoolCluster return new CStorPoolCluster type.
-func NewCStorPoolCluster(c *mayav1alpha1.CStorPoolCluster) CStorPoolCluster {
+func NewCStorPoolCluster(c *cstorv1.CStorPoolCluster) CStorPoolCluster {
 	return &cStorPoolCluster{CStorPoolCluster: c, Meta: meta{c.ObjectMeta}}
 }
 
@@ -26,10 +27,9 @@ func NewCStorPoolCluster(c *mayav1alpha1.CStorPoolCluster) CStorPoolCluster {
 func (c *cStorPoolCluster) GetNode(probeID string) report.Node {
 	return c.MetaNode(report.MakeCStorPoolClusterNodeID(c.UID())).WithLatests(map[string]string{
 		NodeType:              "CStor Pool Cluster",
-		Status:                c.Status.Phase,
-		TotalSize:             c.Status.Capacity.Total,
-		FreeSize:              c.Status.Capacity.Free,
-		UsedSize:              c.Status.Capacity.Used,
+		ProvisionedInstances:  strconv.Itoa(int(c.Status.ProvisionedInstances)),
+		DesiredInstances:      strconv.Itoa(int(c.Status.DesiredInstances)),
+		HealthyInstances:      strconv.Itoa(int(c.Status.HealthyInstances)),
 		report.ControlProbeID: probeID,
 	}).WithLatestActiveControls(Describe)
 }

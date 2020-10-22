@@ -76,6 +76,13 @@ const (
 	TotalSize                    = report.KubernetesTotalSize
 	FreeSize                     = report.KubernetesFreeSize
 	UsedSize                     = report.KubernetesUsedSize
+	LogicalUsed                  = report.KubernetesLogicalUsed
+	ProvisionedInstances         = report.KubernetesProvisionedInstances
+	DesiredInstances             = report.KubernetesDesiredInstances
+	HealthyInstances             = report.KubernetesHealthyInstances
+	ReadOnly                     = report.KubernetesReadOnly
+	ProvisionedReplicas          = report.KubernetesProvisionedReplicas
+	HealthyReplicas              = report.KubernetesHealthyReplicas
 	CStorPoolInstanceUID         = report.KubernetesCStorPoolInstanceUID
 	Driver                       = report.KubernetesDriver
 	DeletionPolicy               = report.KubernetesDeletionPolicy
@@ -279,19 +286,22 @@ var (
 	}
 
 	CStorPoolClusterMetadataTemplates = report.MetadataTemplates{
-		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
-		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
-		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
-		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+		NodeType:             {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		ProvisionedInstances: {ID: ProvisionedInstances, Label: "Provisioned Instances", From: report.FromLatest, Priority: 2},
+		DesiredInstances:     {ID: DesiredInstances, Label: "Desired Instances", From: report.FromLatest, Priority: 3},
+		HealthyInstances:     {ID: HealthyInstances, Label: "Healthy Instances", From: report.FromLatest, Priority: 4},
 	}
 
 	CStorPoolInstanceMetadataTemplates = report.MetadataTemplates{
-		NodeType:  {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
-		Status:    {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
-		TotalSize: {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
-		FreeSize:  {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
-		UsedSize:  {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+		NodeType:             {ID: NodeType, Label: "Type", From: report.FromLatest, Priority: 1},
+		Status:               {ID: Status, Label: "Status", From: report.FromLatest, Priority: 2},
+		TotalSize:            {ID: TotalSize, Label: "Total size", From: report.FromLatest, Priority: 3},
+		FreeSize:             {ID: FreeSize, Label: "Free size", From: report.FromLatest, Priority: 4},
+		UsedSize:             {ID: UsedSize, Label: "Used size", From: report.FromLatest, Priority: 5},
+		LogicalUsed:          {ID: LogicalUsed, Label: "Logical Used size", From: report.FromLatest, Priority: 6},
+		ReadOnly:             {ID: ReadOnly, Label: "Read Only", From: report.FromLatest, Priority: 7},
+		ProvisionedReplicas:  {ID: ProvisionedReplicas, Label: "Provisioned Replicas", From: report.FromLatest, Priority: 8},
+		HealthyReplicas:      {ID: HealthyReplicas, Label: "Healthy Replicas", From: report.FromLatest, Priority: 9},
 	}
 
 	CsiVolumeSnapshotMetadataTemplates = report.MetadataTemplates{
