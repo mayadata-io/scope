@@ -1,5 +1,5 @@
 /*
-Copyright The Kubernetes Authors.
+Copyright 2018 The OpenEBS Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ limitations under the License.
 package fake
 
 import (
+	"context"
+
 	v1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
@@ -39,7 +41,7 @@ var cstorpoolclustersResource = schema.GroupVersionResource{Group: "openebs.io",
 var cstorpoolclustersKind = schema.GroupVersionKind{Group: "openebs.io", Version: "v1alpha1", Kind: "CStorPoolCluster"}
 
 // Get takes name of the cStorPoolCluster, and returns the corresponding cStorPoolCluster object, and an error if there is any.
-func (c *FakeCStorPoolClusters) Get(name string, options v1.GetOptions) (result *v1alpha1.CStorPoolCluster, err error) {
+func (c *FakeCStorPoolClusters) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.CStorPoolCluster, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewGetAction(cstorpoolclustersResource, c.ns, name), &v1alpha1.CStorPoolCluster{})
 
@@ -50,7 +52,7 @@ func (c *FakeCStorPoolClusters) Get(name string, options v1.GetOptions) (result 
 }
 
 // List takes label and field selectors, and returns the list of CStorPoolClusters that match those selectors.
-func (c *FakeCStorPoolClusters) List(opts v1.ListOptions) (result *v1alpha1.CStorPoolClusterList, err error) {
+func (c *FakeCStorPoolClusters) List(ctx context.Context, opts v1.ListOptions) (result *v1alpha1.CStorPoolClusterList, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewListAction(cstorpoolclustersResource, cstorpoolclustersKind, c.ns, opts), &v1alpha1.CStorPoolClusterList{})
 
@@ -72,14 +74,14 @@ func (c *FakeCStorPoolClusters) List(opts v1.ListOptions) (result *v1alpha1.CSto
 }
 
 // Watch returns a watch.Interface that watches the requested cStorPoolClusters.
-func (c *FakeCStorPoolClusters) Watch(opts v1.ListOptions) (watch.Interface, error) {
+func (c *FakeCStorPoolClusters) Watch(ctx context.Context, opts v1.ListOptions) (watch.Interface, error) {
 	return c.Fake.
 		InvokesWatch(testing.NewWatchAction(cstorpoolclustersResource, c.ns, opts))
 
 }
 
 // Create takes the representation of a cStorPoolCluster and creates it.  Returns the server's representation of the cStorPoolCluster, and an error, if there is any.
-func (c *FakeCStorPoolClusters) Create(cStorPoolCluster *v1alpha1.CStorPoolCluster) (result *v1alpha1.CStorPoolCluster, err error) {
+func (c *FakeCStorPoolClusters) Create(ctx context.Context, cStorPoolCluster *v1alpha1.CStorPoolCluster, opts v1.CreateOptions) (result *v1alpha1.CStorPoolCluster, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewCreateAction(cstorpoolclustersResource, c.ns, cStorPoolCluster), &v1alpha1.CStorPoolCluster{})
 
@@ -90,7 +92,7 @@ func (c *FakeCStorPoolClusters) Create(cStorPoolCluster *v1alpha1.CStorPoolClust
 }
 
 // Update takes the representation of a cStorPoolCluster and updates it. Returns the server's representation of the cStorPoolCluster, and an error, if there is any.
-func (c *FakeCStorPoolClusters) Update(cStorPoolCluster *v1alpha1.CStorPoolCluster) (result *v1alpha1.CStorPoolCluster, err error) {
+func (c *FakeCStorPoolClusters) Update(ctx context.Context, cStorPoolCluster *v1alpha1.CStorPoolCluster, opts v1.UpdateOptions) (result *v1alpha1.CStorPoolCluster, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewUpdateAction(cstorpoolclustersResource, c.ns, cStorPoolCluster), &v1alpha1.CStorPoolCluster{})
 
@@ -101,7 +103,7 @@ func (c *FakeCStorPoolClusters) Update(cStorPoolCluster *v1alpha1.CStorPoolClust
 }
 
 // Delete takes name of the cStorPoolCluster and deletes it. Returns an error if one occurs.
-func (c *FakeCStorPoolClusters) Delete(name string, options *v1.DeleteOptions) error {
+func (c *FakeCStorPoolClusters) Delete(ctx context.Context, name string, opts v1.DeleteOptions) error {
 	_, err := c.Fake.
 		Invokes(testing.NewDeleteAction(cstorpoolclustersResource, c.ns, name), &v1alpha1.CStorPoolCluster{})
 
@@ -109,15 +111,15 @@ func (c *FakeCStorPoolClusters) Delete(name string, options *v1.DeleteOptions) e
 }
 
 // DeleteCollection deletes a collection of objects.
-func (c *FakeCStorPoolClusters) DeleteCollection(options *v1.DeleteOptions, listOptions v1.ListOptions) error {
-	action := testing.NewDeleteCollectionAction(cstorpoolclustersResource, c.ns, listOptions)
+func (c *FakeCStorPoolClusters) DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error {
+	action := testing.NewDeleteCollectionAction(cstorpoolclustersResource, c.ns, listOpts)
 
 	_, err := c.Fake.Invokes(action, &v1alpha1.CStorPoolClusterList{})
 	return err
 }
 
 // Patch applies the patch and returns the patched cStorPoolCluster.
-func (c *FakeCStorPoolClusters) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.CStorPoolCluster, err error) {
+func (c *FakeCStorPoolClusters) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts v1.PatchOptions, subresources ...string) (result *v1alpha1.CStorPoolCluster, err error) {
 	obj, err := c.Fake.
 		Invokes(testing.NewPatchSubresourceAction(cstorpoolclustersResource, c.ns, name, pt, data, subresources...), &v1alpha1.CStorPoolCluster{})
 

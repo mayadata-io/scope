@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -15,8 +16,12 @@ import (
 	snapshotv1 "github.com/openebs/k8s-snapshot-client/snapshot/pkg/apis/volumesnapshot/v1"
 	snapshot "github.com/openebs/k8s-snapshot-client/snapshot/pkg/client/clientset/versioned"
 
+	csisnapshotv1beta1 "github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1"
+	csisnapshot "github.com/kubernetes-csi/external-snapshotter/v2/pkg/client/clientset/versioned"
 	mayav1alpha1 "github.com/openebs/maya/pkg/apis/openebs.io/v1alpha1"
 	mayaclient "github.com/openebs/maya/pkg/client/clientset/versioned"
+	cstorv1 "github.com/openebs/api/pkg/apis/cstor/v1"
+	cstorclient "github.com/openebs/api/pkg/client/clientset/versioned"
 
 	"github.com/pborman/uuid"
 	log "github.com/sirupsen/logrus"
@@ -38,8 +43,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
-	kubectldescribe "k8s.io/kubernetes/pkg/kubectl/describe"
-	kubectl "k8s.io/kubernetes/pkg/kubectl/describe/versioned"
+	kubectldescribe "k8s.io/kubectl/pkg/describe"
 )
 
 // Client keeps track of running kubernetes pods and services
@@ -67,16 +71,21 @@ type Client interface {
 	WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error
 	WalkCStorPoolClusters(f func(CStorPoolCluster) error) error
 	WalkCStorPoolInstances(f func(CStorPoolInstance) error) error
+	WalkCsiVolumeSnapshots(f func(CsiVolumeSnapshot) error) error
+	WalkVolumeSnapshotClasses(f func(VolumeSnapshotClass) error) error
+	WalkVolumeSnapshotContents(f func(VolumeSnapshotContent) error) error
 	WatchPods(f func(Event, Pod))
 
-	CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
-	CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string) error
-	GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
+	CloneVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error
+	CloneCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) error
+	CreateVolumeSnapshot(ctx context.Context, namespaceID, persistentVolumeClaimID, capacity, driver string) error
+	GetLogs(ctx context.Context, namespaceID, podID string, containerNames []string) (io.ReadCloser, error)
 	Describe(namespaceID, resourceID string, groupKind schema.GroupKind, restMapping apimeta.RESTMapping) (io.ReadCloser, error)
-	DeletePod(namespaceID, podID string) error
-	DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error
-	ScaleUp(namespaceID, id string) error
-	ScaleDown(namespaceID, id string) error
+	DeletePod(ctx context.Context, namespaceID, podID string) error
+	DeleteVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error
+	DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error
+	ScaleUp(ctx context.Context, namespaceID, id string) error
+	ScaleDown(ctx context.Context, namespaceID, id string) error
 }
 
 // ResourceMap is the mapping of resource and their GroupKind
@@ -94,11 +103,109 @@ var ResourceMap = map[string]schema.GroupKind{
 	"StorageClass":          {Group: storagev1.GroupName, Kind: "StorageClass"},
 }
 
+var csiDriverMap = map[string]bool{
+	"diskplugin.csi.alibabacloud.com":          true,
+	"nasplugin.csi.alibabacloud.com":           true,
+	"ossplugin.csi.alibabacloud.com":           true,
+	"arstor.csi.huayun.io":                     true,
+	"ebs.csi.aws.com":                          true,
+	"efs.csi.aws.com":                          true,
+	"fsx.csi.aws.com":                          true,
+	"disk.csi.azure.com":                       true,
+	"file.csi.azure.com":                       true,
+	"csi.block.bigtera.com":                    true,
+	"csi.fs.bigtera.com":                       true,
+	"cephfs.csi.ceph.com":                      true,
+	"rbd.csi.ceph.com":                         true,
+	"csi.chubaofs.com":                         true,
+	"cinder.csi.openstack.org":                 true,
+	"csi.cloudscale.ch":                        true,
+	"csi-infiblock-plugin":                     true,
+	"csi-infifs-plugin":                        true,
+	"dsp.csi.daterainc.io":                     true,
+	"csi-isilon.dellemc.com":                   true,
+	"csi-powermax.dellemc.com":                 true,
+	"csi-powerstore.dellemc.com":               true,
+	"csi-unity.dellemc.com":                    true,
+	"csi-vxflexos.dellemc.com":                 true,
+	"csi-xtremio.dellemc.com":                  true,
+	"org.democratic-csi.v1.0":                  true,
+	"org.democratic-csi.v1.1":                  true,
+	"org.democratic-csi.v1.2":                  true,
+	"dcx.csi.diamanti.com":                     true,
+	"dobs.csi.digitalocean.com":                true,
+	"csi.drivescale.com":                       true,
+	"v0.2.ember-csi.io":                        true,
+	"v0.3.ember-csi.io":                        true,
+	"v1.0.ember-csi.io":                        true,
+	"pd.csi.storage.gke.io":                    true,
+	"com.google.csi.filestore":                 true,
+	"gcs.csi.ofek.dev":                         true,
+	"org.gluster.glusterfs":                    true,
+	"org.gluster.glustervirtblock":             true,
+	"com.hammerspace.csi":                      true,
+	"io.hedvig.csi":                            true,
+	"csi.hetzner.cloud":                        true,
+	"com.hitachi.hspc.csi":                     true,
+	"csi.hpe.com":                              true,
+	"csi.huawei.com":                           true,
+	"eu.zetanova.csi.hyperv":                   true,
+	"block.csi.ibm.com":                        true,
+	"spectrumscale.csi.ibm.com":                true,
+	"vpc.block.csi.ibm.io":                     true,
+	"infinibox-csi-driver":                     true,
+	"csi-instorage":                            true,
+	"pmem-csi.intel.com":                       true,
+	"csi.juicefs.com":                          true,
+	"org.kadalu.gluster":                       true,
+	"linodebs.csi.linode.com":                  true,
+	"io.drbd.linstor-csi":                      true,
+	"driver.longhorn.io":                       true,
+	"csi-macrosan":                             true,
+	"manila.csi.openstack.org":                 true,
+	"com.mapr.csi-kdf":                         true,
+	"com.tuxera.csi.moosefs":                   true,
+	"csi.trident.netapp.io":                    true,
+	"nexentastor-csi-driver.nexenta.com":       true,
+	"nexentastor-block-csi-driver.nexenta.com": true,
+	"com.nutanix.csi":                          true,
+	"cstor.csi.openebs.io":                     true,
+	"csi-opensdsplugin":                        true,
+	"com.open-e.joviandss.csi":                 true,
+	"pxd.openstorage.org":                      true,
+	"pure-csi":                                 true,
+	"disk.csi.qingcloud.com":                   true,
+	"csi-neonsan":                              true,
+	"quobyte-csi":                              true,
+	"robin":                                    true,
+	"csi-sandstone-plugin":                     true,
+	"eds.csi.sangfor.com":                      true,
+	"seaweedfs-csi-driver":                     true,
+	"secrets-store.csi.k8s.io":                 true,
+	"csi-smtx-plugin":                          true,
+	"csi.spdk.io":                              true,
+	"storageos":                                true,
+	"com.tencent.cloud.csi.cbs":                true,
+	"com.tencent.cloud.csi.cfs":                true,
+	"com.tencent.cloud.csi.cosfs":              true,
+	"topolvm.cybozu.com":                       true,
+	"csi.vastdata.com":                         true,
+	"csi.block.xsky.com":                       true,
+	"csi.fs.xsky.com":                          true,
+	"secrets.csi.kubevault.com":                true,
+	"csi.vsphere.vmware.com":                   true,
+	"csi.weka.io":                              true,
+	"yandex.csi.flant.com":                     true,
+	"csi.zadara.com":                           true,
+}
+
 type client struct {
 	quit                       chan struct{}
 	client                     *kubernetes.Clientset
 	snapshotClient             *snapshot.Clientset
 	mayaClient                 *mayaclient.Clientset
+	csiSnapshotClient          *csisnapshot.Clientset
+	cstorClient                *cstorclient.Clientset
 	podStore                   cache.Store
 	serviceStore               cache.Store
 	deploymentStore            cache.Store
@@ -122,6 +229,9 @@ type client struct {
 	blockDeviceClaimStore      cache.Store
 	cStorPoolClusterStore      cache.Store
 	cStorPoolInstanceStore     cache.Store
+	csiVolumeSnapshotStore     cache.Store
+	volumeSnapshotClassStore   cache.Store
+	volumeSnapshotContentStore cache.Store
 
 	podWatchesMutex sync.Mutex
 	podWatches      []func(Event, Pod)
@@ -200,11 +310,23 @@ func NewClient(config ClientConfig) (Client, error) {
 		return nil, err
 	}
 
+	csc, err := csisnapshot.NewForConfig(restConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	cc, err := cstorclient.NewForConfig(restConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	result := &client{
-		quit:           make(chan struct{}),
-		client:         c,
-		snapshotClient: sc,
-		mayaClient:     mc,
+		quit:              make(chan struct{}),
+		client:            c,
+		snapshotClient:    sc,
+		mayaClient:        mc,
+		csiSnapshotClient: csc,
+		cstorClient:  cc,
 	}
 
 	result.podStore = NewEventStore(result.triggerPodWatches, cache.MetaNamespaceKeyFunc)
@@ -232,6 +354,9 @@ func NewClient(config ClientConfig) (Client, error) {
 	result.blockDeviceClaimStore = result.setupStore("blockdeviceclaims")
 	result.cStorPoolClusterStore = result.setupStore("cstorpoolclusters")
 	result.cStorPoolInstanceStore = result.setupStore("cstorpoolinstances")
+	result.csiVolumeSnapshotStore = result.setupStore("csivolumesnapshots")
+	result.volumeSnapshotClassStore = result.setupStore("volumesnapshotclasses")
+	result.volumeSnapshotContentStore = result.setupStore("volumesnapshotcontents")
 
 	return result, nil
 }
@@ -293,9 +418,9 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 	case "storagepoolclaims":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.StoragePoolClaim{}, nil
 	case "cstorvolumes":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolume{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorVolume{}, nil
 	case "cstorvolumereplicas":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorVolumeReplica{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorVolumeReplica{}, nil
 	case "cstorpools":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPool{}, nil
 	case "blockdevices":
@@ -303,11 +428,17 @@ func (c *client) clientAndType(resource string) (rest.Interface, interface{}, er
 	case "blockdeviceclaims":
 		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.BlockDeviceClaim{}, nil
 	case "cstorpoolclusters":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolCluster{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorPoolCluster{}, nil
 	case "cstorpoolinstances":
-		return c.mayaClient.OpenebsV1alpha1().RESTClient(), &mayav1alpha1.CStorPoolInstance{}, nil
+		return c.cstorClient.CstorV1().RESTClient(), &cstorv1.CStorPoolInstance{}, nil
 	case "cronjobs":
 		return c.client.BatchV1beta1().RESTClient(), &apibatchv1beta1.CronJob{}, nil
+	case "csivolumesnapshots":
+		return c.csiSnapshotClient.SnapshotV1beta1().RESTClient(), &csisnapshotv1beta1.VolumeSnapshot{}, nil
+	case "volumesnapshotclasses":
+		return c.csiSnapshotClient.SnapshotV1beta1().RESTClient(), &csisnapshotv1beta1.VolumeSnapshotClass{}, nil
+	case "volumesnapshotcontents":
+		return c.csiSnapshotClient.SnapshotV1beta1().RESTClient(), &csisnapshotv1beta1.VolumeSnapshotContent{}, nil
 	}
 	return nil, nil, fmt.Errorf("Invalid resource: %v", resource)
 }
@@ -322,6 +453,11 @@ func (c *client) runReflectorUntil(resource string, store cache.Store) {
 			if err != nil {
 				return false, err
 			}
+
+			if resource == "csivolumesnapshots" {
+				resource = "volumesnapshots"
+			}
+
 			ok, err := c.isResourceSupported(kclient.APIVersion(), resource)
 			if err != nil {
 				return false, err
@@ -502,6 +638,36 @@ func (c *client) WalkVolumeSnapshotData(f func(VolumeSnapshotData) error) error 
 	return nil
 }
 
+func (c *client) WalkCsiVolumeSnapshots(f func(CsiVolumeSnapshot) error) error {
+	for _, m := range c.csiVolumeSnapshotStore.List() {
+		cvs := m.(*csisnapshotv1beta1.VolumeSnapshot)
+		if err := f(NewCsiVolumeSnapshot(cvs)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkVolumeSnapshotClasses(f func(VolumeSnapshotClass) error) error {
+	for _, m := range c.volumeSnapshotClassStore.List() {
+		vsc := m.(*csisnapshotv1beta1.VolumeSnapshotClass)
+		if err := f(NewVolumeSnapshotClass(vsc)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *client) WalkVolumeSnapshotContents(f func(VolumeSnapshotContent) error) error {
+	for _, m := range c.volumeSnapshotContentStore.List() {
+		vsc := m.(*csisnapshotv1beta1.VolumeSnapshotContent)
+		if err := f(NewVolumeSnapshotContent(vsc)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (c *client) WalkJobs(f func(Job) error) error {
 	for _, m := range c.jobStore.List() {
 		job := m.(*apibatchv1.Job)
@@ -544,7 +710,7 @@ func (c *client) WalkStoragePoolClaims(f func(StoragePoolClaim) error) error {
 
 func (c *client) WalkCStorVolumes(f func(CStorVolume) error) error {
 	for _, m := range c.cStorvolumeStore.List() {
-		cStorVolume := m.(*mayav1alpha1.CStorVolume)
+		cStorVolume := m.(*cstorv1.CStorVolume)
 		if err := f(NewCStorVolume(cStorVolume)); err != nil {
 			return err
 		}
@@ -554,7 +720,7 @@ func (c *client) WalkCStorVolumes(f func(CStorVolume) error) error {
 
 func (c *client) WalkCStorVolumeReplicas(f func(CStorVolumeReplica) error) error {
 	for _, m := range c.cStorvolumeReplicaStore.List() {
-		cStorVolumeReplica := m.(*mayav1alpha1.CStorVolumeReplica)
+		cStorVolumeReplica := m.(*cstorv1.CStorVolumeReplica)
 		if err := f(NewCStorVolumeReplica(cStorVolumeReplica)); err != nil {
 			return err
 		}
@@ -584,7 +750,7 @@ func (c *client) WalkBlockDeviceClaims(f func(BlockDeviceClaim) error) error {
 
 func (c *client) WalkCStorPoolClusters(f func(CStorPoolCluster) error) error {
 	for _, m := range c.cStorPoolClusterStore.List() {
-		cStorPoolCluster := m.(*mayav1alpha1.CStorPoolCluster)
+		cStorPoolCluster := m.(*cstorv1.CStorPoolCluster)
 		if err := f(NewCStorPoolCluster(cStorPoolCluster)); err != nil {
 			return err
 		}
@@ -594,7 +760,7 @@ func (c *client) WalkCStorPoolClusters(f func(CStorPoolCluster) error) error {
 
 func (c *client) WalkCStorPoolInstances(f func(CStorPoolInstance) error) error {
 	for _, m := range c.cStorPoolInstanceStore.List() {
-		cStorPoolInstance := m.(*mayav1alpha1.CStorPoolInstance)
+		cStorPoolInstance := m.(*cstorv1.CStorPoolInstance)
 		if err := f(NewCStorPoolInstance(cStorPoolInstance)); err != nil {
 			return err
 		}
@@ -602,12 +768,12 @@ func (c *client) WalkCStorPoolInstances(f func(CStorPoolInstance) error) error {
 	return nil
 }
 
-func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error {
+func (c *client) CloneVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity string) error {
 	var scName string
 	var claimSize string
 	UID := strings.Split(uuid.New(), "-")
 	scProvisionerName := "volumesnapshot.external-storage.k8s.io/snapshot-promoter"
-	scList, err := c.client.StorageV1().StorageClasses().List(metav1.ListOptions{})
+	scList, err := c.client.StorageV1().StorageClasses().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
@@ -621,9 +787,9 @@ func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVo
 	if scName == "" {
 		return errors.New("snapshot-promoter storage class is not present")
 	}
-	volumeSnapshot, _ := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Get(volumeSnapshotID, metav1.GetOptions{})
+	volumeSnapshot, _ := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Get(ctx, volumeSnapshotID, metav1.GetOptions{})
 	if volumeSnapshot.Spec.PersistentVolumeClaimName != "" {
-		persistentVolumeClaim, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Get(volumeSnapshot.Spec.PersistentVolumeClaimName, metav1.GetOptions{})
+		persistentVolumeClaim, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Get(ctx, volumeSnapshot.Spec.PersistentVolumeClaimName, metav1.GetOptions{})
 		if err == nil {
 			storage := persistentVolumeClaim.Spec.Resources.Requests[apiv1.ResourceStorage]
 			if storage.String() != "" {
@@ -657,35 +823,26 @@ func (c *client) CloneVolumeSnapshot(namespaceID, volumeSnapshotID, persistentVo
 			},
 		},
 	}
-	_, err = c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(persistentVolumeClaim)
+	_, err = c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(ctx, persistentVolumeClaim, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *client) CreateVolumeSnapshot(namespaceID, persistentVolumeClaimID, capacity string) error {
+func (c *client) CreateVolumeSnapshot(ctx context.Context, namespaceID, persistentVolumeClaimID, capacity, driver string) error {
 	UID := strings.Split(uuid.New(), "-")
-	volumeSnapshot := &snapshotv1.VolumeSnapshot{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1],
-			Namespace: namespaceID,
-			Annotations: map[string]string{
-				"capacity": capacity,
-			},
-		},
-		Spec: snapshotv1.VolumeSnapshotSpec{
-			PersistentVolumeClaimName: persistentVolumeClaimID,
-		},
+	snapshotName := "snapshot-" + time.Now().Format("20060102150405") + "-" + UID[1]
+	var err error
+	if _, ok := csiDriverMap[driver]; ok {
+		err = c.createCsiVolumeSnapshot(ctx, snapshotName, namespaceID, persistentVolumeClaimID, capacity, driver)
+	} else {
+		err = c.createVolumeSnapshot(ctx, snapshotName, namespaceID, persistentVolumeClaimID, capacity)
 	}
-	_, err := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Create(volumeSnapshot)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-func (c *client) GetLogs(namespaceID, podID string, containerNames []string) (io.ReadCloser, error) {
+func (c *client) GetLogs(ctx context.Context, namespaceID, podID string, containerNames []string) (io.ReadCloser, error) {
 	readClosersWithLabel := map[io.ReadCloser]string{}
 	for _, container := range containerNames {
 		req := c.client.CoreV1().Pods(namespaceID).GetLogs(
@@ -696,7 +853,7 @@ func (c *client) GetLogs(namespaceID, podID string, containerNames []string) (io
 				Container:  container,
 			},
 		)
-		readCloser, err := req.Stream()
+		readCloser, err := req.Stream(ctx)
 		if err != nil {
 			for rc := range readClosersWithLabel {
 				rc.Close()
@@ -715,9 +872,9 @@ func (c *client) Describe(namespaceID, resourceID string, groupKind schema.Group
 	if err != nil {
 		return nil, err
 	}
-	describer, ok := kubectl.DescriberFor(groupKind, restConfig)
+	describer, ok := kubectldescribe.DescriberFor(groupKind, restConfig)
 	if !ok {
-		describer, ok = kubectl.GenericDescriberFor(&restMapping, restConfig)
+		describer, ok = kubectldescribe.GenericDescriberFor(&restMapping, restConfig)
 		if !ok {
 			return nil, errors.New("Resource not found")
 		}
@@ -735,37 +892,175 @@ func (c *client) Describe(namespaceID, resourceID string, groupKind schema.Group
 	return NewLogReadCloser(readClosersWithLabel), nil
 }
 
-func (c *client) DeletePod(namespaceID, podID string) error {
-	return c.client.CoreV1().Pods(namespaceID).Delete(podID, &metav1.DeleteOptions{})
+func (c *client) DeletePod(ctx context.Context, namespaceID, podID string) error {
+	return c.client.CoreV1().Pods(namespaceID).Delete(ctx, podID, metav1.DeleteOptions{})
 }
 
-func (c *client) DeleteVolumeSnapshot(namespaceID, volumeSnapshotID string) error {
-	return c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Delete(volumeSnapshotID, &metav1.DeleteOptions{})
+func (c *client) DeleteVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
+	return c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Delete(ctx, volumeSnapshotID, metav1.DeleteOptions{})
 }
 
-func (c *client) ScaleUp(namespaceID, id string) error {
-	return c.modifyScale(namespaceID, id, func(scale *autoscalingv1.Scale) {
+func (c *client) DeleteCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID string) error {
+	return c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshots(namespaceID).Delete(ctx, volumeSnapshotID, metav1.DeleteOptions{})
+}
+
+func (c *client) ScaleUp(ctx context.Context, namespaceID, id string) error {
+	return c.modifyScale(ctx, namespaceID, id, func(scale *autoscalingv1.Scale) {
 		scale.Spec.Replicas++
 	})
 }
 
-func (c *client) ScaleDown(namespaceID, id string) error {
-	return c.modifyScale(namespaceID, id, func(scale *autoscalingv1.Scale) {
+func (c *client) ScaleDown(ctx context.Context, namespaceID, id string) error {
+	return c.modifyScale(ctx, namespaceID, id, func(scale *autoscalingv1.Scale) {
 		scale.Spec.Replicas--
 	})
 }
 
-func (c *client) modifyScale(namespaceID, id string, f func(*autoscalingv1.Scale)) error {
+func (c *client) modifyScale(ctx context.Context, namespaceID, id string, f func(*autoscalingv1.Scale)) error {
 	scaler := c.client.AppsV1().Deployments(namespaceID)
-	scale, err := scaler.GetScale(id, metav1.GetOptions{})
+	scale, err := scaler.GetScale(ctx, id, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
 	f(scale)
-	_, err = scaler.UpdateScale(id, scale)
+	_, err = scaler.UpdateScale(ctx, id, scale, metav1.UpdateOptions{})
 	return err
 }
 
 func (c *client) Stop() {
 	close(c.quit)
+}
+
+func (c *client) createVolumeSnapshot(ctx context.Context, name, namespaceID, persistentVolumeClaimID, capacity string) error {
+	volumeSnapshot := &snapshotv1.VolumeSnapshot{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespaceID,
+			Annotations: map[string]string{
+				"capacity": capacity,
+			},
+		},
+		Spec: snapshotv1.VolumeSnapshotSpec{
+			PersistentVolumeClaimName: persistentVolumeClaimID,
+		},
+	}
+	_, err := c.snapshotClient.VolumesnapshotV1().VolumeSnapshots(namespaceID).Create(ctx, volumeSnapshot, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) createCsiVolumeSnapshot(ctx context.Context, name, namespaceID, persistentVolumeClaimID, capacity, driver string) error {
+	volumeSnapshotClassName := strings.ReplaceAll(driver, ".", "-")
+	_, err := c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshotClasses().Get(ctx, volumeSnapshotClassName, metav1.GetOptions{})
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			err = c.createVolumeSnapshotClass(ctx, volumeSnapshotClassName, driver)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+
+	volumeSnapshot := &csisnapshotv1beta1.VolumeSnapshot{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespaceID,
+			Annotations: map[string]string{
+				Capacity:         capacity,
+				DriverAnnotation: driver,
+			},
+		},
+		Spec: csisnapshotv1beta1.VolumeSnapshotSpec{
+			VolumeSnapshotClassName: &volumeSnapshotClassName,
+			Source: csisnapshotv1beta1.VolumeSnapshotSource{
+				PersistentVolumeClaimName: &persistentVolumeClaimID,
+			},
+		},
+	}
+	_, err = c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshots(namespaceID).Create(ctx, volumeSnapshot, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) createVolumeSnapshotClass(ctx context.Context, name, driver string) error {
+	volumeSnapshotClass := &csisnapshotv1beta1.VolumeSnapshotClass{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+		Driver:         driver,
+		DeletionPolicy: csisnapshotv1beta1.VolumeSnapshotContentDelete,
+	}
+
+	_, err := c.csiSnapshotClient.SnapshotV1beta1().VolumeSnapshotClasses().Create(ctx, volumeSnapshotClass, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) CloneCsiVolumeSnapshot(ctx context.Context, namespaceID, volumeSnapshotID, persistentVolumeClaimID, capacity, driver string) error {
+	var scName string
+	var claimSize string
+	UID := strings.Split(uuid.New(), "-")
+	scList, err := c.client.StorageV1().StorageClasses().List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	// Retrieve the first snapshot-promoter storage class
+	for _, sc := range scList.Items {
+		if sc.Provisioner == driver {
+			scName = sc.Name
+			break
+		}
+	}
+	if scName == "" {
+		return errors.New("csi driver " + driver + " related storage class is not present")
+	}
+	persistentVolumeClaim, err := c.client.CoreV1().PersistentVolumeClaims(namespaceID).Get(ctx, persistentVolumeClaimID, metav1.GetOptions{})
+	if err == nil {
+		storage := persistentVolumeClaim.Spec.Resources.Requests[apiv1.ResourceStorage]
+		if storage.String() != "" {
+			claimSize = storage.String()
+		}
+	}
+	// Set default volume size to the one stored in volume snapshot annotation,
+	// if unable to get PVC size.
+	if claimSize == "" {
+		claimSize = capacity
+	}
+
+	csiAPIGroup := "snapshot.storage.k8s.io"
+	clonePVC := &apiv1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "clone-" + persistentVolumeClaimID + "-" + UID[1],
+			Namespace: namespaceID,
+		},
+		Spec: apiv1.PersistentVolumeClaimSpec{
+			StorageClassName: &scName,
+			AccessModes: []apiv1.PersistentVolumeAccessMode{
+				apiv1.ReadWriteOnce,
+			},
+			Resources: apiv1.ResourceRequirements{
+				Requests: apiv1.ResourceList{
+					apiv1.ResourceName(apiv1.ResourceStorage): resource.MustParse(claimSize),
+				},
+			},
+			DataSource: &apiv1.TypedLocalObjectReference{
+				APIGroup: &csiAPIGroup,
+				Name:     volumeSnapshotID,
+				Kind:     "VolumeSnapshot",
+			},
+		},
+	}
+	_, err = c.client.CoreV1().PersistentVolumeClaims(namespaceID).Create(ctx, clonePVC, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
 }
